@@ -835,6 +835,13 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .fmeta{font-family:var(--mono);font-size:11px;letter-spacing:.06em;line-height:1.5;margin:8px 0 0;opacity:.85}
 .fcode{font-family:var(--mono);font-size:12px;letter-spacing:.14em}
 .barlink{display:block;margin:10px auto 0;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px;color:var(--cream);opacity:.85}
+
+.labstat{display:flex;gap:10px;margin:0 0 10px}.labstat>div{flex:1;background:rgba(84,11,14,.1);padding:10px 12px}.labstat b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:34px;line-height:1}.labstat span{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;line-height:1.35}
+.labocr{font-family:var(--mono);font-size:12.5px;line-height:1.4;background:#fff9d9;border:2px solid var(--ox);padding:10px;max-height:150px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+.labcand{padding:8px 10px;border-top:1.5px solid rgba(84,11,14,.2)}.labcand b{display:block;font-size:14px}.labcand span{font-size:12px;opacity:.8}.labcand.right{background:rgba(224,159,62,.35)}
+.labrow{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-top:1.5px solid rgba(84,11,14,.2)}.labrow span{flex:1;font-size:14px}.labrow b{font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:24px}.labrow em{font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.04em;opacity:.7;max-width:46%;text-align:right}
+.labrow.ok b{color:#2c6b3c}.labrow.bad b{color:var(--red)}
+.labbusy{margin:14px 0;padding:18px;background:var(--ox);color:var(--cream);text-align:center}.labbusy b{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:22px}.labbusy span{font-family:var(--mono);font-size:11px;opacity:.75}
 </style>
 </head>
 <body>
@@ -1277,6 +1284,7 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
       <button class="opt-card" data-set="svc"><b>Connected music services</b><span>Connect your own Spotify or Apple Music so playlists can be saved for real.</span></button>
       <div class="sethead">Scanner</div>
       <button class="opt-card" data-set="cam"><b>Live camera preview</b><span>Try your real camera in the viewfinder instead of the illustration.</span></button>
+      <button class="opt-card" data-lab="open"><b>Phase 0 test lab</b><span>Build the answer key, scan real deadwax, and score it against the bars.</span></button>
       <div class="sethead">Legal and safety</div>
       <button class="opt-card" data-set="legal"><b>Terms, privacy and takedowns</b><span>What Memory Wax is, what it is not, and how to report a problem.</span></button>
       <button class="ghost" data-set="about">About our data</button>
@@ -1291,6 +1299,8 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
     <div class="sheet" id="sheet-session" role="dialog" aria-label="Listening session"><div id="sessBody"></div></div>
 
     <div class="sheet" id="sheet-night" role="dialog" aria-label="Listening session room"><div id="nightBody"></div></div>
+
+    <div class="sheet" id="sheet-lab" role="dialog" aria-label="Phase 0 test lab"><div id="labBody"></div></div>
 
     <div class="sheet" id="sheet-found" role="dialog" aria-label="Scan result"><div id="foundBody"></div></div>
 
@@ -2991,10 +3001,316 @@ async function barLook(){
   st.found={code:v,hit,err};renderFound();openSheet('found');resetScan();
 }
 restoreReal();
+if(/[?&]lab=1/.test(location.search))setTimeout(openLab,400);
+
+
+/* ---------- Phase 0 test lab: answer key, scan trials, scoring against locked bars ---------- */
+const LAB_DEF={keys:[],trials:[],bars:{falseLock:2,top3:80,identified:95,secs:15},locked:'',nk:1,nt:1,engine:'auto',discogs:''};
+let LAB=(()=>{try{return {...LAB_DEF,keys:[],trials:[],bars:{...LAB_DEF.bars},...JSON.parse(localStorage.getItem('mw_lab')||'{}')}}catch(e){return {...LAB_DEF,keys:[],trials:[],bars:{...LAB_DEF.bars}}}})();
+const labSave=()=>{try{localStorage.setItem('mw_lab',JSON.stringify(LAB))}catch(e){toast('This browser blocked saving. Export your results before closing.')}};
+let LB={view:'home',form:null,trial:null,busy:false,msg:''};
+const GENRES=['Hip-hop','Jazz','House','Latin','Soul'];
+/* photos live in IndexedDB so they stay on this phone and never upload */
+const labDB=()=>new Promise((ok,no)=>{const r=indexedDB.open('mwlab',1);r.onupgradeneeded=()=>r.result.createObjectStore('img');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+async function imgPut(id,blob){const d=await labDB();return new Promise((ok,no)=>{const t=d.transaction('img','readwrite');t.objectStore('img').put(blob,id);t.oncomplete=()=>ok();t.onerror=()=>no(t.error)})}
+async function imgGet(id){const d=await labDB();return new Promise((ok,no)=>{const q=d.transaction('img').objectStore('img').get(id);q.onsuccess=()=>ok(q.result||null);q.onerror=()=>no(q.error)})}
+async function fileToCanvas(file,max){
+  let bmp;try{bmp=await createImageBitmap(file,{imageOrientation:'from-image'})}catch(e){bmp=await new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=no;im.src=URL.createObjectURL(file)})}
+  const w=bmp.width||bmp.naturalWidth,h=bmp.height||bmp.naturalHeight,s=Math.min(1,max/Math.max(w,h)),cv=document.createElement('canvas');
+  cv.width=Math.round(w*s);cv.height=Math.round(h*s);cv.getContext('2d').drawImage(bmp,0,0,cv.width,cv.height);return cv;
+}
+const cvBlob=(cv,q=.9)=>new Promise(ok=>cv.toBlob(ok,'image/jpeg',q));
+/* a few ways to make etched text easier to read, run separately and pooled */
+function labVariants(cv){
+  const out=[],mk=inv=>{
+    const c=document.createElement('canvas');c.width=cv.width;c.height=cv.height;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(cv,0,0);
+    const im=x.getImageData(0,0,c.width,c.height),d=im.data,hist=new Uint32Array(256);
+    for(let i=0;i<d.length;i+=4){const g=(d[i]*.3+d[i+1]*.59+d[i+2]*.11)|0;d[i]=g;hist[g]++}
+    const n=c.width*c.height;let lo=0,hi=255,a=0;while(lo<255&&(a+=hist[lo])<n*.02)lo++;a=0;while(hi>0&&(a+=hist[hi])<n*.02)hi--;
+    const k=255/Math.max(1,hi-lo);
+    for(let i=0;i<d.length;i+=4){let g=Math.max(0,Math.min(255,(d[i]-lo)*k));if(inv)g=255-g;d[i]=d[i+1]=d[i+2]=g;d[i+3]=255}
+    x.putImageData(im,0,0);return c};
+  out.push(mk(false),mk(true));return out;
+}
+let tessP=null,tessW=null;
+function tessLoad(){return tessP||(tessP=new Promise((ok,no)=>{if(window.Tesseract)return ok(window.Tesseract);const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';el.onload=()=>window.Tesseract?ok(window.Tesseract):no(new Error('Reader did not start.'));el.onerror=()=>{tessP=null;no(new Error('Could not load the text reader. Check your signal.'))};document.head.appendChild(el)}))}
+const LABENG={
+  tess:{name:'Tesseract (web)',ok:()=>true,run:async cv=>{
+    const T=await tessLoad();if(!tessW){tessW=await T.createWorker('eng');await tessW.setParameters({tessedit_pageseg_mode:T.PSM.SPARSE_TEXT,tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-/.()#*+& '})}
+    const texts=[];for(const v of labVariants(cv)){const r=await tessW.recognize(v);texts.push(r.data.text)}return texts.join('\n')}},
+  vision:{name:'Apple Vision (this app)',ok:()=>{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.nativePromise&&(C.PluginHeaders||[]).some(h=>h.name==='VisionOCR'))},run:async cv=>{
+    const texts=[];for(const v of [cv,...labVariants(cv)]){const r=await Capacitor.nativePromise('VisionOCR','recognize',{image:v.toDataURL('image/jpeg',.92).split(',')[1]});texts.push((r.lines||[]).map(l=>l.text).join('\n'))}return texts.join('\n')}}
+};
+const labEngine=()=>{const e=LAB.engine==='auto'?(LABENG.vision.ok()?'vision':'tess'):LAB.engine;return LABENG[e]&&LABENG[e].ok()?e:'tess'};
+const labNorm=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9\-\/\s]/g,' ');
+const labTokens=s=>[...new Set(labNorm(s).split(/\s+/).filter(t=>t.length>=2))];
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+function readScore(truth,ocr){
+  const T=labTokens(truth).filter(t=>t.length>=3),O=labTokens(ocr);if(!T.length)return null;
+  let hit=0;T.forEach(t=>{if(O.some(o=>o===t||(t.length>=5&&Math.abs(o.length-t.length)<=1&&lev(o,t)<=1)))hit++});
+  return {recall:hit/T.length,exact:hit===T.length,n:T.length,hit};
+}
+/* baseline matcher: catalog-number-like strings from the read go to Discogs search, ranked by agreement */
+async function labDiscogs(ocr){
+  if(!LAB.discogs)return null;
+  const O=labTokens(ocr),isCat=t=>/^[A-Z]{1,6}-?\d{2,6}[A-Z0-9-]*$/.test(t)||/^\d{2,6}-?[A-Z]{1,4}$/.test(t);
+  /* a matrix often reads "A-77-A": the catalog number is the part before the side letter */
+  const variants=t=>{const v=[t],p=t.split('-');if(p.length>2&&/^[A-Z0-9]{1,2}$/.test(p[p.length-1]))v.push(p.slice(0,-1).join('-'));if(p.length>1)v.push(p.join(''));return [...new Set(v)]};
+  const qs=[];O.filter(isCat).forEach(t=>variants(t).forEach(v=>{if(!qs.includes(v))qs.push(v)}));
+  const queries=qs.slice(0,4);if(!queries.length)return [];
+  const flat=v=>v.replace(/-/g,''),map=new Map(),H={headers:{Authorization:'Discogs token='+LAB.discogs}};
+  for(const c of queries){
+    const r=await fetch('https://api.discogs.com/database/search?type=release&per_page=15&catno='+encodeURIComponent(c),H);
+    if(r.status===401)throw new Error('Discogs did not accept the token.');
+    if(!r.ok)throw new Error('Discogs search failed ('+r.status+').');
+    const j=await r.json();
+    (j.results||[]).forEach(x=>{
+      const cn=flat(labNorm(x.catno||'').replace(/\s/g,'')),catHit=queries.some(q=>flat(q)===cn)?3:(queries.some(q=>cn&&(cn.includes(flat(q))||flat(q).includes(cn)))?1:0);
+      const lbl=(x.label||[]).some(l=>O.includes(labNorm(l).trim()))?1:0,yr=x.year&&O.includes(String(x.year))?1:0;
+      const prev=map.get(x.id)||{id:x.id,title:x.title,catno:x.catno||'',year:x.year||'',country:x.country||'',score:0};
+      prev.score=Math.max(prev.score,catHit+lbl+yr);map.set(x.id,prev)});
+    if(c!==queries[queries.length-1])await new Promise(r=>setTimeout(r,1100));
+  }
+  return [...map.values()].sort((a,b)=>b.score-a.score).slice(0,8);
+}
+const labWouldLock=c=>!!(c&&c.length&&c[0].score>=3&&(c.length<2||c[0].score>c[1].score));
+const fmtPct=(a,b)=>b?Math.round(a/b*100)+'%':'—';
+/* ---------- scoring ---------- */
+function labScore(){
+  const T=LAB.trials,keyOf=id=>LAB.keys.find(k=>k.id===id)||{};
+  const isTop3=t=>t.rank>0?t.rank<=3:t.manualTop==='yes';
+  const found=t=>(isTop3(t)&&t.fallback==='none')||['cover','barcode','manual'].includes(t.fallback);
+  const scored=T.filter(t=>!keyOf(t.recId).notInDiscogs);
+  const locks=scored.filter(t=>t.lockWould),wrong=locks.filter(t=>!t.lockRight);
+  const secs=scored.map(t=>t.secs).filter(x=>x>0).sort((a,b)=>a-b),med=secs.length?secs[Math.floor(secs.length/2)]:null;
+  const reads=scored.map(t=>t.read&&t.read.recall).filter(x=>typeof x==='number'),avgRead=reads.length?reads.reduce((a,b)=>a+b,0)/reads.length:null;
+  const m={n:scored.length,locks:locks.length,wrong:wrong.length,
+    falseLock:locks.length?wrong.length/locks.length*100:null,
+    top3:scored.length?scored.filter(isTop3).length/scored.length*100:null,
+    identified:scored.length?scored.filter(found).length/scored.length*100:null,
+    secs:med,avgRead,exact:scored.length?scored.filter(t=>t.read&&t.read.exact).length/scored.length*100:null,
+    notInDiscogs:LAB.keys.filter(k=>k.notInDiscogs).length};
+  const by=(f,vals)=>vals.map(v=>{const s=scored.filter(t=>f(t)===v);return {v,n:s.length,top3:s.filter(isTop3).length,exact:s.filter(t=>t.read&&t.read.exact).length}});
+  m.byGenre=by(t=>keyOf(t.recId).genre,GENRES).filter(x=>x.n);
+  m.byHard=by(t=>keyOf(t.recId).hard?'Hard cases':'Everything else',['Hard cases','Everything else']).filter(x=>x.n);
+  m.byLight=by(t=>t.light,['normal','dim']).filter(x=>x.n);
+  m.byEngine=by(t=>t.engine,['tess','vision']).filter(x=>x.n);
+  return m;
+}
+/* ---------- rendering ---------- */
+const labPass=(v,bar,hi)=>v==null?'':(hi?v>=bar:v<=bar)?'ok':'bad';
+function labSetView(v){LB.view=v;LB.msg='';renderLab()}
+function renderLab(){
+  const el=$('#labBody');if(!el)return;
+  const nav=LB.view!=='home'?`<button class="ghost" data-lab="view:home" style="text-align:left;padding:0 0 8px;width:auto">← Back to the lab</button>`:'';
+  const V={home:labHome,keys:labKeys,key:labKeyForm,trial:labTrial,results:labResults,settings:labSettings}[LB.view]||labHome;
+  el.innerHTML=nav+V();
+}
+function labHome(){
+  const pilot=LAB.keys.filter(k=>k.set==='pilot').length,full=LAB.keys.filter(k=>k.set==='full').length;
+  return `<h4 class="disp" style="font-size:36px">Phase 0 test lab</h4>
+   <p class="sub">Does deadwax matching work well enough to be the signature feature? Build the answer key, scan, and score against the bars.</p>
+   <div class="labstat"><div><b>${LAB.keys.length}</b><span>answer key<br>pilot ${pilot}/50 · full ${full}/200</span></div><div><b>${LAB.trials.length}</b><span>scan trials</span></div></div>
+   <p class="fine2">${LAB.locked?'Bars locked on '+esc(LAB.locked)+'.':'Bars are proposals until you lock them after the pilot.'} Engine: <b>${esc(LABENG[labEngine()].name)}</b>. Matching: <b>${LAB.discogs?'Discogs search on':'read accuracy only'}</b>.</p>
+   <button class="go press" data-lab="newkey">1. Add a record to the answer key</button>
+   <button class="go press" data-lab="newtrial" style="background:var(--teal)">2. Run a scan trial</button>
+   <button class="go press" data-lab="view:results" style="background:var(--red)">3. See results against the bars</button>
+   <button class="ghost" data-lab="view:keys">Answer key list (${LAB.keys.length})</button>
+   <button class="ghost" data-lab="view:settings">Settings and export</button>
+   <p class="fine2" style="margin-top:12px">Photos and notes stay on this phone. Nothing uploads. Export a CSV from Settings to paste into the scoring sheet.</p>`;
+}
+function labKeys(){
+  return `<h4 class="disp" style="font-size:34px">Answer key</h4><p class="sub">${LAB.keys.length} record${LAB.keys.length===1?'':'s'}.</p>
+   ${LAB.keys.length?LAB.keys.slice().reverse().map(k=>`<button class="srow" data-lab="editkey:${k.id}"><div><b>${esc(k.artist||'?')} · ${esc(k.title||'?')}</b><span>${[k.set,k.genre,k.catno,k.hard&&'hard case',k.notInDiscogs&&'not in Discogs'].filter(Boolean).map(esc).join(' · ')}</span></div><i>Edit</i></button>`).join(''):'<p class="fine2">Nothing yet.</p>'}
+   <button class="go press" data-lab="newkey">Add a record</button>`;
+}
+function labKeyForm(){
+  const f=LB.form,fld=(k,l,ph,extra='')=>`<div class="hf"><label for="lf_${k}">${l}</label><input class="txt sm" id="lf_${k}" data-labf="${k}" value="${esc(f[k]||'')}" placeholder="${ph||''}" autocomplete="off" ${extra}></div>`;
+  const tog=(k,l)=>`<button class="pb" aria-pressed="${!!f[k]}" data-lab="tog:${k}">${l}</button>`;
+  return `<h4 class="disp" style="font-size:34px">${f.id?'Edit record':'New record'}</h4>
+   ${fld('artist','Artist','John Coltrane')}${fld('title','Title','A Love Supreme')}
+   <div class="hf2">${fld('label','Label','Impulse!')}${fld('catno','Catalog number','A-77')}</div>
+   <div class="hf2">${fld('country','Country','US')}${fld('year','Year','1965','inputmode="numeric"')}</div>
+   ${fld('discogsId','Discogs release ID','e.g. 1234567','inputmode="numeric"')}
+   <div class="sethead" style="margin-top:4px">Genre</div><div class="opts">${GENRES.map(g=>`<button class="pb" aria-pressed="${f.genre===g}" data-lab="genre:${g}">${g}</button>`).join('')}</div>
+   <div class="sethead" style="margin-top:4px">Which set</div><div class="opts"><button class="pb" aria-pressed="${f.set==='pilot'}" data-lab="set:pilot">Pilot</button><button class="pb" aria-pressed="${f.set==='full'}" data-lab="set:full">Full run</button></div>
+   <div class="opts">${tog('reissue','Reissue')}${tog('hard','Hard case (faint, worn, stamped)')}${tog('notInDiscogs','Not in Discogs')}</div>
+   ${fld('pair','Same-album pair note','First press vs 1975 reissue')}
+   <div class="sethead">Matrix, as you read it by eye</div>
+   <div class="hf"><label for="lf_matrixA">Side A</label><textarea class="txt" id="lf_matrixA" data-labf="matrixA" style="height:64px;font-size:17px" placeholder="A-77-A RVG">${esc(f.matrixA||'')}</textarea></div>
+   <div class="hf"><label for="lf_matrixB">Side B</label><textarea class="txt" id="lf_matrixB" data-labf="matrixB" style="height:64px;font-size:17px" placeholder="B-77-B RVG">${esc(f.matrixB||'')}</textarea></div>
+   <div class="sethead">Deadwax photos (optional, kept on this phone)</div>
+   <div class="opts"><button class="pb" data-lab="photo:A">${f.imgA?'Retake side A':'Photo side A'}</button><button class="pb" data-lab="photo:B">${f.imgB?'Retake side B':'Photo side B'}</button></div>
+   <button class="go press" data-lab="savekey">Save to answer key</button>
+   ${f.id?'<button class="ghost" data-lab="delkey">Delete this record</button>':''}`;
+}
+function labTrial(){
+  const t=LB.trial,k=LAB.keys.find(x=>x.id===t.keyId);
+  if(!t.keyId||t.stage==='pick'){
+    return `<h4 class="disp" style="font-size:34px">Scan trial</h4><p class="sub">Pick the record you’re about to scan.</p>
+     ${LAB.keys.length?LAB.keys.slice().reverse().map(x=>`<button class="srow" data-lab="pickkey:${x.id}"><div><b>${esc(x.artist||'?')} · ${esc(x.title||'?')}</b><span>${[x.set,x.genre,x.catno].filter(Boolean).map(esc).join(' · ')}</span></div><i>Pick</i></button>`).join(''):'<p class="fine2">Add a record to the answer key first.</p>'}`;
+  }
+  const eng=labEngine();
+  let h=`<h4 class="disp" style="font-size:32px">${esc(k.title||'Trial')}</h4><p class="sub" style="margin:6px 0 10px">${esc(k.artist||'')}</p>
+   <div class="sethead" style="margin-top:0">Light</div><div class="opts"><button class="pb" aria-pressed="${t.light==='normal'}" data-lab="light:normal">Normal room light</button><button class="pb" aria-pressed="${t.light==='dim'}" data-lab="light:dim">Dim</button></div>
+   <div class="sethead" style="margin-top:0">Side</div><div class="opts"><button class="pb" aria-pressed="${t.side==='A'}" data-lab="side:A">Side A</button><button class="pb" aria-pressed="${t.side==='B'}" data-lab="side:B">Side B</button></div>`;
+  if(LB.busy)return h+`<div class="labbusy"><b>${esc(LB.msg||'Reading…')}</b><span>${esc(LABENG[eng].name)}</span></div>`;
+  if(!t.result)return h+`<button class="go press" data-lab="scan">Scan the deadwax</button><p class="fine2" style="margin-top:8px">Opens the camera. Tilt the record until the etching catches the light, then take the picture. The timer starts when you tap.</p>${LB.msg?`<p class="fine2" style="color:var(--red)"><b>${esc(LB.msg)}</b></p>`:''}`;
+  const r=t.result,truth=t.side==='A'?k.matrixA:k.matrixB;
+  h+=`<div class="sethead">What the reader saw</div><div class="labocr">${esc(r.text.trim()||'(nothing)')}</div>
+   <div class="fmeta">${r.read?`Read accuracy: <b>${Math.round(r.read.recall*100)}%</b> of ${r.read.n} matrix words${r.read.exact?' · exact':''}`:'Enter the matrix in the answer key to score the read.'} · ${(r.secs||0).toFixed(1)}s · ${esc(LABENG[r.engine].name)}</div>`;
+  if(r.cands){
+    h+=`<div class="sethead">Candidate pressings</div>${r.cands.length?r.cands.map((c,i)=>`<div class="labcand${c.id==k.discogsId?' right':''}"><b>${i+1}. ${esc(c.title)}</b><span>${esc([c.catno,c.year,c.country].filter(Boolean).join(' · '))} · score ${c.score}${c.id==k.discogsId?' · the right one':''}</span></div>`).join(''):'<p class="fine2">No catalog number could be read, so nothing was searched.</p>'}
+     <p class="fine2">${r.lockWould?'The app <b>would lock</b> this one.':'The app would show candidates and ask you to confirm.'} ${k.discogsId?(r.rank?`The right pressing is #${r.rank}.`:'The right pressing is not in the list.'):'No Discogs ID in the answer key, so it can’t be scored.'}</p>`;
+  }else{
+    h+=`<div class="sethead">Was the right pressing in the top 3?</div><p class="fine2" style="margin:0 0 6px">No Discogs matching is on, so judge it yourself from the read.</p><div class="opts"><button class="pb" aria-pressed="${t.manualTop==='yes'}" data-lab="mtop:yes">Yes</button><button class="pb" aria-pressed="${t.manualTop==='no'}" data-lab="mtop:no">No</button></div>`;
+  }
+  h+=`<div class="sethead">Did you find the right pressing in the end?</div><div class="opts">${[['none','By the deadwax scan'],['cover','Via the cover'],['barcode','Via the barcode'],['manual','By hand'],['failed','Never']].map(([v,l])=>`<button class="pb" aria-pressed="${t.fallback===v}" data-lab="fb:${v}">${l}</button>`).join('')}</div>
+   <div class="hf"><label for="lf_note">Notes</label><input class="txt sm" id="lf_note" data-labf="trialNote" value="${esc(t.note||'')}" placeholder="Glare on the left, stamped marks"></div>
+   <button class="go press" data-lab="savetrial">Save this trial</button><button class="ghost" data-lab="again">Discard and retake</button>`;
+  return h;
+}
+function labResults(){
+  const m=labScore(),B=LAB.bars,row=(l,v,bar,hi,fmt)=>`<div class="labrow ${labPass(v,bar,hi)}"><span>${l}</span><b>${v==null?'—':fmt(v)}</b><em>${hi?'at least':'under'} ${bar}${l.includes('Median')?'s':'%'}</em></div>`;
+  const grp=(t,a)=>a.length?`<div class="sethead">${t}</div>${a.map(x=>`<div class="labrow"><span>${esc({normal:'Normal light',dim:'Dim light',tess:'Tesseract',vision:'Apple Vision'}[x.v]||x.v)}</span><b>${fmtPct(x.top3,x.n)}</b><em>top 3 · ${x.n} trial${x.n===1?'':'s'} · exact read ${fmtPct(x.exact,x.n)}</em></div>`).join('')}`:'';
+  return `<h4 class="disp" style="font-size:34px">Results</h4><p class="sub">${m.n} scored trial${m.n===1?'':'s'}${LAB.locked?' · bars locked '+esc(LAB.locked):' · bars not locked yet'}.</p>
+   ${m.n?`${row('False lock rate',m.falseLock,B.falseLock,false,v=>v.toFixed(1)+'%')}
+   ${row('Right pressing in top 3',m.top3,B.top3,true,v=>Math.round(v)+'%')}
+   ${row('Identified in the end',m.identified,B.identified,true,v=>Math.round(v)+'%')}
+   ${row('Median seconds to result',m.secs,B.secs,false,v=>v.toFixed(0)+'s')}
+   <div class="sethead">Reading the etching</div>
+   <div class="labrow"><span>Average words read right</span><b>${m.avgRead==null?'—':Math.round(m.avgRead*100)+'%'}</b><em>of the matrix you typed</em></div>
+   <div class="labrow"><span>Read exactly</span><b>${m.exact==null?'—':Math.round(m.exact)+'%'}</b><em>every matrix word right</em></div>
+   <div class="labrow"><span>Locks that were wrong</span><b>${m.wrong} of ${m.locks}</b><em>false locks</em></div>
+   <div class="labrow"><span>Not in Discogs</span><b>${m.notInDiscogs}</b><em>excluded from scoring</em></div>
+   ${grp('By genre',m.byGenre)}${grp('Hard cases',m.byHard)}${grp('By light',m.byLight)}${grp('By reader',m.byEngine)}
+   <p class="fine2" style="margin-top:14px">${labReading(m)}</p>`:'<p class="fine2">Run a scan trial first.</p>'}
+   <button class="ghost" data-lab="view:settings">Export</button>`;
+}
+function labReading(m){
+  const B=LAB.bars;if(m.top3==null)return '';
+  if(m.falseLock!=null&&m.falseLock>B.falseLock)return 'False locks are over the bar. No Tactile Lock until fixed: show candidates and ask the user to confirm.';
+  if(m.top3>=B.top3&&m.identified>=B.identified)return 'The bars are met. Build the scanner as designed. Check the hard cases before you believe it.';
+  if(m.top3<B.top3&&m.identified>=B.identified)return 'Top 3 is low but identified-in-the-end is high: deadwax is a bonus ritual and cover or barcode does the real work. Rethink how the feature is pitched.';
+  return 'Below the bars. Look at the by-genre and hard-case rows to see where it breaks.';
+}
+function labSettings(){
+  return `<h4 class="disp" style="font-size:34px">Settings</h4>
+   <div class="sethead" style="margin-top:4px">Text reader</div>
+   <div class="opts">${[['auto','Automatic'],['tess','Tesseract (web)'],['vision','Apple Vision']].map(([v,l])=>`<button class="pb" aria-pressed="${LAB.engine===v}" data-lab="eng:${v}" ${v==='vision'&&!LABENG.vision.ok()?'disabled style="opacity:.4"':''}>${l}</button>`).join('')}</div>
+   <p class="fine2" style="margin:0 0 6px">Apple Vision runs only in the iPhone app. Automatic uses it when it can.</p>
+   <div class="sethead">Discogs matching (optional)</div>
+   <div class="hf"><label for="lf_dg">Your Discogs personal access token</label><input class="txt sm" id="lf_dg" data-labf="discogs" type="password" value="${esc(LAB.discogs)}" placeholder="Paste your own token" autocomplete="off" spellcheck="false"></div>
+   <p class="fine2" style="margin:0 0 6px">Create one at discogs.com, Settings, Developers. It stays in this browser. Without it the lab scores the reading only. The matcher is a plain baseline: catalog numbers from the read go to Discogs search.</p>
+   <div class="sethead">The bars</div>
+   <div class="labrow"><span>False locks under</span><b>${LAB.bars.falseLock}%</b></div><div class="labrow"><span>Right in top 3, at least</span><b>${LAB.bars.top3}%</b></div><div class="labrow"><span>Identified in the end, at least</span><b>${LAB.bars.identified}%</b></div><div class="labrow"><span>Median time under</span><b>${LAB.bars.secs}s</b></div>
+   <button class="pb" style="margin:10px 0" data-lab="lockbars">${LAB.locked?'Locked '+esc(LAB.locked):'Lock the bars today'}</button>
+   <p class="fine2" style="margin:0 0 6px">Lock them after the pilot and do not change them again, so the full run is scored against bars you set before you saw its results.</p>
+   <div class="sethead">Export</div>
+   <button class="go press" style="margin-top:0" data-lab="export:trials">Scan trials (CSV for the scoring sheet)</button>
+   <button class="go press" style="background:var(--teal)" data-lab="export:keys">Answer key (CSV)</button>
+   <button class="ghost" data-lab="export:json">Full backup (JSON, no photos)</button>
+   <button class="ghost" data-lab="selftest">Check the text reader (self-test)</button>
+   <button class="ghost" data-lab="wipe" style="color:var(--red)">Erase all lab data</button>
+   ${LB.msg?`<p class="fine2"><b>${esc(LB.msg)}</b></p>`:''}`;
+}
+/* ---------- actions ---------- */
+const csvq=v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+async function labShareFile(name,text,type){
+  const f=new File([text],name,{type});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return}}catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;document.body.appendChild(a);a.click();a.remove();toast('Saved as '+name);
+}
+function labExport(kind){
+  const kOf=id=>LAB.keys.find(k=>k.id===id)||{};
+  if(kind==='trials'){
+    const H=['trial','date','artist','title','genre','set','hard_case','side','light','reader','scanner_returned','read_accuracy','read_exact','top_candidate','would_lock','lock_correct','rank_of_right','right_in_top3','fallback','identified_in_end','seconds','notes'];
+    const rows=LAB.trials.map(t=>{const k=kOf(t.recId),top=(t.cands||[])[0];return [t.id,t.at.slice(0,10),k.artist,k.title,k.genre,k.set,k.hard?'yes':'no',t.side,t.light,t.engine,(t.text||'').replace(/\s+/g,' ').trim().slice(0,120),t.read?Math.round(t.read.recall*100)+'%':'',t.read?(t.read.exact?'yes':'no'):'',top?top.title:'',t.lockWould?'yes':'no',t.lockWould?(t.lockRight?'yes':'no'):'',t.rank||'',(t.rank>0?t.rank<=3:t.manualTop==='yes')?'yes':'no',t.fallback,t.found?'yes':'no',(t.secs||0).toFixed(1),t.note||''].map(csvq).join(',')});
+    labShareFile('memory-wax-phase0-trials.csv',[H.join(','),...rows].join('\n'),'text/csv');
+  }else if(kind==='keys'){
+    const H=['id','set','artist','title','label','catalog_number','country','year','genre','reissue','hard_case','not_in_discogs','discogs_release_id','pair_note','matrix_side_a','matrix_side_b'];
+    labShareFile('memory-wax-phase0-answer-key.csv',[H.join(','),...LAB.keys.map(k=>[k.id,k.set,k.artist,k.title,k.label,k.catno,k.country,k.year,k.genre,k.reissue?'yes':'no',k.hard?'yes':'no',k.notInDiscogs?'yes':'no',k.discogsId,k.pair,k.matrixA,k.matrixB].map(csvq).join(','))].join('\n'),'text/csv');
+  }else{
+    const o={...LAB,discogs:''};o.keys=o.keys.map(k=>({...k,imgA:undefined,imgB:undefined}));
+    labShareFile('memory-wax-phase0-backup.json',JSON.stringify(o,null,1),'application/json');
+  }
+}
+function labPick(accept){return new Promise(ok=>{const i=$('#labFile');i.value='';i.onchange=()=>ok(i.files&&i.files[0]||null);i.click()})}
+async function labScan(){
+  const t=LB.trial,k=LAB.keys.find(x=>x.id===t.keyId);t.t0=performance.now();LB.msg='';
+  const file=await labPick();if(!file){return}
+  LB.busy=true;LB.msg='Preparing the photo…';renderLab();
+  try{
+    const cv=await fileToCanvas(file,2000),eng=labEngine();
+    LB.msg='Reading the etching…';renderLab();
+    const text=await LABENG[eng].run(cv),truth=t.side==='A'?k.matrixA:k.matrixB,read=truth?readScore(truth,text):null;
+    let cands=null;
+    if(LAB.discogs){LB.msg='Looking for matches…';renderLab();try{cands=await labDiscogs(text)}catch(e){LB.msg=e.message;cands=null}}
+    const secs=(performance.now()-t.t0)/1000;
+    const rank=cands&&k.discogsId?(cands.findIndex(c=>String(c.id)===String(k.discogsId))+1):null;
+    const lockWould=cands?labWouldLock(cands):false;
+    t.result={text,read,cands,secs,engine:eng,rank,lockWould,lockRight:lockWould&&rank===1};
+    t.photo=await cvBlob(cv,.85);
+    if(!t.fallback)t.fallback=(rank&&rank<=3)?'none':'';
+  }catch(e){LB.msg=e.message||'Something went wrong reading the photo.'}
+  LB.busy=false;renderLab();
+}
+async function labSaveTrial(){
+  const t=LB.trial,r=t.result;if(!r)return;
+  if(!t.fallback){toast('Say how you found the right pressing, or choose Never.');return}
+  if(!r.cands&&!t.manualTop){toast('Say whether the right pressing was in the top 3.');return}
+  const id=LAB.nt++,tr={id,recId:t.keyId,at:new Date().toISOString(),side:t.side,light:t.light,engine:r.engine,text:r.text,read:r.read,cands:r.cands?r.cands.slice(0,5):null,rank:r.rank,lockWould:r.lockWould,lockRight:r.lockRight,manualTop:t.manualTop||'',fallback:t.fallback,secs:r.secs,note:t.note||''};
+  tr.found=(((tr.rank>0?tr.rank<=3:tr.manualTop==='yes'))&&tr.fallback==='none')||['cover','barcode','manual'].includes(tr.fallback);
+  LAB.trials.push(tr);labSave();try{if(t.photo)await imgPut('t'+id,t.photo)}catch(e){}
+  toast('Trial saved.');LB.trial={stage:'run',keyId:t.keyId,light:t.light,side:t.side==='A'?'B':'A'};renderLab();
+}
+async function labSelfTest(){
+  LB.msg='Testing the reader…';renderLab();
+  const cv=document.createElement('canvas');cv.width=900;cv.height=300;const x=cv.getContext('2d');x.fillStyle='#8a8a8a';x.fillRect(0,0,900,300);x.fillStyle='#222';x.font='bold 64px Menlo, monospace';x.fillText('A-77-A  RVG',40,110);x.fillText('ST-1136-B  JF',40,230);
+  const t0=performance.now();
+  try{const out=await LABENG[labEngine()].run(cv);const s=readScore('A-77-A RVG ST-1136-B',out);LB.msg=`${LABENG[labEngine()].name}: read ${s?Math.round(s.recall*100):0}% of the test text in ${((performance.now()-t0)/1000).toFixed(1)}s. It saw: ${out.replace(/\s+/g,' ').trim().slice(0,70)}`;}
+  catch(e){LB.msg='The reader failed: '+e.message}
+  renderLab();
+}
+function openLab(){if(!$('#labFile')){const i=document.createElement('input');i.type='file';i.accept='image/*';i.setAttribute('capture','environment');i.id='labFile';i.style.display='none';document.body.appendChild(i)}LB={view:'home',form:null,trial:null,busy:false,msg:''};renderLab();openSheet('lab')}
+async function labDo(a){
+  const [c,v]=[a.split(':')[0],a.slice(a.indexOf(':')+1)],f=LB.form,t=LB.trial;
+  if(c==='open')return openLab();
+  if(c==='view')return labSetView(v);
+  if(c==='newkey'){LB.form={set:'pilot',genre:''};return labSetView('key')}
+  if(c==='editkey'){LB.form={...LAB.keys.find(k=>k.id===+v)};return labSetView('key')}
+  if(c==='tog'){f[v]=!f[v];return renderLab()}
+  if(c==='genre'){f.genre=v;return renderLab()}
+  if(c==='set'){f.set=v;return renderLab()}
+  if(c==='photo'){const file=await labPick();if(!file)return;const cv=await fileToCanvas(file,1600),b=await cvBlob(cv),id='k'+(f.id||'new')+v+Date.now();await imgPut(id,b);f['img'+v]=id;return renderLab()}
+  if(c==='savekey'){
+    if(!f.title||!f.artist){toast('Add the artist and the title.');return}
+    if(f.id){const i=LAB.keys.findIndex(k=>k.id===f.id);LAB.keys[i]=f}else{f.id=LAB.nk++;LAB.keys.push(f)}
+    labSave();toast('Saved to the answer key.');return labSetView('keys')}
+  if(c==='delkey'){if(!confirm('Delete this record and its trials?'))return;LAB.keys=LAB.keys.filter(k=>k.id!==f.id);LAB.trials=LAB.trials.filter(x=>x.recId!==f.id);labSave();return labSetView('keys')}
+  if(c==='newtrial'){LB.trial={stage:'pick',keyId:null,light:'normal',side:'A'};return labSetView('trial')}
+  if(c==='pickkey'){t.keyId=+v;t.stage='run';return renderLab()}
+  if(c==='light'){t.light=v;return renderLab()}
+  if(c==='side'){t.side=v;t.result=null;return renderLab()}
+  if(c==='scan')return labScan();
+  if(c==='again'){t.result=null;t.fallback='';t.manualTop='';return renderLab()}
+  if(c==='mtop'){t.manualTop=v;return renderLab()}
+  if(c==='fb'){t.fallback=v;return renderLab()}
+  if(c==='savetrial')return labSaveTrial();
+  if(c==='eng'){LAB.engine=v;labSave();return renderLab()}
+  if(c==='lockbars'){if(LAB.locked)return;LAB.locked=new Date().toISOString().slice(0,10);labSave();return renderLab()}
+  if(c==='export')return labExport(v);
+  if(c==='selftest')return labSelfTest();
+  if(c==='wipe'){if(!confirm('Erase every answer-key record, trial and setting in the lab? This can’t be undone.'))return;LAB={...LAB_DEF,keys:[],trials:[],bars:{...LAB_DEF.bars}};labSave();try{const d=await labDB();d.transaction('img','readwrite').objectStore('img').clear()}catch(e){}return labSetView('home')}
+}
+document.addEventListener('input',e=>{
+  const f=e.target.closest('[data-labf]');if(!f)return;const k=f.dataset.labf;
+  if(k==='discogs'){LAB.discogs=f.value.trim();labSave()}else if(k==='trialNote'){if(LB.trial)LB.trial.note=f.value}else if(LB.form)LB.form[k]=f.value;
+});
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr);return}
@@ -3042,6 +3358,7 @@ document.addEventListener('click',e=>{
       amConnect(tok).then(()=>{renderSvc();toast('Apple Music connected.');if(st.pendSave){const q=st.pendSave;closeSheets();saveTo(q.svc,q.name,q.note,q.items,q.pid)}}).catch(e=>toast('Apple Music: '+(e.message||'could not connect.')))}
     return}
   if(t.dataset.nroom){openRoom(t.dataset.nroom);return}
+  if(t.dataset.lab){labDo(t.dataset.lab);return}
   if(t.dataset.foundadd){addFound();return}
   if(t.dataset.foundno){closeSheets();return}
   if(t.dataset.barlook){barLook();return}
