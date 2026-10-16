@@ -110,7 +110,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 .vf[data-m=cover]::before,.vf[data-m=barcode]::before{opacity:0}
 .vf.locked::before{background:var(--red)}
 .vf .view{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .25s ease-out,visibility 0s linear .25s}
-.vf[data-m=deadwax] .v-rec,.vf[data-m=cover] .v-cov,.vf[data-m=barcode] .v-bar{opacity:1;visibility:visible;transition:opacity .25s ease-out}
+.vf[data-m=deadwax] .v-rec,.vf[data-m=label] .v-rec,.vf[data-m=cover] .v-cov,.vf[data-m=barcode] .v-bar{opacity:1;visibility:visible;transition:opacity .25s ease-out}
 .vf svg{width:100%;height:100%;overflow:visible;display:block}
 .vf .ring-text{font-family:var(--mono);font-size:11px;letter-spacing:1.6px;fill:var(--gold);opacity:.7;transition:opacity .4s}
 .vf.reading .ring-text{opacity:1}
@@ -415,6 +415,15 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .frow .pb{background:var(--cream);color:var(--ox);padding:8px 12px}
 .frow .pb.o{background:transparent;color:var(--cream)}
 .trow[hidden]{display:none}
+#modes button[hidden]{display:none}
+.cands{display:grid;gap:8px;margin:12px 0 4px}
+.candrow{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:center;text-align:left;padding:10px;background:rgba(84,11,14,.07);border-left:6px solid var(--ox);color:inherit}
+.candrow img{width:56px;height:56px;object-fit:cover;background:rgba(84,11,14,.12)}
+.candrow span{display:grid;gap:2px;min-width:0}.candrow b{font-weight:800;font-size:16px;line-height:1.1}.candrow em{font-family:var(--serif);font-style:italic;font-size:15px}.candrow small{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
+.mxbig{font-family:var(--mono);font-size:22px;letter-spacing:.12em;line-height:1.3;padding:12px 14px;margin:10px 0 12px;background:var(--gold);color:var(--ox);word-break:break-word}
+.gloss{margin:10px 0 4px;padding:12px 14px;border-left:6px solid var(--gold);background:rgba(84,11,14,.06)}
+.gloss small{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;opacity:.65;margin-bottom:6px}
+.gloss p{font-size:14.5px;line-height:1.4;margin:0 0 6px}
 .emptyc{margin:0 16px 4px;padding:16px 18px;border:1.5px dashed currentColor;border-radius:0 0 var(--cut) 0;opacity:.85;display:grid;gap:4px}
 .emptyc b{font-family:var(--disp);font-size:19px}
 .emptyc span{font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.2}
@@ -875,9 +884,10 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
     <section class="screen scan" data-screen="scan" id="scan">
       <div class="seg modes" id="modes" style="--i:0" role="group" aria-label="Scan mode">
         <i class="thumb"></i>
+        <button aria-pressed="false" data-mode="barcode">Barcode</button>
+        <button aria-pressed="false" data-mode="label">Label</button>
         <button aria-pressed="true" data-mode="deadwax">Deadwax</button>
         <button aria-pressed="false" data-mode="cover">Cover</button>
-        <button aria-pressed="false" data-mode="barcode">Barcode</button>
       </div>
       <button class="batchbtn" id="batchBtn" aria-pressed="false" aria-label="Batch scan mode">Batch</button>
       <div class="prompt" aria-live="polite"><span id="prompt">Point at any record.</span></div>
@@ -1288,6 +1298,7 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
       <button class="opt-card" data-set="svc"><b>Connected music services</b><span>Connect your own Spotify or Apple Music so playlists can be saved for real.</span></button>
       <div class="sethead">Scanner</div>
       <button class="opt-card" data-set="cam"><b>Live camera preview</b><span>Try your real camera in the viewfinder instead of the illustration.</span></button>
+      <button class="opt-card" data-dgtoken="1"><b>Discogs token</b><span>Optional. Lets the deadwax reader match your etching to known pressings. Stored on this phone only.</span></button>
       <button class="opt-card" data-lab="open"><b>Phase 0 test lab</b><span>Build the answer key, scan real deadwax, and score it against the bars.</span></button>
       <div class="sethead">Sample data</div>
       <button class="opt-card" data-dmo="sample"><b>Load the sample collection</b><span>Fills the app with example records, shelves and friends so you can see it full. Your own scans stay.</span></button>
@@ -1536,7 +1547,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.9.1 · every page clean';
+const BUILD='0.10 · label + deadwax reader';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -1605,6 +1616,7 @@ $('#arrive').addEventListener('click',()=>go('scan'));
 const SCAN={
   deadwax:{lab:'Matrix',prompt:'Point at any record.',guide:'Find the smooth band near the label',text:'A-77-A  ▲  RVG',aria:'Start scanning the deadwax'},
   cover:{lab:'Cover',prompt:'Frame the front cover.',guide:'Fill the frame, avoid glare',text:'A LOVE SUPREME',aria:'Start scanning the cover'},
+  label:{lab:'Label',prompt:'Frame the center label.',guide:'Fill the circle, keep it flat',text:'BLP 1577',aria:'Start reading the label'},
   barcode:{lab:'Barcode',prompt:'Line up the barcode.',guide:'Hold steady, about 6 inches away',text:'0 12345 67890 5',aria:'Start scanning the barcode'}
 };
 (function drawBarcode(){let x=0,s=7,h='';while(x<216){s=(s*9301+49297)%233280;const w=1+(s%4),gap=1+((s>>3)%3);h+=`<rect x="${x}" y="0" width="${w}" height="78" fill="#540B0E"/>`;x+=w+gap}$('#barSvg').innerHTML=h})();
@@ -1618,14 +1630,14 @@ function renderText(n){
 }
 function setScanMode(m){
   st.scanMode=m;$('#vf').dataset.m=m;$('#barType').hidden=(m!=='barcode');
-  if(m!=='barcode'&&!st.simNote){st.simNote=true;setTimeout(()=>toast(DEMO?'Deadwax and cover reading are simulated. Barcode scanning is real.':'Deadwax and cover reading aren’t live yet. Barcode scanning is.'),250)}
-  const idx=['deadwax','cover','barcode'].indexOf(m);
-  $('#modes').style.setProperty('--i',idx);
+  if((DEMO?(m==='deadwax'||m==='cover'):m==='cover')&&!st.simNote){st.simNote=true;setTimeout(()=>toast(DEMO?'Deadwax and cover reading are simulated here. Barcode and label are real.':'Cover reading isn’t live yet. Barcode, label and deadwax are.'),250)}
+  const vis=$$('#modes button').filter(b=>!b.hidden),idx=Math.max(0,vis.findIndex(b=>b.dataset.mode===m));
+  $('#modes').style.setProperty('--i',idx);$('#modes').style.setProperty('--n',vis.length);
   $$('#modes button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
   resetScan();
 }
 $$('#modes button').forEach(b=>b.addEventListener('click',()=>{if(!st.scanning)setScanMode(b.dataset.mode)}));
-if(!DEMO){setScanMode('barcode');$$('.v-rec svg text:not(.ring-text)').forEach(t=>t.textContent='')}
+if(!DEMO){$('#modes [data-mode=cover]').hidden=true;setScanMode('barcode');$$('.v-rec svg text:not(.ring-text)').forEach(t=>t.textContent='')}
 function resetScan(){
   const S=SCAN[st.scanMode];
   st.scanning=false;$('#shutter').disabled=false;$('#shutter').setAttribute('aria-label',S.aria);
@@ -1693,7 +1705,9 @@ function finish(res){
 $('#shutter').addEventListener('click',()=>{
   if(!st.camAsked){st.camAsked=true;openSheet('cam');return}
   if(st.scanMode==='barcode'){startBarcodeScan();return}
-  if(!DEMO){toast('Deadwax and cover reading aren’t live yet. Switch to Barcode to add a record.');return}
+  if(st.scanMode==='label'){startLabelScan();return}
+  if(!DEMO&&st.scanMode==='deadwax'){startDeadwaxScan();return}
+  if(!DEMO){toast('Cover reading isn’t live yet. Use Barcode, Label or Deadwax.');return}
   if(st.scanMode==='deadwax'&&!st.tipSeen){st.tipSeen=true;st.tipScan=true;$('#tipGo').textContent='Got it. Start scanning';openSheet('tips');return}
   startScan();
 });
@@ -1723,6 +1737,7 @@ const MODES={
   cover:{a:'Album only',b:'Pressing unconfirmed',cls:'cover',
     rows:[['Label',L('impulse','Impulse!')],['Catalog','Not confirmed'],['Country','Not confirmed'],['Matrix','<span style="color:var(--gold)">Scan the deadwax to confirm</span>'],['Format','12-inch LP']],
     evid:'Cover art was recognised. Many pressings share this cover, so the etched matrix is needed to name yours.'},
+  label:{a:'Release found',b:'Label read',cls:'cover',rows:[],evid:'The label name and catalog number were read from the center label and matched to a release. Several pressings can share them; the deadwax tells them apart.'},
   barcode:{a:'Release found',b:'Pressing unconfirmed',cls:'cover',
     rows:[['Label',L('impulse','Impulse!')],['Catalog','Matched by barcode'],['Country','Not confirmed'],['Matrix','<span style="color:var(--gold)">Scan the deadwax to confirm</span>'],['Format','12-inch LP']],
     evid:'The barcode matched a release. A barcode names the edition, not the individual pressing, and older records often have none. Scan the deadwax to confirm yours.'}
@@ -1731,6 +1746,7 @@ const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const recOf=id=>RECS.find(r=>r.id===id)||RECS[0];
 const copyOf=id=>(st.copies[id]=st.copies[id]||{cond:null,paid:'',where:''});
 const MODEOF={confirmed:'confirmed',likely:'likely',album:'cover'};
+const realModeOf=r=>r.ev?evMode(r):'barcode';
 const NAMEKEY={'John Coltrane':'coltrane','McCoy Tyner':'tyner','Jimmy Garrison':'garrison','Elvin Jones':'jones','Bob Thiele':'thiele','Rudy Van Gelder':'rvg','Van Gelder Studio':'studio','Impulse!':'impulse'};
 const nameBtn=(n,role)=>NAMEKEY[n]?`<button class="cr" data-cr="${NAMEKEY[n]}">${n}</button>`:`<button class="cr" data-crn="${n}" data-crr="${role||''}">${n}</button>`;
 const BATTLE_BY_REC={1:0,7:1,2:2};
@@ -1850,14 +1866,14 @@ function fillReport(r,mode){
   const by=$('#repBy'),lead=R.lead||r.a;by.removeAttribute('data-cr');by.removeAttribute('data-crn');
   if(NAMEKEY[lead])by.dataset.cr=NAMEKEY[lead];else{by.dataset.crn=lead;by.dataset.crr='Artist'}
   by.textContent=r.a+' ↗';
-  $('#repSent').textContent=R.sent||(r.real?[r.y?'Released '+r.y:'',r.lab?'on '+r.lab:''].filter(Boolean).join(' ')+(r.y||r.lab?'. ':'')+'Found by barcode. Credits and story aren’t filled in yet.':'');
+  $('#repSent').textContent=R.sent||(r.real?[r.y?'Released '+r.y:'',r.lab?'on '+r.lab:''].filter(Boolean).join(' ')+(r.y||r.lab?'. ':'')+((r.ev&&r.ev.dw&&r.ev.dw.mx)?'Pressing read from the deadwax. ':(r.ev&&r.ev.label)?'Found from the center label. ':'Found by barcode. ')+'Credits and story aren’t filled in yet.':'');
   $('#repPeople').innerHTML=(R.crew||[]).map(([n,role])=>`<li>${nameBtn(n,role)}<span>${role}</span></li>`).join('');
   $('#repIh').hidden=!R.ih;$('#repIhP').innerHTML=(R.ih||'')+'<sup><a href="#s2">2</a></sup>';
   $('#repSound').innerHTML=(R.sound||'')+'<sup><a href="#s2">2</a></sup>';
   $('#repStory').innerHTML=(R.story||'')+'<sup><a href="#s1">1</a></sup>';
   $('#repBattle').hidden=true;
   fillCopy(r.id);fillPlan(r.id);fillAvail(r.id);
-  tidyReport(r,R);
+  tidyReport(r,R);if(r.real)realReport(r,mode);
 }
 /* A real (scanned) record has only what the lookup returned. Hide the sections that would otherwise show sample text, and renumber the rest. */
 function tidyReport(r,R){
@@ -1873,7 +1889,7 @@ function tidyReport(r,R){
 let ios,t2,t3;
 function playReveal(){
   const r0=recOf(st.rec||1),fromScan=st.cameFromScan;
-  const mode=fromScan?st.mode:MODEOF[r0.c];
+  const mode=fromScan?st.mode:(r0.real?realModeOf(r0):MODEOF[r0.c]);
   const m=MODES[mode]||MODES.confirmed,r=$('#reveal');
   clearTimeout(t2);clearTimeout(t3);
   r.classList.remove('go1','go2','go3');
@@ -1882,7 +1898,7 @@ function playReveal(){
   $('#evid').classList.remove('open');$('#evidBtn').setAttribute('aria-expanded','false');$('#evidBtn').textContent='How we know';
   $('#repScroll').scrollTop=0;$$('.blk').forEach(s=>{s.classList.remove('in');s.style.transitionDelay='0ms'});
   let dup=false;
-  if(fromScan){dup=st.owned.has(r0.id);st.owned.add(r0.id)}
+  if(fromScan){dup=st.owned.has(r0.id)&&st.justAdded!==r0.id;st.owned.add(r0.id)}st.justAdded=null;
   $('#dup').hidden=!dup;$('#notown').hidden=st.owned.has(r0.id);
   void r.offsetWidth;
   const d0=reduce?0:260;
@@ -2947,6 +2963,9 @@ let zxP=null,barDet=null;
 function zxLoad(){return zxP||(zxP=new Promise((ok,no)=>{if(window.ZXing)return ok(window.ZXing);const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';el.onload=()=>window.ZXing?ok(window.ZXing):no(new Error('Reader did not start.'));el.onerror=()=>{zxP=null;no(new Error('Could not load the barcode reader.'))};document.head.appendChild(el)}))}
 async function getBarDet(){
   if(barDet)return barDet;
+  /* on the iPhone app, Apple's own barcode reader runs first; if it can't (the simulator), the web reader takes over */
+  if(ID_NATIVE()){let nativeOK=true;const web=async()=>{barDet=null;const d=await getBarDet();return d};
+    return barDet={detect:async c=>{if(nativeOK){try{const r=await Capacitor.nativePromise('VisionOCR','barcode',{image:c.toDataURL('image/jpeg',.9).split(',')[1]});const k=(r.codes||[])[0];return k?k.code:null}catch(e){nativeOK=false;const d=await web();return d.detect(c)}}return null}}}
   if('BarcodeDetector' in window){try{const f=await BarcodeDetector.getSupportedFormats();if(f.includes('ean_13')){const d=new BarcodeDetector({formats:['ean_13','upc_a','upc_e','ean_8']});return barDet={detect:async c=>{const r=await d.detect(c);return r[0]?r[0].rawValue:null}}}}catch(e){}}
   const Z=await zxLoad(),reader=new Z.MultiFormatReader(),h=new Map();
   h.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.UPC_E,Z.BarcodeFormat.EAN_8]);h.set(Z.DecodeHintType.TRY_HARDER,true);reader.setHints(h);
@@ -2990,6 +3009,7 @@ async function realFound(code){
   setTimeout(resetScan,400);
 }
 function renderFound(){
+  if(st.found.kind&&st.found.kind!=='barcode')return renderFoundX();
   const {code,hit,err}=st.found;
   if(!hit){
     $('#foundBody').innerHTML=`<h4 class="disp" style="font-size:36px">${err?'Couldn’t look it up':'No match yet'}</h4>
@@ -3013,11 +3033,7 @@ function restoreReal(){
 }
 function addFound(){
   const {code,hit}=st.found;if(!hit)return;
-  const ex=RECS.find(r=>r.real&&r.mb===hit.mbid);if(ex){st.owned.add(ex.id);toast('Already in your collection.');closeSheets();return}
-  const id=Math.max(100,...RECS.map(r=>r.id))+1,ord=Math.max(...RECS.map(r=>r.ord||0))+1;
-  RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab,cat:hit.cat,cred:[],real:true,mb:hit.mbid,bc:code,cover:'https://coverartarchive.org/release/'+hit.mbid+'/front-250'});
-  st.owned.add(id);saveReal();closeSheets();
-  st.rec=id;st.keepRec=true;st.mode='barcode';go('reveal');toast('Added. It’s in your collection.');
+  addRel(hit,{bc:{code,n:hit.n||1}});
 }
 function openBarEntry(){$('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Type the barcode</h4><p class="sub">The digits under the bars. Usually 12 or 13 numbers.</p>
   <div class="hf"><label for="barIn">Barcode</label><input class="txt sm" id="barIn" inputmode="numeric" pattern="[0-9]*" maxlength="14" placeholder="0886976389413" autocomplete="off"></div>
@@ -3030,6 +3046,271 @@ async function barLook(){
 restoreReal();
 if(/[?&]lab=1/.test(location.search))setTimeout(openLab,400);
 
+
+/* the record page for a scanned record: rows from real evidence, and "how we know" built from what was actually read */
+function realReport(r,mode){
+  const e=r.ev||{},dw=e.dw;
+  const rows=[['Label',r.lab?esc(r.lab):'Not read'],['Catalog',r.cat?esc(r.cat):'Not read'],['Country',r.ctry?esc(r.ctry):'Not confirmed'],
+    ['Matrix',dw&&dw.mx?`<span class="mono-chip">${esc(dw.mx)}</span>`:`<button class="chipbtn press" data-dwscan="${r.id}" style="margin:0;padding:8px 14px">Scan the deadwax</button>`],['Format',r.fmt?esc(r.fmt):'12-inch LP']];
+  $('#pressing').innerHTML=rows.map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
+  const steps=[];
+  if(e.bc)steps.push(`<b>Barcode</b> ${esc(e.bc.code)} matched a release in MusicBrainz${e.bc.n>1?' ('+e.bc.n+' releases share it)':''}.`);
+  if(e.label)steps.push(`<b>Center label</b> read as ${esc([e.label.lab,e.label.cat].filter(Boolean).join(' '))}${e.label.side?' · side '+esc(e.label.side):''}, matched by catalog number.`);
+  if(dw&&dw.mx)steps.push(dw.match?`<b>Deadwax</b> read <code>${esc(dw.mx)}</code>: ${dw.match.hit} of ${dw.match.n} parts match the runout listed for ${esc(dw.match.title)}${dw.match.uri?' · <a href="https://www.discogs.com'+esc(dw.match.uri)+'" target="_blank" rel="noopener">Data provided by Discogs</a>':''}.`:`<b>Deadwax</b> read <code>${esc(dw.mx)}</code> over ${dw.frames} frame${dw.frames===1?'':'s'}. Not matched to a database runout yet.`);
+  if(dw&&dw.gloss&&dw.gloss.length)steps.push('<b>Marks:</b> '+dw.gloss.map(esc).join(' '));
+  if(!steps.length)steps.push('Added without a scan.');
+  $('#evidIn').innerHTML=steps.join('<br>');
+  const b={confirmed:'Matrix match',likely:'Matrix read',label:'Label read',barcode:'Barcode match'}[mode];if(b)$('#sealB').textContent=b;
+}
+/* ---------- identify engine: barcode, label and deadwax, stacked into one answer with evidence ----------
+   Design (from the research round):
+   - A barcode names an edition. A label + catalog number names a release family. Only the deadwax names the pressing.
+   - Deadwax reading is treated as choosing among KNOWN runout strings for the candidate pressings, not open-ended OCR:
+     frames are read several times under moving light, reads are voted, and the result is matched to Discogs runouts.
+   - Every answer carries its evidence, and an honest tier: Confirmed / Likely / Release found. */
+const ID_NATIVE=()=>{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.nativePromise&&(C.PluginHeaders||[]).some(h=>h.name==='VisionOCR'))};
+const sleepMs=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* text normalisation. fold() is for comparing only: it merges the characters an etching confuses */
+const CONFUSE={'0':'O','1':'I','5':'S','8':'B','2':'Z','6':'G'};
+const canon=s=>String(s||'').toUpperCase().replace(/[–—_]/g,'-').replace(/[^A-Z0-9\-\/\.#\s]/g,' ').replace(/\s+/g,' ').trim();
+const fold=s=>canon(s).replace(/[0-9]/g,d=>CONFUSE[d]||d).replace(/[\s\-\.\/#]/g,'');
+const tokensOf=s=>canon(s).split(' ').map(fold).filter(Boolean);
+function nlev(a,b){a=fold(a);b=fold(b);if(!a.length&&!b.length)return 0;return lev(a,b)/Math.max(a.length,b.length)}
+
+/* one OCR pass over a canvas. Native: Apple Vision with word hints. Web: Tesseract (slower, for the browser prototype). */
+async function ocrFrame(cv,opt={}){
+  if(ID_NATIVE()){
+    const r=await Capacitor.nativePromise('VisionOCR','recognize',{image:cv.toDataURL('image/jpeg',.92).split(',')[1],words:opt.words||[],minHeight:opt.minHeight||0.01,alts:3});
+    return (r.lines||[]).map(l=>({text:l.text,conf:l.confidence,alts:l.alts||[],box:l.box||null}));
+  }
+  const T=await tessLoad();
+  if(!tessW){tessW=await T.createWorker('eng');await tessW.setParameters({tessedit_pageseg_mode:T.PSM.SPARSE_TEXT,tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-/.()#*+& '})}
+  const r=await tessW.recognize(cv);
+  return (r.data.lines||[]).map(l=>({text:(l.text||'').trim(),conf:(l.confidence||0)/100,alts:[],box:l.bbox?{x:l.bbox.x0/cv.width,y:l.bbox.y0/cv.height,w:(l.bbox.x1-l.bbox.x0)/cv.width,h:(l.bbox.y1-l.bbox.y0)/cv.height}:null})).filter(l=>l.text);
+}
+
+/* frames: from the live camera when it is on, otherwise one photo through the system camera / picker */
+function frameFromVideo(max=1280){const v=$('#liveVid');if(!v||!v.videoWidth)return null;const s=Math.min(1,max/Math.max(v.videoWidth,v.videoHeight)),cv=document.createElement('canvas');cv.width=Math.round(v.videoWidth*s);cv.height=Math.round(v.videoHeight*s);cv.getContext('2d').drawImage(v,0,0,cv.width,cv.height);return cv}
+function pickPhoto(){return new Promise(ok=>{let i=$('#idFile');if(!i){i=document.createElement('input');i.type='file';i.accept='image/*';i.setAttribute('capture','environment');i.id='idFile';i.style.display='none';document.body.appendChild(i)}i.value='';i.onchange=()=>ok(i.files&&i.files[0]||null);i.click()})}
+async function grabFrames(n,ms,onTick){
+  if(camStream){const out=[];for(let i=0;i<n;i++){const f=frameFromVideo();if(f)out.push(f);onTick&&onTick(i+1,n);await sleepMs(ms/n)}return out}
+  const file=await pickPhoto();if(!file)return [];return [await fileToCanvas(file,1600)];
+}
+async function torch(on){try{const t=camStream&&camStream.getVideoTracks()[0];if(t&&t.getCapabilities&&t.getCapabilities().torch)await t.applyConstraints({advanced:[{torch:on}]})}catch(e){}}
+
+/* ---- center label: label name + catalog number → release family ---- */
+const LABELS=['Blue Note','Impulse','Columbia','Capitol','Atlantic','Atco','Prestige','Riverside','Verve','Motown','Tamla','Gordy','Stax','Volt','Fania','Tico','Alegre','Cotique','Vaya','Island','Factory','Warner Bros','Reprise','RCA Victor','Decca','Elektra','Asylum','A&M','Epic','Mercury','Philips','Polydor','Chess','Checker','Vee-Jay','King','Sun','Def Jam','Tommy Boy','Sugar Hill','Rawkus','Loud','Trax','Strictly Rhythm','Nervous','Salsoul','West End','Prelude','Casablanca','CTI','Kudu','Milestone','Contemporary','Pacific Jazz','Savoy','Roulette','ECM','Enja','Strata-East','Black Jazz','Flying Dutchman','ABC','Dunhill','Buddah','Parlophone','Apple','Harvest','EMI','Virgin','Rough Trade','4AD','Mute','Creation','Sub Pop','Matador','Merge','SST','Dischord','Alligator','Delmark','Folkways','Vanguard','Nonesuch','Deutsche Grammophon','London','Liberty','United Artists','Imperial','Specialty','Modern','Kent','Hi Records','Curtom','Brunswick','Philadelphia International','Bell','Scepter','Wand','Cameo','Parkway','Westbound','Invictus','Hot Wax','Rare Earth','Arista','Sire','Geffen','Interscope','Priority','Ruthless','Death Row','Jive','Cold Chillin','Wild Pitch','Profile','Stones Throw','Ninja Tune','Warp','Mo Wax','Talkin Loud','Acid Jazz','Dance Mania','Cajual','Relief','Nu Groove','Light in the Attic','Numero','Mobile Fidelity','Analogue Productions','Music On Vinyl','Rhino','Legacy','Craft','Verve By Request','Tone Poet','Classic Records','Speakers Corner','Pure Pleasure','Vinyl Me Please','Jazz Dispensary','Soul Jazz','Strut','BBE','Daptone','Colemine','Big Crown','Fat Possum','Drag City','Thrill Jockey','Kranky','Domino','XL Recordings','Ghostly','Hyperdub','Stones Throw','Fantasy','Pablo','Concord','Blue Thumb','Mainstream','Cadet','Argo','Chess','Bluesway','Impulse!','Motown','Seeco','Discos Fuentes','Sonodisc','Salsoul'];
+const LABKEY=[...new Set(LABELS)].map(n=>[n,fold(n)]).filter(([,k])=>k.length>=3);
+const CATRX=/^[A-Z]{1,5}[-\s]?\d{2,6}(?:[-\s]?[A-Z0-9]{1,3})?$/,NUMRX=/^\d{4,6}$/,NOISE=/^(STEREO|MONO|SIDE|LONG|PLAYING|RECORD|RECORDS|INC|LTD|RPM|MADE|IN|USA|U\.S\.A\.|ALL|RIGHTS|RESERVED|UNAUTHORIZED|HIGH|FIDELITY|PRINTED|MANUFACTURED|BY|THE|A|AN|OF|AND|LP|LPS)$/;
+function parseLabel(lines){
+  const toks=[],raw=[];
+  lines.forEach(l=>{const c=canon(l.text);if(!c)return;raw.push(c);c.split(' ').forEach(t=>toks.push({t,conf:l.conf||0}))});
+  const cats=new Map(),add=(s,c)=>{s=s.replace(/\s+/g,' ').replace(/[\.]+$/,'');if(NOISE.test(s))return;if(CATRX.test(s)||NUMRX.test(s)){const k=s.replace(/\s/g,'-');cats.set(k,Math.max(cats.get(k)||0,c))}};
+  toks.forEach((x,i)=>{add(x.t,x.conf);if(i+1<toks.length&&/^[A-Z]{1,5}$/.test(x.t)&&/^\d{2,6}/.test(toks[i+1].t))add(x.t+' '+toks[i+1].t,(x.conf+toks[i+1].conf)/2)});
+  const joined=fold(raw.join(' '));let lab=null,ls=0;
+  LABKEY.forEach(([n,k])=>{if(joined.includes(k)&&k.length>ls){lab=n;ls=k.length}});
+  const side=(raw.join(' ').match(/\bSIDE\s*([AB12])\b/)||[])[1]||null;
+  const list=[...cats.entries()].filter(([k])=>!/^(19|20)\d{2}$/.test(k)&&!/^33|^45$/.test(k)).map(([k,c])=>({k,sc:c+(/[A-Z]/.test(k)&&/\d/.test(k)?.5:0)+(k.length>=5?.2:0)})).sort((a,b)=>b.sc-a.sc);
+  return {lab,side,cats:list.map(x=>x.k).slice(0,4),raw};
+}
+
+/* MusicBrainz release search by catalog number (matched regardless of case, spaces or separators) */
+async function mbQ(q){const r=await fetch('https://musicbrainz.org/ws/2/release/?query='+encodeURIComponent(q)+'&fmt=json&limit=25');if(!r.ok)throw new Error(r.status===503?'MusicBrainz is busy. Try again in a few seconds.':'The lookup service returned an error ('+r.status+').');return (await r.json()).releases||[]}
+function mbRel(x){const li=(x['label-info']||[])[0]||{},vinyl=(x.media||[]).some(m=>/vinyl|lp|12"|7"|10"/i.test(m.format||''));return {mbid:x.id,t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),dis:x.disambiguation||'',pack:x.packaging||'',vinyl,score:x.score||0,n:1}}
+async function mbByCat(cats,lab){
+  const out=new Map();let i=0;
+  for(const c of cats.slice(0,3)){
+    if(i++)await sleepMs(1100);
+    const cq='catno:"'+c.replace(/"/g,'')+'"';let rels=await mbQ(lab?cq+' AND label:"'+lab.replace(/"/g,'')+'"':cq);
+    if(!rels.length&&lab){await sleepMs(1100);rels=await mbQ(cq)}
+    rels.forEach(x=>{const r=mbRel(x);r.q=c;r.rank=(r.vinyl?2:0)+(lab&&fold(r.lab).includes(fold(lab))?2:0)+(fold(r.cat)===fold(c)?2:.5)+r.score/100;const p=out.get(r.mbid);if(!p||p.rank<r.rank)out.set(r.mbid,r)});
+    if(out.size>=6)break;
+  }
+  return [...out.values()].sort((a,b)=>b.rank-a.rank).slice(0,6);
+}
+
+/* ---- Discogs: candidate pressings and their known runouts (needs the user's own token; CC0 data, attributed) ---- */
+const DG={cache:new Map()};
+const dgTok=()=>(typeof LAB!=='undefined'&&LAB.discogs)||'';
+async function dgFetch(url){const r=await fetch(url,{headers:{Authorization:'Discogs token='+dgTok()}});if(r.status===401)throw new Error('Discogs did not accept the token.');if(r.status===429)throw new Error('Discogs is rate limiting. Wait a minute and try again.');if(!r.ok)throw new Error('Discogs search failed ('+r.status+').');return r.json()}
+async function dgCandidates(cat,lab){const j=await dgFetch('https://api.discogs.com/database/search?type=release&format=Vinyl&per_page=8&catno='+encodeURIComponent(cat)+(lab?'&label='+encodeURIComponent(lab):''));return (j.results||[]).map(x=>({id:x.id,title:x.title,catno:x.catno||'',year:x.year||'',country:x.country||'',label:(x.label||[])[0]||'',fmt:(x.format||[]).join(', '),uri:x.uri||''}))}
+async function dgRunouts(id){if(DG.cache.has(id))return DG.cache.get(id);const j=await dgFetch('https://api.discogs.com/releases/'+id);const o={ids:(j.identifiers||[]).filter(i=>/matrix/i.test(i.type||'')).map(i=>({v:i.value||'',d:i.description||''})),title:j.title,year:j.year,country:j.country,uri:j.uri,notes:j.notes||''};DG.cache.set(id,o);return o}
+/* how much of a known runout string the read covers (tokens of 3+ characters, one edit allowed on long ones) */
+function matchRunout(read,ids){
+  const R=tokensOf(read);let best=null;
+  ids.forEach(i=>{const T=tokensOf(i.v).filter(t=>t.length>=3);if(!T.length)return;let hit=0;T.forEach(t=>{if(R.some(r=>r===t||(t.length>=5&&lev(r,t)<=1)))hit++});const sc=hit/T.length;if(!best||sc>best.sc)best={sc,v:i.v,d:i.d,hit,n:T.length}});
+  return best;
+}
+
+/* ---- deadwax: vote over many reads, then decode what the marks mean ---- */
+const STAMPS=['RVG','VAN GELDER','STERLING','MASTERDISK','PORKY','PECKO','PRIMED','KENDUN','ARTISAN','WALLY','WLY','MASTERED','CAPITOL','BELL SOUND','LONGWEAR','NASHVILLE','MATRIX','STRAWBERRY','TOWN HOUSE','UTOPIA','TAPE ONE','TRIDENT','ABBEY','DMM','PALLAS','OPTIMAL','GZ','MPO','QRP','RTI','PRC','PRESSWELL','MONARCH','ALLIED','SPECIALTY','SHELLEY','BESTWAY','SONIC','PLASTYLITE','DOUG','TML'];
+const STAMPSET=new Set(STAMPS.map(fold));
+function dwVote(reads){
+  const items=reads.map(r=>({s:canon(r.text),conf:r.conf||0,frame:r.frame,x:r.x||0})).filter(x=>x.s.length>=2&&(/\d/.test(x.s)||STAMPSET.has(fold(x.s))||/^[A-Z]{3,}$/.test(x.s)&&x.s.length<=12));
+  const clusters=[];
+  items.forEach(it=>{let best=null,bd=1;clusters.forEach(c=>{const d=nlev(it.s,c.rep);if(d<bd){bd=d;best=c}});if(best&&bd<=.34)best.m.push(it);else clusters.push({rep:it.s,m:[it]})});
+  const nFrames=Math.max(1,new Set(reads.map(r=>r.frame)).size);
+  clusters.forEach(c=>{
+    let bestS=c.rep,bestD=1e9;c.m.forEach(a=>{let d=0;c.m.forEach(b=>d+=nlev(a.s,b.s)*(1-b.conf*.5));if(d<bestD){bestD=d;bestS=a.s}});
+    const same=c.m.filter(x=>x.s.length===bestS.length);
+    if(same.length>=3)bestS=[...bestS].map((ch,i)=>{const cnt={};same.forEach(x=>{cnt[x.s[i]]=(cnt[x.s[i]]||0)+x.conf+.01});return Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0][0]}).join('');
+    c.s=bestS;c.cov=new Set(c.m.map(x=>x.frame)).size/nFrames;c.conf=c.m.reduce((a,x)=>a+x.conf,0)/c.m.length;c.x=c.m.reduce((a,x)=>a+x.x,0)/c.m.length;
+    c.alpha=!/\d/.test(bestS);c.known=STAMPSET.has(fold(bestS));
+    c.score=Math.min(1,.5*c.cov+.35*c.conf+.15*Math.min(1,bestS.length/8));
+  });
+  /* keep what was seen in more than one frame (or anything, when there is only one), drop lone alphabetic noise */
+  const keep=clusters.filter(c=>(c.cov>=.25||nFrames===1||c.m.length>=2)&&(!c.alpha||c.known||c.m.length>=2)).sort((a,b)=>a.x-b.x);
+  const mx=keep.map(c=>c.s).join(' '),conf=keep.length?keep.reduce((a,c)=>a+c.score,0)/keep.length:0;
+  return {mx,conf,frames:nFrames,n:items.length,parts:keep.map(c=>({s:c.s,cov:c.cov,conf:c.conf}))};
+}
+/* catalog number derived from a matrix like "A-77-A" or "BN-LP-1577-B" (the part before the side letter / cut number) */
+function deriveCat(mx){
+  const out=[];canon(mx).split(' ').forEach(t=>{if(!/\d/.test(t))return;const p=t.split('-');const push=s=>{if(s&&!out.includes(s)&&(CATRX.test(s)||NUMRX.test(s)))out.push(s)};push(t);if(p.length>2&&/^[A-Z0-9]{1,2}$/.test(p[p.length-1]))push(p.slice(0,-1).join('-'));if(p.length>3)push(p.slice(0,-2).join('-'))});
+  return out.slice(0,3);
+}
+/* what the marks mean: mastering houses, engineers and pressing plants (sourced from collector guides; always labelled as a reading, not a fact) */
+const RUNOUT_GLOSS=[
+ [/\bRVG\b|VAN ?GELDER/,'Cut by Rudy Van Gelder. Hand-etched RVG is pre-1957, machine-stamped after; VAN GELDER from about 1962. It proves Van Gelder metal, not a first pressing.'],
+ [/\bSTERLING\b/,'Mastered at Sterling Sound, New York. Initials nearby name the engineer (RL = Bob Ludwig, TJ = Ted Jensen, GC = Greg Calbi).'],
+ [/\bMASTERDISK\b/,'Mastered at Masterdisk, New York (RL = Bob Ludwig after 1976, HW = Howie Weinberg).'],
+ [/\bRL\b/,'RL: Bob Ludwig, one of the most sought-after mastering engineers.'],
+ [/\bB\.?G\.?\b/,'BG: Bernie Grundman mastering, Hollywood.'],
+ [/\bKG\b/,'KG: Kevin Gray, Cohearent Audio / AcousTech.'],
+ [/\bKENDUN\b/,'Cut at Kendun Recorders, Burbank.'],
+ [/\bTML\b/,'TML: The Mastering Lab, Hollywood (Doug Sax).'],
+ [/\bWALLY\b|\bWLY\b/,'Wally: Wally Traugott, Capitol Mastering, Hollywood.'],
+ [/PORKY|PECKO|PRIMED/,'A Porky Prime Cut: George Peckham, UK.'],
+ [/\bARTISAN\b/,'Artisan Sound Recorders, Hollywood.'],
+ [/BELL ?SOUND/,'Bell Sound Studios, New York.'],
+ [/\bLW\b|LONGWEAR/,'LW: Longwear Plating, New York, common on Impulse! and Atlantic.'],
+ [/\bDMM\b/,'DMM: Direct Metal Mastering, a cutting process, not a plant.'],
+ [/\bMO\b|\bMR\b/,'MO / MR: Monarch Record Mfg., Los Angeles. A triangle number nearby dates the job.'],
+ [/\bPR\b|PRESSWELL/,'PR: Presswell, Ancora NJ, or PRC Richmond, depending on the label.'],
+ [/\bPRC\b/,'PRC: PRC Recording Company, Richmond, Indiana.'],
+ [/\bSP\b|\bSRC\b/,'SP / SRC: Specialty Records, Olyphant, Pennsylvania.'],
+ [/\bAR\b|ALLIED/,'AR: Allied Record Company, Los Angeles.'],
+ [/\bARP\b/,'ARP: American Record Pressing, Owosso, Michigan (early Motown).'],
+ [/\bCTH?\b|\bCT\b/,'CT / CTH: Columbia, Terre Haute, Indiana.'],
+ [/\bCP\b|\bPIT\b/,'CP / P: Columbia, Pitman, New Jersey.'],
+ [/\bCSM?\b/,'CS / CSM: Columbia, Santa Maria, California.'],
+ [/\bSTRAWBERRY\b|TOWN ?HOUSE|UTOPIA|TAPE ?ONE|TRIDENT|ABBEY/,'A UK cutting room (Strawberry, Town House, Utopia, Tape One, Trident, Abbey Road).'],
+ [/\bPALLAS\b|\bOPTIMAL\b|\bMPO\b|\bQRP\b|\bRTI\b|\bGZ\b/,'A modern pressing plant (Pallas, Optimal, MPO, QRP, RTI or GZ): a recent reissue.'],
+ [/^AS-?\d|\bAS-\d+/,'AS- prefix on Impulse! is the stereo series; A- is mono.'],
+ [/\bBST\b|\bBLP\b/,'Blue Note: BLP is the mono series, BST the stereo series.'],
+ [/\bXEX\b|\bYEX\b/,'EMI UK: XEX is mono, YEX stereo. The number after the dash is the cut; a U means it was cut outside Abbey Road.']
+];
+function decodeRunout(mx){const u=canon(mx),out=[];RUNOUT_GLOSS.forEach(([re,txt])=>{if(re.test(u)&&!out.includes(txt))out.push(txt)});return out}
+
+/* ---- the flows ---- */
+function evMode(r){const e=r.ev||{};if(e.dw&&e.dw.match&&e.dw.match.sc>=.8)return 'confirmed';if(e.dw&&e.dw.mx)return 'likely';return e.label?'label':'barcode'}
+function addRel(hit,ev){
+  const ex=RECS.find(r=>r.real&&r.mb===hit.mbid);let id;
+  if(ex){id=ex.id;st.owned.add(id);ex.ev={...(ex.ev||{}),...ev};if(!ex.cat&&hit.cat)ex.cat=hit.cat;if(!ex.lab&&hit.lab)ex.lab=hit.lab;if(!ex.ctry&&hit.ctry)ex.ctry=hit.ctry}
+  else{id=Math.max(100,...RECS.map(r=>r.id))+1;const ord=Math.max(...RECS.map(r=>r.ord||0))+1;
+    RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid,bc:ev.bc?ev.bc.code:undefined,cover:'https://coverartarchive.org/release/'+hit.mbid+'/front-250',ev});st.owned.add(id);st.justAdded=id}
+  const r=recOf(id);if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
+  saveReal();closeSheets();st.dwCtx=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
+}
+async function startLabelScan(){
+  if(st.scanning)return;st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');
+  setPrompt('Reading the label…');$('#guide').textContent=camStream?'Hold still, fill the circle':'Photograph the center label';
+  const gen=st.scanGen=(st.scanGen||0)+1;
+  try{
+    const frames=await grabFrames(camStream?2:1,700);if(st.scanGen!==gen)return;if(!frames.length){stopReal();return}
+    let lines=[];for(const f of frames)lines=lines.concat(await ocrFrame(f,{minHeight:.015}));
+    const P=parseLabel(lines);
+    if(!P.cats.length){stopReal();setPrompt('No catalog number yet.');$('#guide').textContent='Closer, less glare';st.found={kind:'label',parse:P,cands:[],err:null};renderFound();openSheet('found');return}
+    setPrompt('Looking it up…');$('#guide').textContent=[P.lab,P.cats[0]].filter(Boolean).join(' · ');
+    let cands=[],err=null;try{cands=await mbByCat(P.cats,P.lab)}catch(e){err=e}
+    $('#vf').classList.remove('reading');if(cands.length){$('#vf').classList.add('locked');shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}}
+    st.found={kind:'label',parse:P,cands,err};renderFound();openSheet('found');setTimeout(resetScan,400);
+  }catch(e){stopReal();toast(e.message||'Something went wrong reading the label.')}
+}
+async function startDeadwaxScan(){
+  if(st.scanning)return;st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');
+  const ctx=st.dwCtx?recOf(st.dwCtx):null,live=!!camStream;
+  setPrompt(live?'Torch on. Tilt slowly.':'Photograph the runout.');$('#guide').textContent=live?'Light from a low angle, etching in the box':'Lamp low and to the side, fill the frame';
+  const gen=st.scanGen=(st.scanGen||0)+1;
+  try{
+    await torch(true);
+    const frames=await grabFrames(live?6:1,3600,(i,n)=>{$('#guide').textContent=`Capturing ${i} of ${n}…`});
+    await torch(false);if(st.scanGen!==gen)return;if(!frames.length){stopReal();return}
+    /* known runouts for the candidate pressings become word hints for the reader */
+    let cands=[],known=[],dgErr=null;
+    if(dgTok()&&ctx&&ctx.cat){try{cands=await dgCandidates(ctx.cat,ctx.lab);for(const c of cands.slice(0,4)){const o=await dgRunouts(c.id);c.ids=o.ids;c.uri=o.uri||c.uri;c.year=c.year||o.year;c.country=c.country||o.country;known=known.concat(o.ids.map(i=>i.v));await sleepMs(1100)}}catch(e){dgErr=e}}
+    const words=[...new Set(known.flatMap(v=>canon(v).split(' ')).filter(t=>t.length>=3))].slice(0,200);
+    const reads=[];let fi=0;
+    for(const f of frames){for(const v of [f,...labVariants(f).slice(0,1)]){const ls=await ocrFrame(v,{words,minHeight:.008});ls.forEach(l=>reads.push({text:l.text,conf:l.conf,frame:fi,x:l.box?l.box.x:0}));if(st.scanGen!==gen)return}fi++;setPrompt(`Reading ${fi} of ${frames.length}…`)}
+    const V=dwVote(reads);let match=null;
+    if(V.mx&&cands.length)cands.forEach(c=>{const m=matchRunout(V.mx,c.ids||[]);if(m&&(!match||m.sc>match.sc))match={sc:m.sc,id:c.id,title:c.title,uri:c.uri,v:m.v,hit:m.hit,n:m.n,year:c.year,country:c.country}});
+    let albums=[];if(!ctx&&V.mx){const d=deriveCat(V.mx);if(d.length){try{albums=await mbByCat(d,null)}catch(e){}}}
+    $('#vf').classList.remove('reading');if(V.mx){$('#vf').classList.add('locked');shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}}
+    st.found={kind:'deadwax',ctx:ctx?ctx.id:null,dw:{mx:V.mx,conf:V.conf,frames:V.frames,n:V.n,parts:V.parts,match,gloss:decodeRunout(V.mx),cands:cands.map(c=>({id:c.id,title:c.title,year:c.year,country:c.country,uri:c.uri,ids:(c.ids||[]).map(i=>i.v)}))},albums,dgErr};
+    renderFound();openSheet('found');setTimeout(resetScan,400);
+  }catch(e){await torch(false);stopReal();toast(e.message||'Something went wrong reading the deadwax.')}
+}
+function dwAttach(){
+  const F=st.found;if(!F||F.kind!=='deadwax'||!F.ctx)return;const r=recOf(F.ctx);if(!r)return;
+  r.ev={...(r.ev||{}),dw:F.dw};r.mx=F.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely';saveReal();closeSheets();st.dwCtx=null;
+  st.rec=r.id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(r.c==='confirmed'?'Pressing confirmed from the deadwax.':'Matrix saved. Not matched to a database runout yet.');
+}
+const DG_NOTE='<p class="fine2" style="margin-top:10px">Runout data provided by Discogs. This app uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs.</p>';
+function candRow(c,i){const meta=[c.y||'',[c.lab,c.cat].filter(Boolean).join(' '),c.ctry,c.fmt,c.pack&&c.pack!=='None'?c.pack:'',c.dis].filter(Boolean).join(' · ');return `<button class="candrow press" data-foundpick="${i}"><img alt="" src="https://coverartarchive.org/release/${c.mbid}/front-250" onerror="this.style.visibility='hidden'"><span><b>${esc(c.t)}</b><em>${esc(c.a)}</em><small>${esc(meta)}</small></span></button>`}
+function renderFoundX(){
+  const F=st.found,B=$('#foundBody');
+  if(F.kind==='label'){
+    const P=F.parse,readLine=[P.lab,P.cats[0]].filter(Boolean).join(' · ');
+    if(!F.cands.length){B.innerHTML=`<h4 class="disp" style="font-size:36px">${F.err?'Couldn’t look it up':P.cats.length?'No match yet':'Couldn’t read a number'}</h4>
+      <p class="sub">${F.err?esc(F.err.message):P.cats.length?'Read <span class="fcode">'+esc(readLine)+'</span>, but nothing in the public database has that catalog number.':'The center label usually carries the label name and a catalog number. Fill the circle, avoid glare.'}</p>
+      ${P.raw.length?`<p class="fine2">Seen on the label: ${esc(P.raw.slice(0,6).join(' · ')).slice(0,180)}</p>`:''}
+      <button class="go press" data-foundno="1">Try again</button><button class="ghost" data-catmanual="1">Type the catalog number</button>`;return}
+    B.innerHTML=`<p class="fine2" style="margin:0 0 6px">Label read: <span class="fcode">${esc(readLine)}</span>${P.side?' · side '+esc(P.side):''}</p>
+     <h4 class="disp" style="font-size:36px">${F.cands.length===1?'Is this it?':'Which one is yours?'}</h4>
+     <p class="sub">${F.cands.length===1?'One release carries that catalog number.':F.cands.length+' releases share that catalog number. Pick yours; the deadwax can confirm the pressing after.'}</p>
+     <div class="cands">${F.cands.map(candRow).join('')}</div>
+     <button class="ghost" data-foundno="1">None of these. Scan again</button><button class="ghost" data-catmanual="1">Type the catalog number</button>
+     <p class="fine2" style="margin-top:8px">Data from MusicBrainz and the Cover Art Archive.</p>`;return;
+  }
+  if(F.kind==='deadwax'){
+    const D=F.dw,ctx=F.ctx?recOf(F.ctx):null;
+    if(!D.mx){B.innerHTML=`<h4 class="disp" style="font-size:36px">Nothing readable yet</h4><p class="sub">Etchings only show when light rakes across them. Turn the record so the runout faces a lamp, hold the phone low on the other side, and try again.</p>
+      <button class="go press" data-dwagain="1">Read again</button>${F.dgErr?`<p class="fine2">${esc(F.dgErr.message)}</p>`:''}`;return}
+    const pct=Math.round(D.conf*100),m=D.match;
+    const tier=m&&m.sc>=.8?'Pressing confirmed':m&&m.sc>=.5?'Close to a known pressing':'Matrix read';
+    B.innerHTML=`<p class="fine2" style="margin:0 0 6px">Deadwax · ${D.frames} frame${D.frames===1?'':'s'} · read confidence ${pct}%</p>
+     <h4 class="disp" style="font-size:36px">${tier}</h4>
+     <div class="mxbig">${esc(D.mx)}</div>
+     ${m?`<p class="sub">${m.hit} of ${m.n} parts match the runout Discogs lists for <b>${esc(m.title)}</b>${m.year?' · '+esc(m.year):''}${m.country?' · '+esc(m.country):''}${m.uri?' · <a href="https://www.discogs.com'+esc(m.uri)+'" target="_blank" rel="noopener">Data provided by Discogs</a>':''}.</p>`
+        :ctx?`<p class="sub">${dgTok()?(D.cands.length?'None of the '+D.cands.length+' listed pressings carry this runout yet. Databases are examples, not the whole world.':'No pressings with that catalog number came back from Discogs.'):'Add your Discogs token in Settings to match this against known runouts for the exact pressing.'}</p>`
+        :`<p class="sub">Read without a record to compare against. ${F.albums.length?'The number looks like one of these:':'Scan the label or barcode first, then confirm with the deadwax.'}</p>`}
+     ${D.gloss.length?`<div class="gloss"><small>What the marks mean · a reading, not a fact</small>${D.gloss.map(g=>`<p>${esc(g)}</p>`).join('')}</div>`:''}
+     ${ctx?`<button class="go press" data-dwattach="1">${m&&m.sc>=.8?'Confirm this pressing':'Save to '+esc(ctx.t)}</button>`:''}
+     ${!ctx&&F.albums.length?`<div class="cands">${F.albums.map(candRow).join('')}</div>`:''}
+     <button class="ghost" data-dwagain="1">Read again</button>
+     ${D.parts.length>1?`<p class="fine2" style="margin-top:8px">Parts: ${D.parts.map(p=>esc(p.s)+' ('+Math.round(p.cov*100)+'%)').join(' · ')}</p>`:''}
+     ${F.dgErr?`<p class="fine2">${esc(F.dgErr.message)}</p>`:''}${dgTok()&&ctx?DG_NOTE:''}`;return;
+  }
+}
+function openCatEntry(){
+  $('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Type the catalog number</h4><p class="sub">From the spine, the back cover or the center label. The label name helps.</p>
+   <div class="hf"><label for="catIn">Catalog number</label><input class="txt sm" id="catIn" placeholder="BLP 1577" autocomplete="off" autocapitalize="characters"></div>
+   <div class="hf"><label for="catLab">Label (optional)</label><input class="txt sm" id="catLab" placeholder="Blue Note" autocomplete="off"></div>
+   <button class="go press" data-catlook="1">Look it up</button>`;closeSheets();openSheet('barcode');setTimeout(()=>{const i=$('#catIn');i&&i.focus()},400);
+}
+async function catLook(){
+  const c=canon($('#catIn').value).replace(/\s+/g,'-'),l=($('#catLab').value||'').trim();if(c.length<2){toast('Enter the catalog number.');return}
+  closeSheets();setPrompt('Looking it up…');$('#guide').textContent=[l,c].filter(Boolean).join(' · ');
+  let cands=[],err=null;try{cands=await mbByCat([c],l||null)}catch(e){err=e}
+  st.found={kind:'label',parse:{lab:l||null,cats:[c],side:null,raw:[]},cands,err};renderFound();openSheet('found');resetScan();
+}
+function openDgToken(){
+  $('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Discogs token</h4><p class="sub">Lets the deadwax reader compare your etching with the runouts Discogs lists for each pressing.</p>
+   <p class="fine2">Make a personal access token at discogs.com → Settings → Developers, and paste it here. It stays on this phone only and is sent to Discogs with each lookup. Never paste a password.</p>
+   <div class="hf"><label for="dgIn">Personal access token</label><input class="txt sm" id="dgIn" value="${esc(dgTok())}" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+   <button class="go press" data-dgsave="1">Save</button>${dgTok()?'<button class="ghost" data-dgclear="1">Remove the token</button>':''}
+   <p class="fine2" style="margin-top:8px">This app uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs.</p>`;closeSheets();openSheet('barcode');
+}
 
 /* ---------- Phase 0 test lab: answer key, scan trials, scoring against locked bars ---------- */
 const LAB_DEF={keys:[],trials:[],bars:{falseLock:2,top3:80,identified:95,secs:15},locked:'',nk:1,nt:1,engine:'auto',discogs:''};
@@ -3337,7 +3618,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr);return}
@@ -3393,6 +3674,15 @@ document.addEventListener('click',e=>{
     closeSheets();location.reload();return}
   if(t.dataset.lab){labDo(t.dataset.lab);return}
   if(t.dataset.foundadd){addFound();return}
+  if(t.dataset.foundpick!==undefined){const F=st.found,c=(F.kind==='label'?F.cands:F.albums)[+t.dataset.foundpick];if(c)addRel(c,F.kind==='label'?{label:{lab:F.parse.lab,cat:c.cat||F.parse.cats[0],side:F.parse.side}}:{dw:F.dw});return}
+  if(t.dataset.dwattach){dwAttach();return}
+  if(t.dataset.dwagain){closeSheets();setTimeout(startDeadwaxScan,300);return}
+  if(t.dataset.dwscan){st.dwCtx=+t.dataset.dwscan;setScanMode('deadwax');go('scan');toast('Torch on. Hold the phone low over the runout and tilt slowly.');return}
+  if(t.dataset.catmanual){openCatEntry();return}
+  if(t.dataset.catlook){catLook();return}
+  if(t.dataset.dgtoken){openDgToken();return}
+  if(t.dataset.dgsave){const v=($('#dgIn').value||'').trim();if(/^[A-Za-z0-9]{20,}$/.test(v)){LAB.discogs=v;labSave();closeSheets();toast('Token saved on this phone.')}else toast('That doesn’t look like a Discogs personal access token.');return}
+  if(t.dataset.dgclear){LAB.discogs='';labSave();closeSheets();toast('Token removed.');return}
   if(t.dataset.foundno){closeSheets();return}
   if(t.dataset.barlook){barLook();return}
   if(t.dataset.barmanual){openBarEntry();return}
