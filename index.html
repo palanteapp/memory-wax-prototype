@@ -414,6 +414,10 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .frow b{font-weight:700;font-size:15px}.frow span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;opacity:.8;margin-top:3px}
 .frow .pb{background:var(--cream);color:var(--ox);padding:8px 12px}
 .frow .pb.o{background:transparent;color:var(--cream)}
+.trow[hidden]{display:none}
+.emptyc{margin:0 16px 4px;padding:16px 18px;border:1.5px dashed currentColor;border-radius:0 0 var(--cut) 0;opacity:.85;display:grid;gap:4px}
+.emptyc b{font-family:var(--disp);font-size:19px}
+.emptyc span{font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.2}
 .shnote{margin:0;padding:0 20px 10px;font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.15;opacity:.9}
 .hostcta{margin:16px 16px 0;width:calc(100% - 32px);padding:16px;border-radius:999px;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.5);color:var(--cream);font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
 .minis{display:flex;gap:6px;margin:6px 0 4px}.minis i{flex:1;aspect-ratio:1;background:var(--b)}
@@ -1521,7 +1525,7 @@ function alongside(name){
 
 let st;
 function initState(empty){
-  st={scanning:false,mode:'confirmed',scanMode:'deadwax',screen:'arrive',tipSeen:false,tipScan:false,
+  st={scanning:false,mode:'confirmed',scanMode:empty?'barcode':'deadwax',screen:'arrive',tipSeen:false,tipScan:false,
     owned:new Set(empty?[]:[2,3,4,5,6,7,8,9,10,11,12]),
     shelves:empty?[]:[{id:1,n:'Spiritual Jazz',v:2,recs:[2,7,11]},{id:2,n:'Late Night House',v:1,recs:[5]},{id:3,n:'Gifts & Memories',v:0,recs:[8,12]}],
     nextShelf:4,
@@ -1614,13 +1618,14 @@ function renderText(n){
 }
 function setScanMode(m){
   st.scanMode=m;$('#vf').dataset.m=m;$('#barType').hidden=(m!=='barcode');
-  if(m!=='barcode'&&!st.simNote){st.simNote=true;setTimeout(()=>toast('Deadwax and cover reading are simulated. Barcode scanning is real.'),250)}
+  if(m!=='barcode'&&!st.simNote){st.simNote=true;setTimeout(()=>toast(DEMO?'Deadwax and cover reading are simulated. Barcode scanning is real.':'Deadwax and cover reading aren’t live yet. Barcode scanning is.'),250)}
   const idx=['deadwax','cover','barcode'].indexOf(m);
   $('#modes').style.setProperty('--i',idx);
   $$('#modes button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
   resetScan();
 }
 $$('#modes button').forEach(b=>b.addEventListener('click',()=>{if(!st.scanning)setScanMode(b.dataset.mode)}));
+if(!DEMO){setScanMode('barcode');$$('.v-rec svg text:not(.ring-text)').forEach(t=>t.textContent='')}
 function resetScan(){
   const S=SCAN[st.scanMode];
   st.scanning=false;$('#shutter').disabled=false;$('#shutter').setAttribute('aria-label',S.aria);
@@ -1688,6 +1693,7 @@ function finish(res){
 $('#shutter').addEventListener('click',()=>{
   if(!st.camAsked){st.camAsked=true;openSheet('cam');return}
   if(st.scanMode==='barcode'){startBarcodeScan();return}
+  if(!DEMO){toast('Deadwax and cover reading aren’t live yet. Switch to Barcode to add a record.');return}
   if(st.scanMode==='deadwax'&&!st.tipSeen){st.tipSeen=true;st.tipScan=true;$('#tipGo').textContent='Got it. Start scanning';openSheet('tips');return}
   startScan();
 });
@@ -1819,7 +1825,7 @@ const REP={
 const lab=(r)=>r.lab?(NAMEKEY[r.lab]?`<button class="cr" data-cr="${NAMEKEY[r.lab]}">${r.lab}</button>`:r.lab):'Not confirmed';
 function repRows(r,R,mode){
   const none='<span style="color:var(--mute)">Not in this sample</span>';
-  if(mode==='cover'||mode==='barcode')return [['Label',lab(r)],['Catalog','Not confirmed'],['Country','Not confirmed'],['Matrix','<span style="color:var(--gold)">Scan the deadwax to confirm</span>'],['Format',R.fmt||'12-inch LP']];
+  if(mode==='cover'||mode==='barcode')return [['Label',lab(r)],['Catalog',r.cat?esc(r.cat):'Not confirmed'],['Country','Not confirmed'],['Matrix','<span style="color:var(--mute)">Not read yet</span>'],['Format',R.fmt||'12-inch LP']];
   const mx=r.mx?`<span class="mono-chip">${r.mx}</span>`:'<span style="color:var(--mute)">Read from your scan</span>';
   return [['Label',lab(r)+(R.lblnote?` (${R.lblnote})`:'')],['Catalog',R.cat||none],['Country',R.ctry||none],['Matrix',mx+(mode==='likely'?' <span style="color:var(--mute)">you confirmed</span>':'')],['Format',R.fmt||'12-inch LP']];
 }
@@ -1836,7 +1842,7 @@ function fillReport(r,mode){
   $('#pressing').innerHTML=rows.map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
   const cat0=(R.cat||'').split(' · ')[0];
   $('#evidIn').innerHTML=r.id===1?m.evid:(mode==='confirmed'?`Etched matrix read and matched against known runouts for ${r.lab||'this label'}${cat0?' '+cat0:''}. Sample data, illustrative only.`:mode==='likely'?'Best match from the scan. Another pressing was close, so this is marked Likely. Scan the deadwax again to confirm.':MODES.cover.evid);
-  $('#rTop').innerHTML=`<span>No. ${String(r.id).padStart(2,'0')}</span><span>${[r.lab,cat0,R.ctry].filter(Boolean).join(' · ')}</span>`;
+  $('#rTop').innerHTML=`<span>${r.real?(r.y||'Scanned'):'No. '+String(r.id).padStart(2,'0')}</span><span>${[r.lab,cat0,R.ctry].filter(Boolean).join(' · ')}</span>`;
   const art=$('#artBox'),img=art.querySelector('img.cover'),c=cov(r);
   art.setAttribute('aria-label','Album cover: '+r.t);$('#artT2').textContent=[r.lab,cat0].filter(Boolean).join(' · ');$('#artT1').textContent=r.t;
   if(c){img.src=c;img.alt=`${r.t} by ${r.a}, album cover`;art.classList.add('has-img')}else art.classList.remove('has-img');
@@ -1844,13 +1850,25 @@ function fillReport(r,mode){
   const by=$('#repBy'),lead=R.lead||r.a;by.removeAttribute('data-cr');by.removeAttribute('data-crn');
   if(NAMEKEY[lead])by.dataset.cr=NAMEKEY[lead];else{by.dataset.crn=lead;by.dataset.crr='Artist'}
   by.textContent=r.a+' ↗';
-  $('#repSent').textContent=R.sent||'';
+  $('#repSent').textContent=R.sent||(r.real?[r.y?'Released '+r.y:'',r.lab?'on '+r.lab:''].filter(Boolean).join(' ')+(r.y||r.lab?'. ':'')+'Found by barcode. Credits and story aren’t filled in yet.':'');
   $('#repPeople').innerHTML=(R.crew||[]).map(([n,role])=>`<li>${nameBtn(n,role)}<span>${role}</span></li>`).join('');
   $('#repIh').hidden=!R.ih;$('#repIhP').innerHTML=(R.ih||'')+'<sup><a href="#s2">2</a></sup>';
   $('#repSound').innerHTML=(R.sound||'')+'<sup><a href="#s2">2</a></sup>';
   $('#repStory').innerHTML=(R.story||'')+'<sup><a href="#s1">1</a></sup>';
   $('#repBattle').hidden=true;
   fillCopy(r.id);fillPlan(r.id);fillAvail(r.id);
+  tidyReport(r,R);
+}
+/* A real (scanned) record has only what the lookup returned. Hide the sections that would otherwise show sample text, and renumber the rest. */
+function tidyReport(r,R){
+  const real=!!r.real,has=(k)=>!!R[k]&&(!Array.isArray(R[k])||R[k].length);
+  const show={session:has('crew'),sound:has('sound'),story:has('story'),liner:!real,listen:!real,src:!real};
+  $$('.rep .blk').forEach(b=>{const k=[...b.classList].find(c=>c in show);if(k)b.hidden=real&&!show[k]});
+  $('.disc-note').hidden=real;
+  $('#repSent').hidden=!$('#repSent').textContent;
+  $('.art .ph').hidden=real;
+  const vs=$('.voices .sample');if(vs)vs.hidden=real;
+  $$('.rep .blk:not([hidden]) .num').forEach((n,i)=>n.textContent=String(i+1).padStart(2,'0'));
 }
 let ios,t2,t3;
 function playReveal(){
@@ -2610,16 +2628,18 @@ function renderScene(){
   el.innerHTML=`
   ${st.wants.some(w=>w.t===recOf(MATCH.recId).t)&&!st.matchDismissed&&!st.matchDone?`<div class="mine" style="background:var(--gold);color:var(--ox);box-shadow:none"><div><b>A copy of ${recOf(MATCH.recId).t} just became available</b><span style="opacity:1">On your Dream Crate list · ${MATCH.cond} · Open to trade</span></div><button class="pb" style="background:var(--ox);color:var(--cream)" data-deal="match">See it</button></div>`:''}
   ${st.inbox.map((q,i)=>`<div class="mine" style="background:var(--red);box-shadow:none"><div><b>A collector wants your ${recOf(q.recId).t}</b><span>${q.who}</span></div><button class="pb" style="background:var(--cream);color:var(--ox)" data-deal="req" data-ri="${i}">Review</button></div>`).join('')}
-  <div class="sh"><span>Curators</span><em>${st.follow.size} following</em></div>
-  <p class="shnote">People and places whose shelves you can follow. They aren’t your friends, and they never see who follows them. These three are samples.</p>
-  <div class="curs">${[...CURS].sort((a,b)=>st.follow.has(b.id)-st.follow.has(a.id)).map(c=>`<div class="cur"><button class="open" data-cur="${c.id}"><div class="av m${c.m}" aria-hidden="true">${c.n[0]}</div><div class="nm">${c.n}</div><div class="tg">${c.tag}</div><div class="kd">${c.kind} · sample · ${c.shelves.length} ${c.shelves.length>1?'shelves':'shelf'} shared</div></button><button class="follow" data-follow="${c.id}" aria-pressed="${st.follow.has(c.id)}">${st.follow.has(c.id)?'Following':'Follow'}</button></div>`).join('')}</div>
-  <div class="sh"><span>Listening sessions</span><em>${new Date(nextNightAt()).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</em></div>
-  <button class="nightcard press" data-nroom="sitk"><div class="nk">Thursday · 8:00 PM Pacific</div><b>Songs in the Key of Life</b><span>Stevie Wonder, side by side with the world. Play your own copy or stream it. Live chat the whole time.</span><span style="opacity:.75;margin-top:6px">Sample session · your time: ${esc(localWhen(nextNightAt()))}</span><i>Open the room</i></button>
+  <div class="sh"><span>Curators</span><em>${DEMO?st.follow.size+' following':'None yet'}</em></div>
+  ${DEMO?`<p class="shnote">People and places whose shelves you can follow. They aren’t your friends, and they never see who follows them. These three are samples.</p>
+  <div class="curs">${[...CURS].sort((a,b)=>st.follow.has(b.id)-st.follow.has(a.id)).map(c=>`<div class="cur"><button class="open" data-cur="${c.id}"><div class="av m${c.m}" aria-hidden="true">${c.n[0]}</div><div class="nm">${c.n}</div><div class="tg">${c.tag}</div><div class="kd">${c.kind} · sample · ${c.shelves.length} ${c.shelves.length>1?'shelves':'shelf'} shared</div></button><button class="follow" data-follow="${c.id}" aria-pressed="${st.follow.has(c.id)}">${st.follow.has(c.id)?'Following':'Follow'}</button></div>`).join('')}</div>`
+  :`<div class="emptyc"><b>No curators yet</b><span>People and places whose shelves you can follow will appear here. They never see who follows them.</span></div>`}
+  <div class="sh"><span>Listening sessions</span><em>${DEMO?new Date(nextNightAt()).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'None scheduled'}</em></div>
+  ${DEMO?`<button class="nightcard press" data-nroom="sitk"><div class="nk">Thursday · 8:00 PM Pacific</div><b>Songs in the Key of Life</b><span>Stevie Wonder, side by side with the world. Play your own copy or stream it. Live chat the whole time.</span><span style="opacity:.75;margin-top:6px">Sample session · your time: ${esc(localWhen(nextNightAt()))}</span><i>Open the room</i></button>`
+  :`<div class="emptyc"><b>No sessions scheduled</b><span>Host one with your own records or a streaming album, and invite people in.</span></div>`}
   <div class="sh"><span>Hosted nights</span><em>${st.sessions.length?st.sessions.length+' listed':'Anyone can host'}</em></div>
   <button class="hostcta press" data-host="start" style="margin-top:0">Host a listening session</button>
   ${st.sessions.length?`<div class="ser" style="margin-top:12px"><h4 class="disp">Your sessions</h4><p class="sub">Listed by you.</p>${st.sessions.map(x=>`<button class="srow" data-sess="${x.id}"><div><b>${esc(x.name)}</b><span>${[whenText(x),x.recs.length+' record'+(x.recs.length===1?'':'s'),HVIS[x.vis]].filter(Boolean).join(' · ')}</span></div><i>Open</i></button>`).join('')}</div>`:''}
-  <div class="ser"><h4 class="disp">Words On Wax</h4><p class="sub">An example from a hand-run series: six nights so far. Every night keeps its records, its stories, and its recap.</p>
-    ${NIGHTS.map(n=>`<button class="srow" data-recap="w${n.id}"><div><b>${n.t}</b><span>${n.n} · ${n.recs.length} records · ${n.guests} guests</span></div><i>Recap</i></button>`).join('')}</div>
+  ${DEMO?`<div class="ser"><h4 class="disp">Words On Wax</h4><p class="sub">An example from a hand-run series: six nights so far. Every night keeps its records, its stories, and its recap.</p>
+    ${NIGHTS.map(n=>`<button class="srow" data-recap="w${n.id}"><div><b>${n.t}</b><span>${n.n} · ${n.recs.length} records · ${n.guests} guests</span></div><i>Recap</i></button>`).join('')}</div>`:''}
   <div class="sh"><span>Friends</span><em>${fr.list.length} friend${fr.list.length===1?'':'s'}</em></div>
   <div class="frs"><h4 class="disp">Friends are mutual</h4><p>You both say yes, or nothing is shared. Friends see only the shelves you set to Friends.</p>
     ${fr.req.map((n,i)=>`<div class="frow"><div><b>${n}</b><span>Wants to be friends</span></div><div style="display:flex;gap:6px"><button class="pb" data-frok="${i}">Accept</button><button class="pb o" data-frno="${i}">Not now</button></div></div>`).join('')}
@@ -3366,11 +3386,11 @@ document.addEventListener('click',e=>{
     return}
   if(t.dataset.nroom){openRoom(t.dataset.nroom);return}
   if(t.dataset.dmo){
-    if(t.dataset.dmo==='sample'){try{localStorage.setItem('mw_demo','1')}catch(e){}closeSheets();fullReset(false);toast('Sample collection loaded.');return}
+    if(t.dataset.dmo==='sample'){try{localStorage.setItem('mw_demo','1')}catch(e){}closeSheets();location.reload();return}
     if(!confirm('Start fresh? This erases the records you scanned on this phone and shows the empty app.'))return;
     try{localStorage.removeItem('mw_demo');localStorage.removeItem('mw_real_recs')}catch(e){}
     for(let i=RECS.length-1;i>=0;i--)if(RECS[i].real)RECS.splice(i,1);
-    closeSheets();fullReset(true);return}
+    closeSheets();location.reload();return}
   if(t.dataset.lab){labDo(t.dataset.lab);return}
   if(t.dataset.foundadd){addFound();return}
   if(t.dataset.foundno){closeSheets();return}
@@ -3433,7 +3453,7 @@ document.addEventListener('click',e=>{
     st.account=true;closeSheets();renderCollection();toast('You’re in. Everything you’ve scanned is backed up.');
     const f=pendAct;pendAct=null;if(f)setTimeout(f,450);return}
   if(t.dataset.acctopen){gate(()=>{});return}
-  if(t.dataset.nudge){closeSheets();setScanMode('deadwax');go('scan');return}
+  if(t.dataset.nudge){closeSheets();setScanMode(DEMO?'deadwax':'barcode');go('scan');return}
   if(t.dataset.segtog){const id=+t.dataset.segtog;st.segOpen.has(id)?st.segOpen.delete(id):st.segOpen.add(id);renderCollection();return}
   if(t.dataset.presh){
     const k=t.dataset.presh,sid=+t.dataset.sid,sh=st.shelves.find(x=>x.id===sid);
@@ -3479,8 +3499,8 @@ document.addEventListener('click',e=>{
     else if(k==='legal'){closeSheets();openSheet('legal')}
     else if(k==='svc'){closeSheets();renderSvc();openSheet('svc')}
     else if(k==='cam'){closeSheets();st.camAsked=true;if(camStream){st.camPref=false;camOff();toast('Back to the illustration.')}else openSheet('cam')}
-    else if(k==='import')gate(()=>openImport());
-    else if(k==='csv')$('#csvIn').click();
+    else if(k==='import'){if(DEMO)gate(()=>openImport());else toast('Discogs import isn’t connected yet. Add records by scanning their barcodes.')}
+    else if(k==='csv'){if(DEMO)$('#csvIn').click();else toast('CSV import isn’t built yet. Add records by scanning their barcodes.')}
     else if(k==='export')exportCSV();
     else if(k==='batchview'){closeSheets();st.queue=[];updatePills();go('collection')}
     else if(k==='panic'){st.shelves.forEach(x=>x.v=0);if(st.spin)st.spin.v=0;closeSheets();renderCollection();toast('Sharing paused. Every shelf is Just me and share links are off. Turn sharing back on shelf by shelf.')}
@@ -3516,7 +3536,7 @@ $('#offline').addEventListener('change',e=>{
 });
 $('#own1').addEventListener('change',e=>{if(e.target.checked)st.owned.add(1);else st.owned.delete(1);renderCollection()});
 function fullReset(empty){
-  initState(empty);restoreReal();setScanMode('deadwax');
+  initState(empty);restoreReal();setScanMode(empty?'barcode':'deadwax');
   $('#batchBtn').setAttribute('aria-pressed','false');$('#offline').checked=false;$('#own1').checked=false;$('#search').value='';
   $$('#cond button').forEach(b=>b.setAttribute('aria-pressed','false'));$('#condNote').textContent='Tap a grade to see what it means.';$('#mcPaid').value='';$('#mcWhere').value='';$('#mcMemo').hidden=true;
   updatePills();renderCollection();
@@ -3525,6 +3545,9 @@ function fullReset(empty){
 }
 $('#restart').addEventListener('click',()=>{try{localStorage.setItem('mw_demo','1')}catch(e){}fullReset(false)});
 $('#newUser').addEventListener('click',()=>{try{localStorage.removeItem('mw_demo')}catch(e){}fullReset(true)});
+if(!DEMO){const sr=document.querySelector('#sheet-settings [data-set="sync"]');if(sr)sr.closest('.trow').hidden=true;
+  const im=document.querySelector('#sheet-settings [data-set="import"] span'),cv=document.querySelector('#sheet-settings [data-set="csv"] span');
+  if(im)im.textContent='Not connected yet in this prototype.';if(cv)cv.textContent='Not built yet in this prototype.'}
 {const b=$('#buildTag');if(b)b.textContent='Memory Wax prototype '+BUILD+(DEMO?' · sample data on':'');}
 renderCollection();updatePills();
 </script>
