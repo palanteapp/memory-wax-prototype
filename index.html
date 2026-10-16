@@ -1285,9 +1285,13 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
       <div class="sethead">Scanner</div>
       <button class="opt-card" data-set="cam"><b>Live camera preview</b><span>Try your real camera in the viewfinder instead of the illustration.</span></button>
       <button class="opt-card" data-lab="open"><b>Phase 0 test lab</b><span>Build the answer key, scan real deadwax, and score it against the bars.</span></button>
+      <div class="sethead">Sample data</div>
+      <button class="opt-card" data-dmo="sample"><b>Load the sample collection</b><span>Fills the app with example records, shelves and friends so you can see it full. Your own scans stay.</span></button>
+      <button class="opt-card" data-dmo="fresh"><b>Start fresh</b><span>The empty app a new user sees, and erases the records you scanned on this phone.</span></button>
       <div class="sethead">Legal and safety</div>
       <button class="opt-card" data-set="legal"><b>Terms, privacy and takedowns</b><span>What Memory Wax is, what it is not, and how to report a problem.</span></button>
       <button class="ghost" data-set="about">About our data</button>
+      <p class="fine2" id="buildTag" style="text-align:center;margin-top:10px"></p>
     </div>
 
     <div class="sheet" id="sheet-svc" role="dialog" aria-label="Connect your music"><div id="svcBody"></div></div>
@@ -1525,9 +1529,12 @@ function initState(empty){
     filter:'All',confOnly:false,sort:'recent',view:'grid',colTab:0,target:null,vis:0,newV:0,addedToast:false,
     q:'',batch:false,queue:[],offline:false,pending:0,copy:{cond:null,paid:'',where:''},
     sessions:[],host:null,nextSess:1,inbox:[],sold:new Set(),deal:null,matchDismissed:false,matchDone:false,planFor:null,rec:1,cameFromScan:false,copies:{},photos:{},fpeople:new Set(),series:[],
-    battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:{req:['Dre Okafor'],list:['Marisol Vega']}};
+    battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
-initState();
+/* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
+const BUILD='0.9 · clean start';
+const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
+initState(!DEMO);
 
 /* cover art: drop the file at Prototype/assets/ */
 let coverURL=null;
@@ -3310,7 +3317,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr);return}
@@ -3358,6 +3365,12 @@ document.addEventListener('click',e=>{
       amConnect(tok).then(()=>{renderSvc();toast('Apple Music connected.');if(st.pendSave){const q=st.pendSave;closeSheets();saveTo(q.svc,q.name,q.note,q.items,q.pid)}}).catch(e=>toast('Apple Music: '+(e.message||'could not connect.')))}
     return}
   if(t.dataset.nroom){openRoom(t.dataset.nroom);return}
+  if(t.dataset.dmo){
+    if(t.dataset.dmo==='sample'){try{localStorage.setItem('mw_demo','1')}catch(e){}closeSheets();fullReset(false);toast('Sample collection loaded.');return}
+    if(!confirm('Start fresh? This erases the records you scanned on this phone and shows the empty app.'))return;
+    try{localStorage.removeItem('mw_demo');localStorage.removeItem('mw_real_recs')}catch(e){}
+    for(let i=RECS.length-1;i>=0;i--)if(RECS[i].real)RECS.splice(i,1);
+    closeSheets();fullReset(true);return}
   if(t.dataset.lab){labDo(t.dataset.lab);return}
   if(t.dataset.foundadd){addFound();return}
   if(t.dataset.foundno){closeSheets();return}
@@ -3510,8 +3523,9 @@ function fullReset(empty){
   $$('.arrive .logo,.arrive .a-sub,.arrive .cta,.arrive .sun,.arrive .a-meta').forEach(e=>{e.style.animation='none';void e.offsetWidth;e.style.animation=''});
   phone.dataset.theme='dark';go('arrive');
 }
-$('#restart').addEventListener('click',()=>fullReset(false));
-$('#newUser').addEventListener('click',()=>fullReset(true));
+$('#restart').addEventListener('click',()=>{try{localStorage.setItem('mw_demo','1')}catch(e){}fullReset(false)});
+$('#newUser').addEventListener('click',()=>{try{localStorage.removeItem('mw_demo')}catch(e){}fullReset(true)});
+{const b=$('#buildTag');if(b)b.textContent='Memory Wax prototype '+BUILD+(DEMO?' · sample data on':'');}
 renderCollection();updatePills();
 </script>
 </body>
