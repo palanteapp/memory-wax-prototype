@@ -234,6 +234,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 .people li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:2px solid rgba(84,11,14,.22);font-size:17px}
 .people li:last-child{border-bottom:0}
 .people span{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;background:var(--ox);color:var(--cream);flex:none}
+.hint a{color:inherit}
 .hint{margin-top:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
 .ih{margin:18px -4px -4px;padding:18px 18px 20px;background:var(--red);color:var(--cream);box-shadow:6px 6px 0 var(--ox);transform:rotate(-1.2deg)}
 .ih small{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;background:var(--cream);color:var(--ox);padding:4px 9px;margin-bottom:10px}
@@ -968,7 +969,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
               <li><button class="cr" data-cr="rvg">Rudy Van Gelder</button><span>engineer</span></li>
               <li><button class="cr" data-cr="studio">Van Gelder Studio</button><span>studio</span></li>
             </ul>
-            <p class="hint">Tap any name for a short bio and what else they played on</p>
+            <p class="hint" id="repHint">Tap any name for a short bio and what else they played on</p>
             <div class="ih" id="repIh"><small>Invisible History</small>
               <p id="repIhP">Archie Shepp and Art Davis joined for a second session the next day. The sextet take of “Acknowledgement” wasn’t released until the 2002 deluxe edition.<sup><a href="#s2">2</a></sup></p></div>
           </article>
@@ -1556,7 +1557,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.11 · your data';
+const BUILD='0.12 · real credits';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -1758,7 +1759,7 @@ const copyOf=id=>(st.copies[id]=st.copies[id]||{cond:null,paid:'',where:''});
 const MODEOF={confirmed:'confirmed',likely:'likely',album:'cover'};
 const realModeOf=r=>r.ev?evMode(r):'barcode';
 const NAMEKEY={'John Coltrane':'coltrane','McCoy Tyner':'tyner','Jimmy Garrison':'garrison','Elvin Jones':'jones','Bob Thiele':'thiele','Rudy Van Gelder':'rvg','Van Gelder Studio':'studio','Impulse!':'impulse'};
-const nameBtn=(n,role)=>NAMEKEY[n]?`<button class="cr" data-cr="${NAMEKEY[n]}">${n}</button>`:`<button class="cr" data-crn="${n}" data-crr="${role||''}">${n}</button>`;
+const nameBtn=(n,role,mbid)=>NAMEKEY[n]?`<button class="cr" data-cr="${NAMEKEY[n]}">${esc(n)}</button>`:`<button class="cr" data-crn="${esc(n)}" data-crr="${esc(role||'')}"${mbid?` data-mbid="${mbid}"`:''}>${esc(n)}</button>`;
 const BATTLE_BY_REC={1:0,7:1,2:2};
 const REP={
  1:{lead:'John Coltrane',cat:'A-77 · mono',ctry:'US · 1965',fmt:'12-inch LP, gatefold',lblnote:'orange and black',
@@ -1863,7 +1864,7 @@ function fillCopy(id){
   const mm=$('#mcMemo');mm.hidden=!r.memo;mm.innerHTML=r.memo?`<small>Your memory · only you</small>${esc(r.memo)}`:'';
 }
 function fillReport(r,mode){
-  const R=REP[r.id]||{},m=MODES[mode]||MODES.confirmed;
+  const R=r.real?realRep(r):(REP[r.id]||{}),m=MODES[mode]||MODES.confirmed;
   const rows=r.id===1?m.rows:repRows(r,R,mode);
   $('#pressing').innerHTML=rows.map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
   const cat0=(R.cat||'').split(' · ')[0];
@@ -1877,13 +1878,13 @@ function fillReport(r,mode){
   if(NAMEKEY[lead])by.dataset.cr=NAMEKEY[lead];else{by.dataset.crn=lead;by.dataset.crr='Artist'}
   by.textContent=r.a+' ↗';
   $('#repSent').textContent=R.sent||(r.real?[r.y?'Released '+r.y:'',r.lab?'on '+r.lab:''].filter(Boolean).join(' ')+(r.y||r.lab?'. ':'')+((r.ev&&r.ev.dw&&r.ev.dw.mx)?'Pressing read from the deadwax. ':(r.ev&&r.ev.label)?'Found from the center label. ':(r.ev&&r.ev.bc)?'Found by barcode. ':(r.ev&&r.ev.dg)?'Imported from your Discogs collection. ':(r.ev&&r.ev.csv)?'Imported from your CSV. ':'Added by hand. ')+'Credits and story aren’t filled in yet.':'');
-  $('#repPeople').innerHTML=(R.crew||[]).map(([n,role])=>`<li>${nameBtn(n,role)}<span>${role}</span></li>`).join('');
+  $('#repPeople').innerHTML=(R.crew||[]).map(([n,role,mbid])=>`<li>${nameBtn(n,role,mbid)}<span>${esc(role)}</span></li>`).join('');
   $('#repIh').hidden=!R.ih;$('#repIhP').innerHTML=(R.ih||'')+'<sup><a href="#s2">2</a></sup>';
   $('#repSound').innerHTML=(R.sound||'')+'<sup><a href="#s2">2</a></sup>';
   $('#repStory').innerHTML=(R.story||'')+'<sup><a href="#s1">1</a></sup>';
   $('#repBattle').hidden=true;
   fillCopy(r.id);fillPlan(r.id);fillAvail(r.id);
-  tidyReport(r,R);if(r.real)realReport(r,mode);
+  tidyReport(r,R);if(r.real)realReport(r,mode);creditsNote(r);
 }
 /* A real (scanned) record has only what the lookup returned. Hide the sections that would otherwise show sample text, and renumber the rest. */
 function tidyReport(r,R){
@@ -1904,7 +1905,7 @@ function playReveal(){
   clearTimeout(t2);clearTimeout(t3);
   r.classList.remove('go1','go2','go3');
   $('#badge').className='seal '+m.cls;$('#sealA').textContent=m.a;$('#sealB').textContent=(!fromScan&&mode==='likely')?'Best match':m.b;
-  fillReport(r0,mode);
+  fillReport(r0,mode);if(r0.real)ensureCredits(r0);
   $('#evid').classList.remove('open');$('#evidBtn').setAttribute('aria-expanded','false');$('#evidBtn').textContent='How we know';
   $('#repScroll').scrollTop=0;$$('.blk').forEach(s=>{s.classList.remove('in');s.style.transitionDelay='0ms'});
   let dup=false;
@@ -1949,14 +1950,14 @@ function buildCredit(c){
       const want=st.wants.some(w=>w.t===p[0]);
       return `<li class="${o?'own':''}">${rr?`<button data-open="${rr.id}">${inner}</button>`:`${inner}<button class="dcbtn" data-dc="${esc(p[0])}|${esc(p[3]||c.name)}" aria-pressed="${want}">${want?'In your Dream Crate':'+ Dream Crate'}</button>`}</li>`}).join('')}</ul>
     ${al.length?`<div class="pathh">Played alongside</div><div class="opts" style="margin-top:8px">${al.map(x=>`<button class="pb" aria-pressed="true" data-crn="${esc(x)}" data-crr="">${esc(x)}</button>`).join('')}</div>`:''}
-    <p class="fine" style="margin-top:12px;font-weight:600">Sample bio, written for this prototype and kept short. In the real product bios and credits come from sourced data (Wikipedia, MusicBrainz, Discogs), with attribution and links. You own ${n} of ${path.length} here.</p>`;
+    <p class="fine" style="margin-top:12px;font-weight:600">${P.known?`Sample bio, written for this prototype and kept short. In the real product bios and credits come from sourced data (Wikipedia, MusicBrainz, Discogs), with attribution and links. `:`Credits from MusicBrainz (open data). A short bio with its source comes next. `}You own ${n} of ${path.length} here.</p>`;
   openSheet('credit');
 }
 function openCredit(key){const c=CR[key];if(c)buildCredit(c)}
 function openCreditName(name,role){
   const hits=RECS.filter(r=>(r.cred||[]).includes(name)||r.a===name||r.a.split(' & ').includes(name));
   const roleFor=r=>{const cr=((REP[r.id]||{}).crew||[]).find(x=>x[0]===name);return cr?cr[1]:(r.a.includes(name)?'Leader':'Credited')};
-  buildCredit({type:typeOf(role||''),name,role:role||'',blurb:`Credited on ${hits.length} record${hits.length===1?'':'s'} in this sample catalog.`,path:hits.map(r=>[r.t,String(r.y),roleFor(r)])});
+  buildCredit({type:typeOf(role||''),name,role:role||'',blurb:`Credited on ${hits.length} record${hits.length===1?'':'s'} in ${DEMO?'this sample catalog':'your collection'}.`,path:hits.map(r=>[r.t,String(r.y),roleFor(r)])});
 }
 
 /* ---------- collection ---------- */
@@ -2079,7 +2080,7 @@ function openBattle(i){st.battle.i=i;st.battle.pick=null;renderBattle();openShee
 /* ---------- listen mock-up ---------- */
 const SVC={sp:{n:'Spotify',ac:'#1ED760',need:'Signed out, Spotify plays short previews. Signed in with the right plan, you hear full tracks.',url:r=>'https://open.spotify.com/search/'+encodeURIComponent(r.t+' '+r.a)},
            am:{n:'Apple Music',ac:'#FA5A6E',need:'Signed out, Apple Music plays short previews. With a subscription, you hear full tracks.',url:r=>'https://music.apple.com/us/search?term='+encodeURIComponent(r.t+' '+r.a)}};
-const recTracks=id=>(REP[id]||{}).tracks||[];
+const recTracks=id=>{const r=RECS.find(x=>x.id===id);return (r&&r.tracks)||(REP[id]||{}).tracks||[]};
 /* real embeds: Spotify album ids and Apple Music album ids, checked against each service's own pages */
 const STREAM={
   sp:{1:'5cKg5nyFcq8ykeiFposAcy',2:'2Z11cXWEa2qqYQBGkJrCga',3:'10PZnE26qh6zStlWgwbCim',4:'5fmIolILp5NAtNYiRPjhzA',5:'2noRn2Aes5aoNVsU6iWThc',6:'1p12OAWwudgMqfMzjMvl2a',7:'1weenld61qoidwYuZ1GESA',8:'2v6ANhWhZBUKkg6pJJBs3B',9:'51kRDjKcrYrQfFmOktFh32',10:'5fMlysqhFE0itGn4KezMBW',11:'4PMwCdbTTBTgyMh8dbTVRb',12:'2WqW0iwOMcta42pZI2hLiJ',15:'0ekrCyUT01BzU89QbiKcaI',21:'7cZ6oBx0SEUPDAoxJtxNDh'},
@@ -3327,6 +3328,91 @@ function openDgToken(){
    <div class="hf"><label for="dgIn">Personal access token</label><input class="txt sm" id="dgIn" value="${esc(dgTok())}" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
    <button class="go press" data-dgsave="1">Save</button>${dgTok()?'<button class="ghost" data-dgclear="1">Remove the token</button>':''}
    <p class="fine2" style="margin-top:8px">This app uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs.</p>`;closeSheets();openSheet('barcode');
+}
+
+/* ---------- real credits: who played on it, from MusicBrainz core data (CC0), fetched once per record and kept on the phone ----------
+   Instruments, vocals, producer and engineer live on each recording; composers on the work; the studio and session dates on
+   "recorded at" relationships. Where MusicBrainz is thin, the page says so instead of inventing anything. */
+let mbQueue=Promise.resolve();   /* MusicBrainz asks for about one request a second */
+const mbPaced=fn=>{const p=mbQueue.then(async()=>{const r=await fn();await sleepMs(1050);return r});mbQueue=p.catch(()=>{});return p};
+async function mbGet(path){return mbPaced(async()=>{
+  const url='https://musicbrainz.org/ws/2/'+path+(path.includes('?')?'&':'?')+'fmt=json';
+  let r=await fetch(url);
+  if(r.status===503){await sleepMs(2500);r=await fetch(url)}   /* one polite retry when MusicBrainz is busy */
+  if(r.status===503)throw new Error('MusicBrainz is busy. Try again in a few seconds.');
+  if(r.status===404)return null;if(!r.ok)throw new Error('MusicBrainz returned '+r.status);return r.json()})}
+const MB_INC='recordings+artist-credits+artist-rels+place-rels+recording-level-rels+work-rels+work-level-rels+release-groups+labels';
+const ROLE_NICE={'drums (drum set)':'drums','double bass':'bass','electric bass guitar':'electric bass','acoustic guitar':'guitar','electric guitar':'guitar','grand piano':'piano','lead vocals':'vocals','background vocals':'backing vocals','tenor saxophone':'tenor sax','alto saxophone':'alto sax','baritone saxophone':'baritone sax','soprano saxophone':'soprano sax','Hammond organ':'organ','Rhodes piano':'Rhodes','Fender Rhodes':'Rhodes','percussion':'percussion'};
+const nice=s=>ROLE_NICE[s]||s;
+const TYPE_ROLE={producer:'producer',recording:'engineer',engineer:'engineer',mix:'mixing',mastering:'mastering',arranger:'arranger',conductor:'conductor','recorded at':null,performance:null};
+const fmtLen=ms=>ms?`${Math.floor(ms/60000)}:${String(Math.round(ms/1000)%60).padStart(2,'0')}`:'';
+const mbArtistName=rel=>(rel.artist||{}).name||'';
+function mbCredits(j){
+  const people=new Map(),bump=(name,mbid,role,trackIdx)=>{if(!name||!role)return;const k=name.toLowerCase();const p=people.get(k)||{name,mbid,roles:new Map(),tracks:new Set(),first:people.size};const n=(p.roles.get(role)||0)+1;p.roles.set(role,n);if(trackIdx!=null)p.tracks.add(trackIdx);people.set(k,p)};
+  const studios=new Map(),dates=new Set(),tracks=[];let withRels=0,ti=0;
+  (j.media||[]).forEach(m=>(m.tracks||[]).forEach(t=>{
+    const rec=t.recording||{},rels=rec.relations||[];tracks.push({n:t.number||String(ti+1),t:t.title||rec.title||'',len:fmtLen(t.length||rec.length)});
+    if(rels.length)withRels++;
+    rels.forEach(r=>{
+      if(r.type==='instrument'||r.type==='vocal'||r.type==='performer'){const roles=(r.attributes||[]).map(nice);(roles.length?roles:[r.type==='vocal'?'vocals':'performer']).forEach(role=>bump(mbArtistName(r),(r.artist||{}).id,role,ti))}
+      else if(r.type in TYPE_ROLE&&TYPE_ROLE[r.type])bump(mbArtistName(r),(r.artist||{}).id,TYPE_ROLE[r.type],ti);
+      else if(r.type==='recorded at'&&r.place){studios.set(r.place.name,(studios.get(r.place.name)||0)+1);if(r.begin)dates.add(r.begin)}
+      else if(r.type==='performance'&&r.work){(r.work.relations||[]).forEach(w=>{if(w.type==='composer'||w.type==='writer'||w.type==='lyricist')bump(mbArtistName(w),(w.artist||{}).id,w.type==='lyricist'?'lyrics':'composer',ti)})}
+    });ti++;
+  }));
+  (j.relations||[]).forEach(r=>{if(r.type in TYPE_ROLE&&TYPE_ROLE[r.type])bump(mbArtistName(r),(r.artist||{}).id,TYPE_ROLE[r.type],null);else if(/design|photograph|artwork|illustration/.test(r.type))bump(mbArtistName(r),(r.artist||{}).id,'cover '+r.type.replace('photography','photo'),null)});
+  const PERF=new Set(['producer','engineer','mixing','mastering','composer','lyrics','arranger','conductor']);
+  const list=[...people.values()].map(p=>{const roles=[...p.roles.entries()].sort((a,b)=>b[1]-a[1]).map(x=>x[0]);const perf=roles.some(x=>!PERF.has(x)&&!x.startsWith('cover'));return {name:p.name,mbid:p.mbid,roles,perf,n:p.tracks.size,first:p.first}});
+  const order=x=>x.perf?0:x.roles.some(r=>r==='producer'||r==='engineer'||r==='mixing'||r==='mastering')?1:x.roles.some(r=>r==='composer'||r==='lyrics'||r==='arranger')?2:3;
+  list.sort((a,b)=>order(a)-order(b)||b.n-a.n||a.first-b.first);
+  const crew=list.slice(0,40).map(x=>{const rs=x.roles.slice(0,3).join(', ');return [x.name,x.n&&x.n<tracks.length&&x.perf?`${rs} (${x.n} track${x.n===1?'':'s'})`:rs,x.mbid||'']});
+  const studio=[...studios.entries()].sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+  const ds=[...dates].sort();
+  const li=(j['label-info']||[])[0]||{};
+  return {crew,tracks,studio,dates:ds,n:withRels,of:tracks.length,rg:(j['release-group']||{}).id||'',ctry:j.country||'',date:j.date||'',lab:(li.label||{}).name||'',cat:li['catalog-number']||'',at:Date.now()};
+}
+const whenText2=ds=>{if(!ds.length)return '';const f=s=>{const [y,m,d]=s.split('-');const M=['January','February','March','April','May','June','July','August','September','October','November','December'];return d?`${M[+m-1]} ${+d}, ${y}`:m?`${M[+m-1]} ${y}`:y};return ds.length===1?f(ds[0]):(ds[0].slice(0,4)===ds[ds.length-1].slice(0,4)?`${f(ds[0])} to ${f(ds[ds.length-1])}`:`${f(ds[0])} to ${f(ds[ds.length-1])}`)};
+function realRep(r){
+  const C=r.mbc;if(!C)return {};
+  const prod=C.crew.filter(c=>/producer/.test(c[1])).map(c=>c[0]).slice(0,2),eng=C.crew.filter(c=>/engineer/.test(c[1])).map(c=>c[0]).slice(0,2);
+  const bits=[];
+  if(C.dates.length||C.studio.length)bits.push('Recorded'+(C.dates.length?' '+whenText2(C.dates):'')+(C.studio.length?' at '+C.studio[0]:'')+'.');
+  if(prod.length)bits.push('Produced by '+prod.join(' and ')+'.');
+  if(eng.length)bits.push('Engineered by '+eng.join(' and ')+'.');
+  const crew=C.crew.slice();C.studio.slice(0,1).forEach(s=>crew.push([s,'studio','']));
+  return {crew,tracks:C.tracks.map(t=>t.t),sent:bits.join(' '),fmt:r.fmt,cat:r.cat,ctry:r.ctry,mbc:C};
+}
+/* find the MusicBrainz release for a record that came from Discogs or a CSV */
+const sameTitle=(a,b)=>{const x=norm(a),y=norm(b);if(!x||!y)return false;return x===y||x.includes(y)||y.includes(x)||lev(x,y)<=Math.max(2,Math.floor(Math.min(x.length,y.length)*.2))};
+async function mbResolve(r){
+  if(r.mb)return r.mb;
+  if(r.dg){const u=await mbGet('url?resource='+encodeURIComponent('https://www.discogs.com/release/'+r.dg)+'&inc=release-rels');const rel=((u||{}).relations||[]).find(x=>x.release&&sameTitle(x.release.title||'',r.t));if(rel){r.mbHow='discogs';return r.mb=rel.release.id}}
+  if(r.cat){const q='catno:"'+r.cat.replace(/"/g,'')+'"'+(r.lab?' AND label:"'+r.lab.replace(/"/g,'')+'"':'');const j=await mbGet('release/?query='+encodeURIComponent(q)+'&limit=10');const rels=((j||{}).releases||[]).map(mbRel).filter(x=>sameTitle(x.t,r.t));const pick=rels.find(x=>x.vinyl)||rels[0];if(pick){r.mbHow='catno';return r.mb=pick.mbid}}
+  const q='release:"'+r.t.replace(/"/g,'')+'"'+(r.a&&r.a!=='Unknown artist'?' AND artist:"'+r.a.split(/ [&,] /)[0].replace(/"/g,'')+'"':'');
+  const j=await mbGet('release/?query='+encodeURIComponent(q)+'&limit=10');const rels=((j||{}).releases||[]).map(mbRel).filter(x=>sameTitle(x.t,r.t));
+  const pick=rels.find(x=>x.vinyl&&(!r.y||x.y===r.y))||rels.find(x=>x.vinyl)||rels[0];if(pick){r.mbHow='title';return r.mb=pick.mbid}
+  return null;
+}
+const CRED_BUSY=new Set();
+async function ensureCredits(r,force){
+  if(!r||!r.real||CRED_BUSY.has(r.id))return;
+  if(!force&&(r.mbc||(r.mbcTried&&Date.now()-r.mbcTried<864e5)))return;
+  CRED_BUSY.add(r.id);
+  try{
+    const mb=await mbResolve(r);
+    if(mb){const j=await mbGet('release/'+mb+'?inc='+MB_INC);if(j){r.mbc=mbCredits(j);r.tracks=r.mbc.tracks.map(t=>t.t);r.cred=r.mbc.crew.map(c=>c[0]);if(!r.ctry&&r.mbc.ctry)r.ctry=r.mbc.ctry;if(!r.cat&&r.mbc.cat)r.cat=r.mbc.cat;if(!r.lab&&r.mbc.lab)r.lab=r.mbc.lab;if(!r.y&&r.mbc.date)r.y=+r.mbc.date.slice(0,4)||0;if(!r.cover&&r.mb)r.cover='https://coverartarchive.org/release/'+r.mb+'/front-250'}}
+    r.mbcTried=Date.now();saveReal();saveState();
+    if(st.screen==='reveal'&&st.rec===r.id){fillReport(r,st.cameFromScan?st.mode:realModeOf(r));$$('.rep .blk:not([hidden])').forEach(b=>{if(!b.classList.contains('in'))ios&&ios.observe(b)})}
+  }catch(e){r.mbcTried=Date.now()-864e5+6e4;r.mbcErr=e.message;creditsNote(r)}
+  CRED_BUSY.delete(r.id);
+}
+/* the line under the names: where the credits came from, and how complete they are */
+function creditsNote(r){
+  const C=r.mbc,el=$('#repHint');if(!el)return;
+  if(!r.real){el.textContent='Tap any name for a short bio and what else they played on';return}
+  if(!C){el.innerHTML=r.mbcErr?`Couldn’t fetch credits: ${esc(r.mbcErr)}`:r.mbcTried?'No credits found for this release on MusicBrainz yet.':'Fetching credits from MusicBrainz…';return}
+  const link=r.mb?`<a href="https://musicbrainz.org/release/${r.mb}" target="_blank" rel="noopener">MusicBrainz</a>`:'MusicBrainz';
+  el.innerHTML=(C.n>=C.of?`Credits for all ${C.of} tracks, from ${link} (open data). Tap a name to follow it.`:C.n?`Credits on ${C.n} of ${C.of} tracks, from ${link} (open data). The rest aren’t entered yet.`:`${link} has the tracklist but no player credits for this release yet. Add them there and they’ll show here.`)+(r.mbHow==='catno'||r.mbHow==='title'?' Matched by '+(r.mbHow==='catno'?'catalog number':'title')+', so check it’s the same release.':'');
 }
 
 /* ---------- Phase 0 test lab: answer key, scan trials, scoring against locked bars ---------- */
