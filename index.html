@@ -1547,7 +1547,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.10 · label + deadwax reader';
+const BUILD='0.10.1 · deadwax passes';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -3091,10 +3091,10 @@ async function ocrFrame(cv,opt={}){
 }
 
 /* frames: from the live camera when it is on, otherwise one photo through the system camera / picker */
-function frameFromVideo(max=1280){const v=$('#liveVid');if(!v||!v.videoWidth)return null;const s=Math.min(1,max/Math.max(v.videoWidth,v.videoHeight)),cv=document.createElement('canvas');cv.width=Math.round(v.videoWidth*s);cv.height=Math.round(v.videoHeight*s);cv.getContext('2d').drawImage(v,0,0,cv.width,cv.height);return cv}
+function frameFromVideo(max=1280,square=false){const v=$('#liveVid');if(!v||!v.videoWidth)return null;let sx=0,sy=0,sw=v.videoWidth,sh=v.videoHeight;if(square){const d=Math.min(sw,sh);sx=(sw-d)/2;sy=(sh-d)/2;sw=sh=d}const s=Math.min(1,max/Math.max(sw,sh)),cv=document.createElement('canvas');cv.width=Math.round(sw*s);cv.height=Math.round(sh*s);cv.getContext('2d').drawImage(v,sx,sy,sw,sh,0,0,cv.width,cv.height);return cv}
 function pickPhoto(){return new Promise(ok=>{let i=$('#idFile');if(!i){i=document.createElement('input');i.type='file';i.accept='image/*';i.setAttribute('capture','environment');i.id='idFile';i.style.display='none';document.body.appendChild(i)}i.value='';i.onchange=()=>ok(i.files&&i.files[0]||null);i.click()})}
-async function grabFrames(n,ms,onTick){
-  if(camStream){const out=[];for(let i=0;i<n;i++){const f=frameFromVideo();if(f)out.push(f);onTick&&onTick(i+1,n);await sleepMs(ms/n)}return out}
+async function grabFrames(n,ms,onTick,square){
+  if(camStream){const out=[];for(let i=0;i<n;i++){const f=frameFromVideo(1280,square);if(f)out.push(f);onTick&&onTick(i+1,n);await sleepMs(ms/n)}return out}
   const file=await pickPhoto();if(!file)return [];return [await fileToCanvas(file,1600)];
 }
 async function torch(on){try{const t=camStream&&camStream.getVideoTracks()[0];if(t&&t.getCapabilities&&t.getCapabilities().torch)await t.applyConstraints({advanced:[{torch:on}]})}catch(e){}}
@@ -3210,14 +3210,14 @@ function addRel(hit,ev){
   else{id=Math.max(100,...RECS.map(r=>r.id))+1;const ord=Math.max(...RECS.map(r=>r.ord||0))+1;
     RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid,bc:ev.bc?ev.bc.code:undefined,cover:'https://coverartarchive.org/release/'+hit.mbid+'/front-250',ev});st.owned.add(id);st.justAdded=id}
   const r=recOf(id);if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
-  saveReal();closeSheets();st.dwCtx=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
+  saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
 }
 async function startLabelScan(){
   if(st.scanning)return;st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');
   setPrompt('Reading the label…');$('#guide').textContent=camStream?'Hold still, fill the circle':'Photograph the center label';
   const gen=st.scanGen=(st.scanGen||0)+1;
   try{
-    const frames=await grabFrames(camStream?2:1,700);if(st.scanGen!==gen)return;if(!frames.length){stopReal();return}
+    const frames=await grabFrames(camStream?2:1,700,null,true);if(st.scanGen!==gen)return;if(!frames.length){stopReal();return}
     let lines=[];for(const f of frames)lines=lines.concat(await ocrFrame(f,{minHeight:.015}));
     const P=parseLabel(lines);
     if(!P.cats.length){stopReal();setPrompt('No catalog number yet.');$('#guide').textContent='Closer, less glare';st.found={kind:'label',parse:P,cands:[],err:null};renderFound();openSheet('found');return}
@@ -3230,11 +3230,11 @@ async function startLabelScan(){
 async function startDeadwaxScan(){
   if(st.scanning)return;st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');
   const ctx=st.dwCtx?recOf(st.dwCtx):null,live=!!camStream;
-  setPrompt(live?'Torch on. Tilt slowly.':'Photograph the runout.');$('#guide').textContent=live?'Light from a low angle, etching in the box':'Lamp low and to the side, fill the frame';
+  setPrompt(live?'Cool light, low angle. Tilt slowly.':'Photograph the runout.');$('#guide').textContent=live?'Keep the label out of the box':'Lamp low and to the side, label out of frame';
   const gen=st.scanGen=(st.scanGen||0)+1;
   try{
     await torch(true);
-    const frames=await grabFrames(live?6:1,3600,(i,n)=>{$('#guide').textContent=`Capturing ${i} of ${n}…`});
+    const frames=await grabFrames(live?6:1,3600,(i,n)=>{$('#guide').textContent=`Capturing ${i} of ${n}…`},true);
     await torch(false);if(st.scanGen!==gen)return;if(!frames.length){stopReal();return}
     /* known runouts for the candidate pressings become word hints for the reader */
     let cands=[],known=[],dgErr=null;
@@ -3242,7 +3242,9 @@ async function startDeadwaxScan(){
     const words=[...new Set(known.flatMap(v=>canon(v).split(' ')).filter(t=>t.length>=3))].slice(0,200);
     const reads=[];let fi=0;
     for(const f of frames){for(const v of [f,...labVariants(f).slice(0,1)]){const ls=await ocrFrame(v,{words,minHeight:.008});ls.forEach(l=>reads.push({text:l.text,conf:l.conf,frame:fi,x:l.box?l.box.x:0}));if(st.scanGen!==gen)return}fi++;setPrompt(`Reading ${fi} of ${frames.length}…`)}
-    const V=dwVote(reads);let match=null;
+    const acc=st.dwAcc&&st.dwAcc.ctx===(ctx?ctx.id:null)?st.dwAcc:{ctx:ctx?ctx.id:null,reads:[],frames:0};
+    const all=acc.reads.concat(reads.map(r=>({...r,frame:r.frame+acc.frames,x:r.x+(acc.passes||0)*2})));  /* later passes sort after earlier ones */st.dwAcc={ctx:acc.ctx,reads:all,frames:acc.frames+frames.length,passes:(acc.passes||0)+1};
+    const V=dwVote(all);let match=null;
     if(V.mx&&cands.length)cands.forEach(c=>{const m=matchRunout(V.mx,c.ids||[]);if(m&&(!match||m.sc>match.sc))match={sc:m.sc,id:c.id,title:c.title,uri:c.uri,v:m.v,hit:m.hit,n:m.n,year:c.year,country:c.country}});
     let albums=[];if(!ctx&&V.mx){const d=deriveCat(V.mx);if(d.length){try{albums=await mbByCat(d,null)}catch(e){}}}
     $('#vf').classList.remove('reading');if(V.mx){$('#vf').classList.add('locked');shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}}
@@ -3252,7 +3254,7 @@ async function startDeadwaxScan(){
 }
 function dwAttach(){
   const F=st.found;if(!F||F.kind!=='deadwax'||!F.ctx)return;const r=recOf(F.ctx);if(!r)return;
-  r.ev={...(r.ev||{}),dw:F.dw};r.mx=F.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely';saveReal();closeSheets();st.dwCtx=null;
+  r.ev={...(r.ev||{}),dw:F.dw};r.mx=F.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely';saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;
   st.rec=r.id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(r.c==='confirmed'?'Pressing confirmed from the deadwax.':'Matrix saved. Not matched to a database runout yet.');
 }
 const DG_NOTE='<p class="fine2" style="margin-top:10px">Runout data provided by Discogs. This app uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs.</p>';
@@ -3275,19 +3277,21 @@ function renderFoundX(){
   if(F.kind==='deadwax'){
     const D=F.dw,ctx=F.ctx?recOf(F.ctx):null;
     if(!D.mx){B.innerHTML=`<h4 class="disp" style="font-size:36px">Nothing readable yet</h4><p class="sub">Etchings only show when light rakes across them. Turn the record so the runout faces a lamp, hold the phone low on the other side, and try again.</p>
-      <button class="go press" data-dwagain="1">Read again</button>${F.dgErr?`<p class="fine2">${esc(F.dgErr.message)}</p>`:''}`;return}
+      <button class="go press" data-dwagain="1">Read again</button><button class="ghost" data-dwreset="1">Start over</button>${F.dgErr?`<p class="fine2">${esc(F.dgErr.message)}</p>`:''}`;return}
     const pct=Math.round(D.conf*100),m=D.match;
     const tier=m&&m.sc>=.8?'Pressing confirmed':m&&m.sc>=.5?'Close to a known pressing':'Matrix read';
-    B.innerHTML=`<p class="fine2" style="margin:0 0 6px">Deadwax · ${D.frames} frame${D.frames===1?'':'s'} · read confidence ${pct}%</p>
+    const passes=st.dwAcc?st.dwAcc.passes:1,webq='https://www.google.com/search?q='+encodeURIComponent('"'+D.mx+'" '+(ctx?ctx.a:''));
+    B.innerHTML=`<p class="fine2" style="margin:0 0 6px">Deadwax · ${passes>1?passes+' passes · ':''}${D.frames} frame${D.frames===1?'':'s'} · read confidence ${pct}%</p>
      <h4 class="disp" style="font-size:36px">${tier}</h4>
      <div class="mxbig">${esc(D.mx)}</div>
      ${m?`<p class="sub">${m.hit} of ${m.n} parts match the runout Discogs lists for <b>${esc(m.title)}</b>${m.year?' · '+esc(m.year):''}${m.country?' · '+esc(m.country):''}${m.uri?' · <a href="https://www.discogs.com'+esc(m.uri)+'" target="_blank" rel="noopener">Data provided by Discogs</a>':''}.</p>`
-        :ctx?`<p class="sub">${dgTok()?(D.cands.length?'None of the '+D.cands.length+' listed pressings carry this runout yet. Databases are examples, not the whole world.':'No pressings with that catalog number came back from Discogs.'):'Add your Discogs token in Settings to match this against known runouts for the exact pressing.'}</p>`
+        :ctx?`<p class="sub">${dgTok()?(D.cands.length?'None of the '+D.cands.length+' listed pressings carry this runout. That often means an unlisted variant, not a wrong read. Save it as Likely.':'No pressings with that catalog number came back from Discogs.'):'Add your Discogs token in Settings to match this against known runouts for the exact pressing.'}</p>`
         :`<p class="sub">Read without a record to compare against. ${F.albums.length?'The number looks like one of these:':'Scan the label or barcode first, then confirm with the deadwax.'}</p>`}
      ${D.gloss.length?`<div class="gloss"><small>What the marks mean · a reading, not a fact</small>${D.gloss.map(g=>`<p>${esc(g)}</p>`).join('')}</div>`:''}
      ${ctx?`<button class="go press" data-dwattach="1">${m&&m.sc>=.8?'Confirm this pressing':'Save to '+esc(ctx.t)}</button>`:''}
      ${!ctx&&F.albums.length?`<div class="cands">${F.albums.map(candRow).join('')}</div>`:''}
-     <button class="ghost" data-dwagain="1">Read again</button>
+     <button class="ghost" data-dwagain="1">Turn the record a quarter and read more</button>
+     <a class="ghost" style="display:block;text-align:center" href="${webq}" target="_blank" rel="noopener">Search the web for this runout</a>
      ${D.parts.length>1?`<p class="fine2" style="margin-top:8px">Parts: ${D.parts.map(p=>esc(p.s)+' ('+Math.round(p.cov*100)+'%)').join(' · ')}</p>`:''}
      ${F.dgErr?`<p class="fine2">${esc(F.dgErr.message)}</p>`:''}${dgTok()&&ctx?DG_NOTE:''}`;return;
   }
@@ -3618,7 +3622,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr);return}
@@ -3676,8 +3680,9 @@ document.addEventListener('click',e=>{
   if(t.dataset.foundadd){addFound();return}
   if(t.dataset.foundpick!==undefined){const F=st.found,c=(F.kind==='label'?F.cands:F.albums)[+t.dataset.foundpick];if(c)addRel(c,F.kind==='label'?{label:{lab:F.parse.lab,cat:c.cat||F.parse.cats[0],side:F.parse.side}}:{dw:F.dw});return}
   if(t.dataset.dwattach){dwAttach();return}
-  if(t.dataset.dwagain){closeSheets();setTimeout(startDeadwaxScan,300);return}
-  if(t.dataset.dwscan){st.dwCtx=+t.dataset.dwscan;setScanMode('deadwax');go('scan');toast('Torch on. Hold the phone low over the runout and tilt slowly.');return}
+  if(t.dataset.dwagain){closeSheets();resetScan();setTimeout(startDeadwaxScan,300);return}
+  if(t.dataset.dwreset){st.dwAcc=null;closeSheets();toast('Cleared. Read it fresh.');return}
+  if(t.dataset.dwscan){st.dwCtx=+t.dataset.dwscan;st.dwAcc=null;setScanMode('deadwax');go('scan');toast('Torch on. Hold the phone low over the runout and tilt slowly.');return}
   if(t.dataset.catmanual){openCatEntry();return}
   if(t.dataset.catlook){catLook();return}
   if(t.dataset.dgtoken){openDgToken();return}
