@@ -414,7 +414,10 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .frow b{font-weight:700;font-size:15px}.frow span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;opacity:.8;margin-top:3px}
 .frow .pb{background:var(--cream);color:var(--ox);padding:8px 12px}
 .frow .pb.o{background:transparent;color:var(--cream)}
-.trow[hidden]{display:none}
+.trow[hidden],.opt-card[hidden]{display:none}
+.opt-card.danger{border-left-color:var(--red)}
+.kvlist{display:grid;gap:8px;margin:10px 0 4px}.kvlist div{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:baseline;padding:8px 0;border-top:1.5px solid rgba(84,11,14,.15)}.kvlist b{font-family:var(--disp);font-size:28px;line-height:1}.kvlist span{font-size:14px;line-height:1.3}
+ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.plain li{margin-bottom:4px}
 #modes button[hidden]{display:none}
 .cands{display:grid;gap:8px;margin:12px 0 4px}
 .candrow{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:center;text-align:left;padding:10px;background:rgba(84,11,14,.07);border-left:6px solid var(--ox);color:inherit}
@@ -1283,11 +1286,14 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
     <div class="sheet" id="sheet-settings" role="dialog" aria-label="Settings and data">
       <h4 class="disp">Settings &amp; data</h4>
       <div class="sethead">Add a lot at once</div>
-      <button class="opt-card" data-set="import"><b>Import from Discogs</b><span>Bring in your whole collection. Keep using the app while it runs.</span></button>
-      <button class="opt-card" data-set="csv"><b>Upload a CSV</b><span>We match each row to a pressing and flag the ones we’re unsure about.</span></button>
+      <button class="opt-card" data-set="import"><b>Import from Discogs</b><span>Your own collection, read with your Discogs token. Nothing is written back.</span></button>
+      <button class="opt-card" data-set="csv"><b>Upload a CSV</b><span>Title and Artist columns are enough. Label, catalog number, barcode, matrix, condition and price come along when present.</span></button>
       <div class="sethead">Your data</div>
-      <div class="trow"><div><b>Keep in sync with Discogs</b><span class="d">Changes flow both ways.</span></div><button class="sw" data-set="sync" aria-pressed="true" aria-label="Keep in sync with Discogs"></button></div>
-      <button class="opt-card" data-set="export" style="margin-top:10px"><b>Export my collection</b><span>A CSV file. Your records are always yours.</span></button>
+      <button class="opt-card" data-set="yourdata"><b>What’s on this phone</b><span>Counts, what leaves the phone, and why nothing syncs yet.</span></button>
+      <button class="opt-card" data-set="backup"><b>Download a backup</b><span>One file: records, shelves, grades, prices, Dream Crate, lab results.</span></button>
+      <button class="opt-card" data-set="restore"><b>Restore a backup</b><span>Replaces what is on this phone with a backup file.</span></button>
+      <button class="opt-card" data-set="export"><b>Export as CSV</b><span>A spreadsheet of your collection. Your records are always yours.</span></button>
+      <div class="trow" data-demo-only><div><b>Keep in sync with Discogs</b><span class="d">Changes flow both ways.</span></div><button class="sw" data-set="sync" aria-pressed="true" aria-label="Keep in sync with Discogs"></button></div>
       <div class="sethead">Privacy</div>
       <div class="trow"><div><b>Remember where and when I scan</b><span class="d">Off. We keep the date only. Notes like “Found in Pasadena” stay words you write yourself.</span></div><button class="sw" data-set="loc" aria-pressed="false" aria-label="Remember where and when I scan"></button></div>
       <button class="opt-card" data-set="panic" style="margin-top:10px"><b>Pause all sharing</b><span>One tap puts every shelf back to Just me and turns off share links.</span></button>
@@ -1298,16 +1304,19 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
       <button class="opt-card" data-set="svc"><b>Connected music services</b><span>Connect your own Spotify or Apple Music so playlists can be saved for real.</span></button>
       <div class="sethead">Scanner</div>
       <button class="opt-card" data-set="cam"><b>Live camera preview</b><span>Try your real camera in the viewfinder instead of the illustration.</span></button>
-      <button class="opt-card" data-dgtoken="1"><b>Discogs token</b><span>Optional. Lets the deadwax reader match your etching to known pressings. Stored on this phone only.</span></button>
+      <button class="opt-card" data-dgtoken="1"><b>Discogs token</b><span>Optional. Needed for the Discogs import and for matching deadwax to known pressings. Stored on this phone only.</span></button>
       <button class="opt-card" data-lab="open"><b>Phase 0 test lab</b><span>Build the answer key, scan real deadwax, and score it against the bars.</span></button>
-      <div class="sethead">Sample data</div>
+      <div class="sethead">Samples</div>
       <button class="opt-card" data-dmo="sample"><b>Load the sample collection</b><span>Fills the app with example records, shelves and friends so you can see it full. Your own scans stay.</span></button>
-      <button class="opt-card" data-dmo="fresh"><b>Start fresh</b><span>The empty app a new user sees, and erases the records you scanned on this phone.</span></button>
+      <button class="opt-card" data-dmo="fresh" data-demo-only><b>Back to the real app</b><span>Puts the samples away and shows your own records again.</span></button>
       <div class="sethead">Legal and safety</div>
       <button class="opt-card" data-set="legal"><b>Terms, privacy and takedowns</b><span>What Memory Wax is, what it is not, and how to report a problem.</span></button>
       <button class="ghost" data-set="about">About our data</button>
+      <button class="opt-card danger" data-set="erase" data-clean-only style="margin-top:14px"><b>Erase everything on this phone</b><span>Records, shelves, photos, lab results and tokens. Download a backup first.</span></button>
       <p class="fine2" id="buildTag" style="text-align:center;margin-top:10px"></p>
     </div>
+
+    <div class="sheet" id="sheet-yourdata" role="dialog" aria-label="What’s on this phone"><div id="yourdataBody"></div></div>
 
     <div class="sheet" id="sheet-svc" role="dialog" aria-label="Connect your music"><div id="svcBody"></div></div>
 
@@ -1547,7 +1556,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.10.1 · deadwax passes';
+const BUILD='0.11 · your data';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -1737,6 +1746,7 @@ const MODES={
   cover:{a:'Album only',b:'Pressing unconfirmed',cls:'cover',
     rows:[['Label',L('impulse','Impulse!')],['Catalog','Not confirmed'],['Country','Not confirmed'],['Matrix','<span style="color:var(--gold)">Scan the deadwax to confirm</span>'],['Format','12-inch LP']],
     evid:'Cover art was recognised. Many pressings share this cover, so the etched matrix is needed to name yours.'},
+  import:{a:'Release found',b:'Imported',cls:'cover',rows:[],evid:'This record came in from an import. Its pressing hasn’t been checked yet; scan the label, barcode or deadwax to confirm it.'},
   label:{a:'Release found',b:'Label read',cls:'cover',rows:[],evid:'The label name and catalog number were read from the center label and matched to a release. Several pressings can share them; the deadwax tells them apart.'},
   barcode:{a:'Release found',b:'Pressing unconfirmed',cls:'cover',
     rows:[['Label',L('impulse','Impulse!')],['Catalog','Matched by barcode'],['Country','Not confirmed'],['Matrix','<span style="color:var(--gold)">Scan the deadwax to confirm</span>'],['Format','12-inch LP']],
@@ -1866,7 +1876,7 @@ function fillReport(r,mode){
   const by=$('#repBy'),lead=R.lead||r.a;by.removeAttribute('data-cr');by.removeAttribute('data-crn');
   if(NAMEKEY[lead])by.dataset.cr=NAMEKEY[lead];else{by.dataset.crn=lead;by.dataset.crr='Artist'}
   by.textContent=r.a+' ↗';
-  $('#repSent').textContent=R.sent||(r.real?[r.y?'Released '+r.y:'',r.lab?'on '+r.lab:''].filter(Boolean).join(' ')+(r.y||r.lab?'. ':'')+((r.ev&&r.ev.dw&&r.ev.dw.mx)?'Pressing read from the deadwax. ':(r.ev&&r.ev.label)?'Found from the center label. ':'Found by barcode. ')+'Credits and story aren’t filled in yet.':'');
+  $('#repSent').textContent=R.sent||(r.real?[r.y?'Released '+r.y:'',r.lab?'on '+r.lab:''].filter(Boolean).join(' ')+(r.y||r.lab?'. ':'')+((r.ev&&r.ev.dw&&r.ev.dw.mx)?'Pressing read from the deadwax. ':(r.ev&&r.ev.label)?'Found from the center label. ':(r.ev&&r.ev.bc)?'Found by barcode. ':(r.ev&&r.ev.dg)?'Imported from your Discogs collection. ':(r.ev&&r.ev.csv)?'Imported from your CSV. ':'Added by hand. ')+'Credits and story aren’t filled in yet.':'');
   $('#repPeople').innerHTML=(R.crew||[]).map(([n,role])=>`<li>${nameBtn(n,role)}<span>${role}</span></li>`).join('');
   $('#repIh').hidden=!R.ih;$('#repIhP').innerHTML=(R.ih||'')+'<sup><a href="#s2">2</a></sup>';
   $('#repSound').innerHTML=(R.sound||'')+'<sup><a href="#s2">2</a></sup>';
@@ -1980,7 +1990,7 @@ function renderCollection(){
   g.innerHTML=!items.length?'<p class="empty">Nothing matches. Try another word or filter.</p>':!asList?items.map(x=>tileHTML(x.r)).join(''):
     items.map(({r,why})=>`<div class="lrow"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`).join('');
   const loose=all.filter(r=>r.c!=='confirmed').length;
-  $('#nudge').innerHTML=(!st.account&&all.length?`<button class="nudge n2" data-acctopen="1"><div><b>Saved on this phone only</b><span>Back it up with a free account.</span></div><i>Back up</i></button>`:'')+(loose?`<button class="nudge" data-nudge="1"><div><b>${loose} could be confirmed</b><span>Scan their deadwax to name the exact pressing.</span></div><i>Scan</i></button>`:'');
+  $('#nudge').innerHTML=(!st.account&&all.length?`<button class="nudge n2" data-acctopen="1"><div><b>Saved on this phone only</b><span>${DEMO?'Back it up with a free account.':'Download a backup file.'}</span></div><i>Back up</i></button>`:'')+(loose?`<button class="nudge" data-nudge="1"><div><b>${loose} could be confirmed</b><span>Scan their deadwax to name the exact pressing.</span></div><i>Scan</i></button>`:'');
   renderShelves();renderWants();
   $$('#colTabs button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.t===st.colTab)));
   $('#colTabs').style.setProperty('--i',st.colTab);
@@ -2324,15 +2334,15 @@ function renderPhotos(){
 function openPhoto(){renderPhotos();openSheet('photo')}
 $('#photoIn').addEventListener('change',e=>{
   const id=st.rec||1;st.photos[id]=st.photos[id]||[];
-  [...e.target.files].forEach(f=>st.photos[id].push(URL.createObjectURL(f)));
+  [...e.target.files].forEach(f=>{st.photos[id].push(URL.createObjectURL(f));photoStore(id,f)});
   e.target.value='';renderPhotos();toast('Saved. Only you can see these.');
 });
 function csvCell(v){v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 function exportCSV(){
-  const head=['Title','Artist','Year','Label','Catalog','Confidence','Condition','Paid','Where','Memory','Shelves'];
-  const rows=own().map(r=>{const R=REP[r.id]||{},cp=copyOf(r.id);return [r.t,r.a,r.y,r.lab||'',R.cat||'',stLabel[r.c],cp.cond||'',cp.paid||'',cp.where||'',r.memo||'',st.shelves.filter(x=>x.recs.includes(r.id)).map(x=>x.n).join('; ')]});
+  const head=['Title','Artist','Year','Label','Catalog','Country','Format','Barcode','Matrix','Tier','Condition','Paid','Where','Memory','Shelves','Discogs release','MusicBrainz release'];
+  const rows=own().map(r=>{const R=REP[r.id]||{},cp=copyOf(r.id);return [r.t,r.a,r.y||'',r.lab||'',r.cat||R.cat||'',r.ctry||R.ctry||'',r.fmt||R.fmt||'',r.bc||'',r.mx||'',stLabel[r.c]||'',cp.cond||'',cp.paid||'',cp.where||'',r.memo||'',st.shelves.filter(x=>x.recs.includes(r.id)).map(x=>x.n).join('; '),r.dg?'https://www.discogs.com/release/'+r.dg:'',r.mb?'https://musicbrainz.org/release/'+r.mb:'']});
   const csv=[head,...rows].map(r=>r.map(csvCell).join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='memory-wax-collection.csv';document.body.appendChild(a);a.click();a.remove();
+  downloadBlob(new Blob([csv],{type:'text/csv'}),'memory-wax-collection-'+stamp()+'.csv');
   toast(`Exported ${rows.length} record${rows.length===1?'':'s'}. Your records are always yours.`);
 }
 function parseCSV(t){
@@ -2351,6 +2361,7 @@ $('#csvIn').addEventListener('change',e=>{
   f.text().then(txt=>{
     const rows=parseCSV(txt);e.target.value='';
     if(rows.length<2){toast('That file looks empty. It needs a header row and at least one record.');return}
+    if(!DEMO){csvImportReal(rows);return}
     const h=rows[0].map(x=>x.trim().toLowerCase());
     const ti=h.findIndex(x=>/^(title|album|release)/.test(x)),ai=h.findIndex(x=>/^artist/.test(x));
     if(ti<0){toast('We couldn’t find a Title column. Add a header row with Title and Artist.');return}
@@ -3055,12 +3066,14 @@ function realReport(r,mode){
   $('#pressing').innerHTML=rows.map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
   const steps=[];
   if(e.bc)steps.push(`<b>Barcode</b> ${esc(e.bc.code)} matched a release in MusicBrainz${e.bc.n>1?' ('+e.bc.n+' releases share it)':''}.`);
+  if(e.dg)steps.push(`<b>Imported</b> from your Discogs collection · <a href="https://www.discogs.com/release/${e.dg.id}" target="_blank" rel="noopener">Data provided by Discogs</a>.`);
+  if(e.csv)steps.push('<b>Imported</b> from a CSV, as typed.');
   if(e.label)steps.push(`<b>Center label</b> read as ${esc([e.label.lab,e.label.cat].filter(Boolean).join(' '))}${e.label.side?' · side '+esc(e.label.side):''}, matched by catalog number.`);
-  if(dw&&dw.mx)steps.push(dw.match?`<b>Deadwax</b> read <code>${esc(dw.mx)}</code>: ${dw.match.hit} of ${dw.match.n} parts match the runout listed for ${esc(dw.match.title)}${dw.match.uri?' · <a href="https://www.discogs.com'+esc(dw.match.uri)+'" target="_blank" rel="noopener">Data provided by Discogs</a>':''}.`:`<b>Deadwax</b> read <code>${esc(dw.mx)}</code> over ${dw.frames} frame${dw.frames===1?'':'s'}. Not matched to a database runout yet.`);
+  if(dw&&dw.mx)steps.push(dw.typed?`<b>Matrix</b> <code>${esc(dw.mx)}</code> came from your import, not a scan.`:dw.match?`<b>Deadwax</b> read <code>${esc(dw.mx)}</code>: ${dw.match.hit} of ${dw.match.n} parts match the runout listed for ${esc(dw.match.title)}${dw.match.uri?' · <a href="https://www.discogs.com'+esc(dw.match.uri)+'" target="_blank" rel="noopener">Data provided by Discogs</a>':''}.`:`<b>Deadwax</b> read <code>${esc(dw.mx)}</code> over ${dw.frames} frame${dw.frames===1?'':'s'}. Not matched to a database runout yet.`);
   if(dw&&dw.gloss&&dw.gloss.length)steps.push('<b>Marks:</b> '+dw.gloss.map(esc).join(' '));
   if(!steps.length)steps.push('Added without a scan.');
   $('#evidIn').innerHTML=steps.join('<br>');
-  const b={confirmed:'Matrix match',likely:'Matrix read',label:'Label read',barcode:'Barcode match'}[mode];if(b)$('#sealB').textContent=b;
+  const b={confirmed:'Matrix match',likely:'Matrix read',label:'Label read',barcode:'Barcode match',import:'Imported'}[mode];if(b)$('#sealB').textContent=b;
 }
 /* ---------- identify engine: barcode, label and deadwax, stacked into one answer with evidence ----------
    Design (from the research round):
@@ -3203,7 +3216,7 @@ const RUNOUT_GLOSS=[
 function decodeRunout(mx){const u=canon(mx),out=[];RUNOUT_GLOSS.forEach(([re,txt])=>{if(re.test(u)&&!out.includes(txt))out.push(txt)});return out}
 
 /* ---- the flows ---- */
-function evMode(r){const e=r.ev||{};if(e.dw&&e.dw.match&&e.dw.match.sc>=.8)return 'confirmed';if(e.dw&&e.dw.mx)return 'likely';return e.label?'label':'barcode'}
+function evMode(r){const e=r.ev||{};if(e.dw&&e.dw.match&&e.dw.match.sc>=.8)return 'confirmed';if(e.dw&&e.dw.mx)return 'likely';if(e.label)return 'label';if(e.bc)return 'barcode';return (e.dg||e.csv)?'import':'barcode'}
 function addRel(hit,ev){
   const ex=RECS.find(r=>r.real&&r.mb===hit.mbid);let id;
   if(ex){id=ex.id;st.owned.add(id);ex.ev={...(ex.ev||{}),...ev};if(!ex.cat&&hit.cat)ex.cat=hit.cat;if(!ex.lab&&hit.lab)ex.lab=hit.lab;if(!ex.ctry&&hit.ctry)ex.ctry=hit.ctry}
@@ -3238,7 +3251,7 @@ async function startDeadwaxScan(){
     await torch(false);if(st.scanGen!==gen)return;if(!frames.length){stopReal();return}
     /* known runouts for the candidate pressings become word hints for the reader */
     let cands=[],known=[],dgErr=null;
-    if(dgTok()&&ctx&&ctx.cat){try{cands=await dgCandidates(ctx.cat,ctx.lab);for(const c of cands.slice(0,4)){const o=await dgRunouts(c.id);c.ids=o.ids;c.uri=o.uri||c.uri;c.year=c.year||o.year;c.country=c.country||o.country;known=known.concat(o.ids.map(i=>i.v));await sleepMs(1100)}}catch(e){dgErr=e}}
+    if(dgTok()&&ctx&&(ctx.cat||ctx.dg)){try{cands=ctx.cat?await dgCandidates(ctx.cat,ctx.lab):[];if(ctx.dg&&!cands.some(c=>c.id===ctx.dg))cands.unshift({id:ctx.dg,title:ctx.a+' - '+ctx.t,catno:ctx.cat,year:ctx.y,country:ctx.ctry||'',uri:'/release/'+ctx.dg});for(const c of cands.slice(0,4)){const o=await dgRunouts(c.id);c.ids=o.ids;c.uri=o.uri||c.uri;c.year=c.year||o.year;c.country=c.country||o.country;known=known.concat(o.ids.map(i=>i.v));await sleepMs(1100)}}catch(e){dgErr=e}}
     const words=[...new Set(known.flatMap(v=>canon(v).split(' ')).filter(t=>t.length>=3))].slice(0,200);
     const reads=[];let fi=0;
     for(const f of frames){for(const v of [f,...labVariants(f).slice(0,1)]){const ls=await ocrFrame(v,{words,minHeight:.008});ls.forEach(l=>reads.push({text:l.text,conf:l.conf,frame:fi,x:l.box?l.box.x:0}));if(st.scanGen!==gen)return}fi++;setPrompt(`Reading ${fi} of ${frames.length}…`)}
@@ -3622,7 +3635,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr);return}
@@ -3633,7 +3646,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.dchip){dealSend(t.dataset.dchip);return}
   if(t.dataset.notes){openNotes();return}
   if(t.dataset.photo){openPhoto();return}
-  if(t.dataset.pdel!==undefined){(st.photos[st.rec||1]||[]).splice(+t.dataset.pdel,1);renderPhotos();return}
+  if(t.dataset.pdel!==undefined){(st.photos[st.rec||1]||[]).splice(+t.dataset.pdel,1);photoDrop(st.rec||1,+t.dataset.pdel);renderPhotos();return}
   if(t.dataset.copy){copyText(st.shareUrl||'https://memorywax.app',t.dataset.copy==='recap'?'Link copied. Anyone can open this recap, even without the app.':t.dataset.copy==='pl'?'Link copied. Friends can play it in their own Spotify or Apple Music.':t.dataset.copy==='sess'?'Link copied. Anyone can open the session page, even without the app.':undefined);return}
   if(t.dataset.nshare){nativeShare(t.dataset.nshare);return}
   if(t.dataset.cardsave){cardBlob().then(saveBlob);return}
@@ -3672,9 +3685,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.nroom){openRoom(t.dataset.nroom);return}
   if(t.dataset.dmo){
     if(t.dataset.dmo==='sample'){try{localStorage.setItem('mw_demo','1')}catch(e){}closeSheets();location.reload();return}
-    if(!confirm('Start fresh? This erases the records you scanned on this phone and shows the empty app.'))return;
-    try{localStorage.removeItem('mw_demo');localStorage.removeItem('mw_real_recs')}catch(e){}
-    for(let i=RECS.length-1;i>=0;i--)if(RECS[i].real)RECS.splice(i,1);
+    try{localStorage.removeItem('mw_demo')}catch(e){}
     closeSheets();location.reload();return}
   if(t.dataset.lab){labDo(t.dataset.lab);return}
   if(t.dataset.foundadd){addFound();return}
@@ -3686,6 +3697,8 @@ document.addEventListener('click',e=>{
   if(t.dataset.catmanual){openCatEntry();return}
   if(t.dataset.catlook){catLook();return}
   if(t.dataset.dgtoken){openDgToken();return}
+  if(t.dataset.imprun){dgImport();return}
+  if(t.dataset.impcancel){IMP.cancel=true;return}
   if(t.dataset.dgsave){const v=($('#dgIn').value||'').trim();if(/^[A-Za-z0-9]{20,}$/.test(v)){LAB.discogs=v;labSave();closeSheets();toast('Token saved on this phone.')}else toast('That doesn’t look like a Discogs personal access token.');return}
   if(t.dataset.dgclear){LAB.discogs='';labSave();closeSheets();toast('Token removed.');return}
   if(t.dataset.foundno){closeSheets();return}
@@ -3747,7 +3760,7 @@ document.addEventListener('click',e=>{
     if(t.dataset.acct==='later'){pendAct=null;closeSheets();return}
     st.account=true;closeSheets();renderCollection();toast('You’re in. Everything you’ve scanned is backed up.');
     const f=pendAct;pendAct=null;if(f)setTimeout(f,450);return}
-  if(t.dataset.acctopen){gate(()=>{});return}
+  if(t.dataset.acctopen){if(DEMO)gate(()=>{});else renderYourData().then(()=>openSheet('yourdata'));return}
   if(t.dataset.nudge){closeSheets();setScanMode(DEMO?'deadwax':'barcode');go('scan');return}
   if(t.dataset.segtog){const id=+t.dataset.segtog;st.segOpen.has(id)?st.segOpen.delete(id):st.segOpen.add(id);renderCollection();return}
   if(t.dataset.presh){
@@ -3794,12 +3807,16 @@ document.addEventListener('click',e=>{
     else if(k==='legal'){closeSheets();openSheet('legal')}
     else if(k==='svc'){closeSheets();renderSvc();openSheet('svc')}
     else if(k==='cam'){closeSheets();st.camAsked=true;if(camStream){st.camPref=false;camOff();toast('Back to the illustration.')}else openSheet('cam')}
-    else if(k==='import'){if(DEMO)gate(()=>openImport());else toast('Discogs import isn’t connected yet. Add records by scanning their barcodes.')}
-    else if(k==='csv'){if(DEMO)$('#csvIn').click();else toast('CSV import isn’t built yet. Add records by scanning their barcodes.')}
+    else if(k==='import'){if(DEMO)gate(()=>openImport());else if(!dgTok()){openDgToken();toast('Add your Discogs token first.')}else{IMP.done=null;IMP.msg='';IMP.pct=0;renderImport();closeSheets();openSheet('import')}}
+    else if(k==='csv')$('#csvIn').click();
+    else if(k==='backup')backupDownload();
+    else if(k==='restore')backupRestore();
+    else if(k==='erase')eraseAll();
+    else if(k==='yourdata'){closeSheets();renderYourData().then(()=>openSheet('yourdata'))}
     else if(k==='export')exportCSV();
     else if(k==='batchview'){closeSheets();st.queue=[];updatePills();go('collection')}
     else if(k==='panic'){st.shelves.forEach(x=>x.v=0);if(st.spin)st.spin.v=0;closeSheets();renderCollection();toast('Sharing paused. Every shelf is Just me and share links are off. Turn sharing back on shelf by shelf.')}
-    else if(k==='sync'||k==='big'||k==='motion'||k==='loc'){prefs[k]=!prefs[k];applyPrefs();renderSettings();if(k==='sync')toast(prefs.sync?'Discogs sync on. Changes flow both ways.':'Discogs sync off.');if(k==='loc')toast(prefs.loc?'We’ll remember where and when you scan, for you only.':'We keep the date only.')}
+    else if(k==='sync'||k==='big'||k==='motion'||k==='loc'){prefs[k]=!prefs[k];applyPrefs();savePrefs();renderSettings();if(k==='sync')toast(prefs.sync?'Discogs sync on. Changes flow both ways.':'Discogs sync off.');if(k==='loc')toast(prefs.loc?'We’ll remember where and when you scan, for you only.':'We keep the date only.')}
     return;
   }
   if(t.closest('.shelf')&&t.dataset.v!==undefined){const s=st.shelves.find(x=>x.id===+t.closest('.shelf').dataset.sid);s.v=+t.dataset.v;renderCollection();toast(`${s.n}: ${VNAME[s.v]}. ${VNOTE[s.v]}`);return}
@@ -3831,7 +3848,7 @@ $('#offline').addEventListener('change',e=>{
 });
 $('#own1').addEventListener('change',e=>{if(e.target.checked)st.owned.add(1);else st.owned.delete(1);renderCollection()});
 function fullReset(empty){
-  initState(empty);restoreReal();setScanMode(empty?'barcode':'deadwax');
+  initState(empty);restoreReal();restoreState();setScanMode(empty?'barcode':'deadwax');
   $('#batchBtn').setAttribute('aria-pressed','false');$('#offline').checked=false;$('#own1').checked=false;$('#search').value='';
   $$('#cond button').forEach(b=>b.setAttribute('aria-pressed','false'));$('#condNote').textContent='Tap a grade to see what it means.';$('#mcPaid').value='';$('#mcWhere').value='';$('#mcMemo').hidden=true;
   updatePills();renderCollection();
@@ -3840,9 +3857,176 @@ function fullReset(empty){
 }
 $('#restart').addEventListener('click',()=>{try{localStorage.setItem('mw_demo','1')}catch(e){}fullReset(false)});
 $('#newUser').addEventListener('click',()=>{try{localStorage.removeItem('mw_demo')}catch(e){}fullReset(true)});
-if(!DEMO){const sr=document.querySelector('#sheet-settings [data-set="sync"]');if(sr)sr.closest('.trow').hidden=true;
-  const im=document.querySelector('#sheet-settings [data-set="import"] span'),cv=document.querySelector('#sheet-settings [data-set="csv"] span');
-  if(im)im.textContent='Not connected yet in this prototype.';if(cv)cv.textContent='Not built yet in this prototype.'}
+$$(DEMO?'[data-clean-only]':'[data-demo-only]').forEach(e=>e.hidden=true);
+/* ---------- your data: what a real user keeps is saved on this phone, backed up as a file, imported from Discogs or a CSV, and erasable ----------
+   No account exists yet, so nothing here pretends to sync. Everything is explicit: a file you download, a file you restore, a token you pasted. */
+const DATA_KEY='mw_state',PREF_KEY='mw_prefs';
+const realIds=()=>new Set(RECS.filter(r=>r.real).map(r=>r.id));
+const IMP={run:false,cancel:false,msg:'',done:null};
+function snapshot(){
+  const R=realIds();
+  return {app:'memory-wax',v:1,at:Date.now(),
+    recs:RECS.filter(r=>r.real),
+    owned:[...st.owned].filter(id=>R.has(id)),
+    copies:Object.fromEntries(Object.entries(st.copies).filter(([id])=>R.has(+id))),
+    shelves:st.shelves.map(s=>({...s,recs:s.recs.filter(id=>R.has(id))})),nextShelf:st.nextShelf,
+    wants:st.wants,playlists:(st.playlists||[]).map(p=>({...p,items:(p.items||[]).filter(i=>R.has(i.rec))})),
+    sessions:st.sessions,nextSess:st.nextSess,series:st.series,spin:st.spin&&R.has(st.spin.id)?st.spin:null,
+    photoKeys:st.photoKeys||{},lastImport:st.lastImport||null};
+}
+let lastSnap='';
+function saveState(){if(DEMO)return;try{const s=JSON.stringify(snapshot());if(s!==lastSnap){localStorage.setItem(DATA_KEY,s);lastSnap=s}}catch(e){}}
+function applyState(d){
+  if(!d||d.app!=='memory-wax')return false;
+  (d.recs||[]).forEach(r=>{const i=RECS.findIndex(x=>x.id===r.id);if(i>=0)RECS[i]=r;else RECS.push(r)});
+  (d.owned||[]).forEach(id=>st.owned.add(id));
+  Object.assign(st.copies,d.copies||{});
+  if(d.shelves&&d.shelves.length){st.shelves=d.shelves;st.nextShelf=Math.max(d.nextShelf||1,...d.shelves.map(s=>s.id+1))}
+  if(d.wants)st.wants=d.wants;if(d.playlists)st.playlists=d.playlists;
+  if(d.sessions){st.sessions=d.sessions;st.nextSess=d.nextSess||st.sessions.length+1}
+  if(d.series)st.series=d.series;if(d.spin)st.spin=d.spin;
+  st.photoKeys=d.photoKeys||{};st.lastImport=d.lastImport||null;
+  loadPhotos();return true;
+}
+function restoreState(){if(DEMO)return;try{const d=JSON.parse(localStorage.getItem(DATA_KEY)||'null');if(d){applyState(d);lastSnap=JSON.stringify(snapshot())}}catch(e){}}
+/* photos of your copy: blobs in IndexedDB (same store the lab uses), keys in the saved state */
+async function photoStore(id,file){try{const k='p'+id+'-'+Date.now()+Math.random().toString(36).slice(2,6);await imgPut(k,file);st.photoKeys=st.photoKeys||{};(st.photoKeys[id]=st.photoKeys[id]||[]).push(k);saveState()}catch(e){}}
+async function photoDrop(id,i){try{const ks=(st.photoKeys||{})[id]||[];const k=ks.splice(i,1)[0];if(k){const d=await labDB();d.transaction('img','readwrite').objectStore('img').delete(k)}saveState()}catch(e){}}
+async function loadPhotos(){try{for(const [id,ks] of Object.entries(st.photoKeys||{})){st.photos[id]=[];for(const k of ks){const b=await imgGet(k);if(b)st.photos[id].push(URL.createObjectURL(b))}}}catch(e){}}
+async function photoCount(){let n=0;Object.values(st.photoKeys||{}).forEach(a=>n+=a.length);return n}
+/* preferences */
+function loadPrefs(){try{Object.assign(prefs,JSON.parse(localStorage.getItem(PREF_KEY)||'{}'))}catch(e){}}
+function savePrefs(){try{localStorage.setItem(PREF_KEY,JSON.stringify({big:prefs.big,motion:prefs.motion,loc:prefs.loc}))}catch(e){}}
+
+/* ---- backup file ---- */
+const stamp=()=>new Date().toISOString().slice(0,10);
+function downloadBlob(b,name){
+  const f=new File([b],name,{type:b.type});
+  if(navigator.canShare&&navigator.canShare({files:[f]})&&/iPhone|iPad|Android/.test(navigator.userAgent)){navigator.share({files:[f],title:name}).catch(()=>{});return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();
+}
+function backupDownload(){
+  const d=snapshot();d.lab=LAB;d.prefs={big:prefs.big,motion:prefs.motion,loc:prefs.loc};
+  downloadBlob(new Blob([JSON.stringify(d)],{type:'application/json'}),'memory-wax-backup-'+stamp()+'.json');
+  st.lastBackup=Date.now();try{localStorage.setItem('mw_backup_at',String(st.lastBackup))}catch(e){}
+  toast(`Backup ready: ${d.recs.length} record${d.recs.length===1?'':'s'}, shelves, grades, prices and photos list. Keep it somewhere safe.`);
+}
+function pickFile(accept){return new Promise(ok=>{let i=$('#anyFile');if(!i){i=document.createElement('input');i.type='file';i.id='anyFile';i.style.display='none';document.body.appendChild(i)}i.accept=accept;i.value='';i.onchange=()=>ok(i.files&&i.files[0]||null);i.click()})}
+async function backupRestore(){
+  const f=await pickFile('.json,application/json');if(!f)return;
+  let d;try{d=JSON.parse(await f.text())}catch(e){toast('That file isn’t a Memory Wax backup.');return}
+  if(!d||d.app!=='memory-wax'){toast('That file isn’t a Memory Wax backup.');return}
+  const n=(d.recs||[]).length;
+  if(!confirm(`Restore ${n} record${n===1?'':'s'} from ${new Date(d.at||0).toLocaleDateString()}? This replaces what is on this phone now.`))return;
+  for(let i=RECS.length-1;i>=0;i--)if(RECS[i].real)RECS.splice(i,1);
+  initState(true);applyState(d);if(d.lab){LAB=d.lab;labSave()}if(d.prefs){Object.assign(prefs,d.prefs);applyPrefs();savePrefs()}
+  saveReal();saveState();closeSheets();renderCollection();go('collection');toast(`Restored ${n} record${n===1?'':'s'}.`);
+}
+/* ---- erase ---- */
+async function eraseAll(){
+  if(!confirm('Erase everything Memory Wax keeps on this phone? Records, shelves, grades, prices, photos, lab results and tokens. Download a backup first if you want any of it back.'))return;
+  try{['mw_state','mw_real_recs','mw_prefs','mw_lab','mw_backup_at','mw_demo'].forEach(k=>localStorage.removeItem(k));localStorage.removeItem('mw_rt')}catch(e){}
+  try{indexedDB.deleteDatabase('mwlab')}catch(e){}
+  location.reload();
+}
+
+/* ---- Discogs collection import (your own token, your own collection) ---- */
+const dgClean=s=>String(s||'').replace(/\s\(\d+\)$/,'');
+const DG_COND={'Mint (M)':'M','Near Mint (NM or M-)':'NM','Very Good Plus (VG+)':'VG+','Very Good (VG)':'VG','Good Plus (G+)':'G+','Good (G)':'G','Fair (F)':'F','Poor (P)':'P'};
+function dgRecord(x){
+  const b=x.basic_information||{},a0=norm(dgClean(((b.artists||[])[0]||{}).name||''));
+  /* same Discogs release, or a record added by scan/CSV with the same title and lead artist: merge rather than duplicate */
+  const ex=RECS.find(r=>r.real&&r.dg===b.id)||RECS.find(r=>r.real&&!r.dg&&norm(r.t)===norm(b.title||'')&&(!a0||norm(r.a).includes(a0)));
+  const lab=(b.labels||[])[0]||{},fmt=(b.formats||[]).map(f=>[f.name,...(f.descriptions||[])].join(' ')).join(', ');
+  const rec=ex||{id:Math.max(100,...RECS.map(r=>r.id))+1,ord:Math.max(0,...RECS.map(r=>r.ord||0))+1,cred:[],real:true,c:'album',g:(b.genres||[])[0]||''};
+  Object.assign(rec,{t:b.title||'Untitled',a:(b.artists||[]).map(a=>dgClean(a.name)+(a.join&&a.join!==','?' '+a.join+' ':a.join?', ':'')).join('').replace(/[\s,]+$/,'')||'Unknown artist',y:b.year||rec.y||0,m:rec.id%4,lab:dgClean(lab.name),cat:lab.catno||'',fmt,dg:b.id,dgm:b.master_id||0,cover:b.cover_image||b.thumb||rec.cover||'',src:'discogs',
+    ev:{...(rec.ev||{}),dg:{id:b.id,inst:x.instance_id,folder:x.folder_id,at:Date.now()}}});
+  if(!ex)RECS.push(rec);st.owned.add(rec.id);
+  const cond=(x.notes||[]).find(n=>n.field_id===1),note=(x.notes||[]).find(n=>n.field_id===3);
+  if(cond&&DG_COND[cond.value])copyOf(rec.id).cond=DG_COND[cond.value];
+  if(note&&note.value&&!rec.memo)rec.memo=note.value;
+  return !ex;
+}
+function renderImport(){
+  const B=$('#importBody');
+  B.innerHTML=`<h4 class="disp">Import from Discogs</h4><p class="sub">Your collection, from your own Discogs account. Keep using the app while it runs.</p>
+   <div class="pbar"><i id="impBar" style="width:${IMP.pct||0}%"></i></div><p class="fine2" id="impTxt" style="margin:0 0 10px">${esc(IMP.msg||'Ready.')}</p>
+   ${IMP.run?'<button class="ghost" data-impcancel="1">Stop</button>':IMP.done?`<button class="go press" data-set="batchview">View in Collection</button>`:`<button class="go press" data-imprun="1">${st.lastImport?'Import again':'Start the import'}</button>`}
+   <p class="fine2" style="margin-top:10px">${st.lastImport?'Last import '+new Date(st.lastImport).toLocaleString()+'. Importing again adds new records and updates the rest; nothing is deleted. ':''}Nothing is written to Discogs. Data provided by Discogs. This app uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs.</p>`;
+}
+async function dgImport(){
+  if(IMP.run)return;IMP.run=true;IMP.cancel=false;IMP.done=null;IMP.pct=0;IMP.msg='Checking the token…';renderImport();
+  let added=0,updated=0,total=0;
+  try{
+    const me=await dgFetch('https://api.discogs.com/oauth/identity');
+    let page=1,pages=1;
+    do{
+      IMP.msg=`Reading ${me.username}’s collection, page ${page}${pages>1?' of '+pages:''}…`;renderImport();
+      const j=await dgFetch(`https://api.discogs.com/users/${encodeURIComponent(me.username)}/collection/folders/0/releases?per_page=100&page=${page}`);
+      pages=(j.pagination||{}).pages||1;total=(j.pagination||{}).items||0;
+      (j.releases||[]).forEach(x=>{if(dgRecord(x))added++;else updated++});
+      IMP.pct=Math.round(100*page/pages);saveReal();saveState();renderCollection();
+      page++;if(page<=pages&&!IMP.cancel)await sleepMs(1100);
+    }while(page<=pages&&!IMP.cancel);
+    st.lastImport=Date.now();IMP.done={added,updated};IMP.msg=`${IMP.cancel?'Stopped. ':'Done. '}${added} added · ${updated} already here${total?' · '+total+' in your Discogs collection':''}.`;
+    toast(`Discogs import: ${added} added.`);
+  }catch(e){IMP.msg=e.message;if(/token/i.test(e.message))IMP.msg+=' Check it in Settings → Discogs token.'}
+  IMP.run=false;saveReal();saveState();renderImport();renderCollection();
+}
+
+/* ---- CSV import: rows become records as typed; confirm any of them later with a scan ---- */
+function csvImportReal(rows){
+  const h=rows[0].map(x=>x.trim().toLowerCase()),col=re=>h.findIndex(x=>re.test(x));
+  const C={t:col(/^(title|album|release)/),a:col(/^artist/),y:col(/^(year|released|date)/),lab:col(/^label/),cat:col(/^(cat|catalog)/),ctry:col(/^country/),fmt:col(/^format/),bc:col(/^(barcode|upc|ean)/),mx:col(/^(matrix|runout|deadwax)/),cond:col(/^(condition|media condition|grade)/),paid:col(/^(paid|price)/),where:col(/^(where|bought|shop|store)/),memo:col(/^(memory|notes?|comment)/)};
+  if(C.t<0){toast('We couldn’t find a Title column. Add a header row with Title and Artist.');return}
+  const g=(r,k)=>C[k]>=0?String(r[C[k]]||'').trim():'';
+  let added=0,had=0;
+  rows.slice(1).forEach(r=>{
+    const t=g(r,'t');if(!t)return;const a=g(r,'a');
+    const ex=RECS.find(x=>x.real&&norm(x.t)===norm(t)&&(!a||norm(x.a)===norm(a)));
+    if(ex){had++;st.owned.add(ex.id);return}
+    const id=Math.max(100,...RECS.map(x=>x.id))+1,ord=Math.max(0,...RECS.map(x=>x.ord||0))+1,mx=g(r,'mx');
+    const rec={id,t,a:a||'Unknown artist',y:+(g(r,'y').match(/\d{4}/)||[0])[0]||0,g:'',c:mx?'likely':'album',m:id%4,ord,lab:g(r,'lab'),cat:g(r,'cat'),ctry:g(r,'ctry'),fmt:g(r,'fmt'),cred:[],real:true,src:'csv',bc:g(r,'bc')||undefined,mx:mx||undefined,ev:{csv:{at:Date.now()},...(mx?{dw:{mx,conf:0,frames:0,n:0,parts:[],match:null,gloss:decodeRunout(mx),typed:true}}:{})}};
+    if(rec.bc)rec.ev.bc={code:rec.bc,n:1,typed:true};
+    const cond=g(r,'cond').toUpperCase().replace(/\s/g,''),cp=copyOf(id);if(/^(M|NM|VG\+|VG|G\+|G|F|P)$/.test(cond))cp.cond=cond;if(g(r,'paid'))cp.paid=g(r,'paid');if(g(r,'where'))cp.where=g(r,'where');
+    if(g(r,'memo'))rec.memo=g(r,'memo');
+    RECS.push(rec);st.owned.add(id);added++;
+  });
+  saveReal();saveState();renderCollection();
+  $('#importBody').innerHTML=`<h4 class="disp">CSV import done</h4><p class="sub">${added} added · ${had} already here</p>
+   <p class="fine2">Rows came in exactly as typed. Any of them can be confirmed later: open the record, then scan its label, barcode or deadwax.</p>
+   <button class="go press" data-set="batchview">View in Collection</button>`;
+  openSheet('import');
+}
+
+/* ---- the "your data" panel ---- */
+async function renderYourData(){
+  const R=RECS.filter(r=>r.real&&st.owned.has(r.id)),conf=R.filter(r=>r.c==='confirmed').length,photos=await photoCount();
+  const kb=(()=>{try{let n=0;for(const k in localStorage)if(k.startsWith('mw_'))n+=(localStorage.getItem(k)||'').length;return Math.round(n/1024)}catch(e){return 0}})();
+  const back=(()=>{try{const t=+localStorage.getItem('mw_backup_at');return t?new Date(t).toLocaleString():''}catch(e){return ''}})();
+  const rt=(()=>{try{return !!localStorage.getItem('mw_rt')}catch(e){return false}})();
+  $('#yourdataBody').innerHTML=`<h4 class="disp">What’s on this phone</h4><p class="sub">Everything Memory Wax keeps, and where it goes.</p>
+   <div class="kvlist">
+    <div><b>${R.length}</b><span>record${R.length===1?'':'s'} · ${conf} with the pressing confirmed</span></div>
+    <div><b>${st.shelves.length}</b><span>shel${st.shelves.length===1?'f':'ves'} · ${st.wants.length} in your Dream Crate</span></div>
+    <div><b>${photos}</b><span>photo${photos===1?'':'s'} of your copies, stored only here</span></div>
+    <div><b>${(LAB.trials||[]).length}</b><span>Phase 0 lab trial${(LAB.trials||[]).length===1?'':'s'}</span></div>
+    <div><b>${kb} KB</b><span>saved in this browser${back?' · last backup '+esc(back):' · never backed up'}</span></div>
+   </div>
+   <div class="sethead">What leaves this phone</div>
+   <p class="fine2" style="margin:0 0 6px">Only when you use the feature, and only what the lookup needs:</p>
+   <ul class="plain">
+    <li><b>MusicBrainz</b> and the <b>Cover Art Archive</b>: the barcode or catalog number you scan, to find the release and its cover.</li>
+    <li><b>Discogs</b>${dgTok()?' (token set)':' (no token)'}: catalog numbers and your collection list, with your token.</li>
+    <li><b>Supabase</b>${rt?' (connected)':' (not set up)'}: live chat messages in a listening room, with the keys you pasted.</li>
+    <li><b>Spotify or Apple Music</b>: only if you connect them, to play or save playlists.</li>
+   </ul>
+   <p class="fine2">No account exists yet, so nothing syncs by itself. Your backup is a file you keep. Prices and places you paid never leave the phone.</p>
+   <button class="go press" data-set="backup">Download a backup</button>
+   <button class="ghost" data-set="restore">Restore a backup</button>`;
+}
+
+loadPrefs();applyPrefs();renderSettings();restoreState();renderCollection();setInterval(saveState,2500);addEventListener('pagehide',saveState);
 {const b=$('#buildTag');if(b)b.textContent='Memory Wax prototype '+BUILD+(DEMO?' · sample data on':'');}
 renderCollection();updatePills();
 </script>
