@@ -1616,7 +1616,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.23.0 · learn';
+const BUILD='0.23.1 · learn';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2009,7 +2009,7 @@ $('#addOwn').addEventListener('click',()=>{st.owned.add(st.rec);$('#notown').hid
 const typeOf=role=>/producer/i.test(role)?'Producer':/engineer/i.test(role)?'Engineer':/studio/i.test(role)?'Studio':/label/i.test(role)?'Label':'Musician';
 /* ---------- short bios: Wikipedia (CC BY-SA), reached through MusicBrainz's own link to the person, or a careful search ----------
    A bio is shown only when the page found is clearly a musician of some kind. When in doubt it shows nothing rather than the wrong person. */
-const MUSICY=/music|singer|vocalist|guitar|bass|drum|piano|saxophon|trumpet|trombone|clarinet|violin|cello|flute|keyboard|organ|percuss|producer|composer|songwriter|conductor|arranger|rapper|\bDJ\b|\bband\b|group|duo|trio|quartet|orchestra|engineer|bandleader|multi-instrumentalist|harmonica|banjo|lyricist|choir/i;
+const MUSICY=/music|jazz|pianis|bassis|drummer|trombonis|trumpeter|guitaris|violinis|cellis|flautis|organis|saxophonis|vocalis|blues|\bsoul\b|funk|hip.hop|singer|vocalist|guitar|bass|drum|piano|saxophon|trumpet|trombone|clarinet|violin|cello|flute|keyboard|organ|percuss|producer|composer|songwriter|conductor|arranger|rapper|\bDJ\b|\bband\b|group|duo|trio|quartet|orchestra|engineer|bandleader|multi-instrumentalist|harmonica|banjo|lyricist|choir/i;
 const BIOC=new Map();
 async function wikiSummary(title){
   const r=await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(String(title).replace(/ /g,'_'))+'?redirect=true');
@@ -2025,9 +2025,11 @@ async function wikiViaMB(mbid){
   return title?wikiSummary(title):null;
 }
 async function wikiSearch(name){
+  /* the page with exactly this name first (so Kenny Drew is the father, not Kenny Drew Jr.), then the search, exact titles only */
+  try{const d=await wikiSummary(name);if(d&&MUSICY.test(d.desc+' '+d.text.slice(0,300)))return d}catch(e){}
   const j=await (await fetch('https://en.wikipedia.org/w/rest.php/v1/search/page?q='+encodeURIComponent(name)+'&limit=6')).json();
   for(const p of (j.pages||[])){
-    if(simText(noParen(p.title),name)<.85||!MUSICY.test((p.description||'')+' '+(p.excerpt||'')))continue;
+    if(nz(noParen(p.title))!==nz(name)||!MUSICY.test((p.description||'')+' '+(p.excerpt||'')))continue;
     const s=await wikiSummary(p.title);if(s&&MUSICY.test(s.desc+' '+s.text.slice(0,300)))return s;
   }
   return null;
@@ -2054,6 +2056,7 @@ async function fillBio(name,mbid){
   let b=null;try{b=await bioFor(name,mbid)}catch(e){}
   const h=$('#creditBody h4'),e2=$('#cbio');if(!e2||!h||h.textContent!==name)return;
   e2.innerHTML=b?`${b.desc?`<div class="biodesc">${esc(b.desc)}</div>`:''}<p class="biotext">${esc(b.short)}</p><p class="fine2">From <a href="${esc(b.url)}" target="_blank" rel="noopener">Wikipedia</a> (<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>), shortened.</p>`:'';
+  if(b){const sub=$('#csub'),sm=$('#csample');if(sub&&sub.dataset.sample)sub.hidden=true;if(sm)sm.hidden=true}
 }
 function buildCredit(c){
   const owns=t=>RECS.some(r=>r.t===t&&st.owned.has(r.id));
@@ -2066,7 +2069,7 @@ function buildCredit(c){
   $('#creditBody').innerHTML=`<span class="crtype">${c.type}</span><h4 class="disp">${esc(c.name)}</h4>
     ${meta?`<div class="crmeta">${esc(meta)}</div>`:''}
     <div class="crrole">${esc(c.role)}</div>
-    <p class="sub">${esc(P.known||c.blurb)}</p>
+    <p class="sub" id="csub"${P.known?' data-sample="1"':''}>${esc(P.known||c.blurb)}</p>
     <div id="cbio"></div>
     ${(c.alts||[]).length?`<p class="fine2" style="margin:0 0 6px">Showing the most-credited ${esc(c.name)}. Not them?</p><div class="opts" style="margin:0 0 8px">${c.alts.map(a=>`<button class="pb" data-pidpick="${a.id}">${a.releases} credit${a.releases===1?'':'s'}</button>`).join('')}</div>`:''}
     <div class="pathh">Albums and sessions · ${path.length}</div>
@@ -2074,9 +2077,9 @@ function buildCredit(c){
       const want=st.wants.some(w=>w.t===p[0]);
       return `<li class="${o?'own':''}">${rr?`<button data-open="${rr.id}">${inner}</button>`:`${inner}<button class="dcbtn" data-dc="${esc(p[0])}|${esc(p[3]||c.name)}" aria-pressed="${want}">${want?'In your Dream Crate':'+ Dream Crate'}</button>`}</li>`}).join('')}</ul>
     ${al.length?`<div class="pathh">Played alongside</div><div class="opts" style="margin-top:8px">${al.map(x=>`<button class="pb" aria-pressed="true" data-crn="${esc(x)}" data-crr="">${esc(x)}</button>`).join('')}</div>`:''}
-    <p class="fine" style="margin-top:12px;font-weight:600">${P.known?`Sample bio, written for this prototype and kept short. In the real product bios and credits come from sourced data (Wikipedia, MusicBrainz, Discogs), with attribution and links. `:c.src==='discogs'?`Credits from Discogs (open data). Data provided by Discogs. `:`Credits from MusicBrainz (open data). `}You own ${n} of ${path.length} here.</p>`;
+    <p class="fine" style="margin-top:12px;font-weight:600">${P.known?`<span id="csample">Sample bio, written for this prototype and kept short. In the real product bios and credits come from sourced data (Wikipedia, MusicBrainz, Discogs), with attribution and links. </span>`:c.src==='discogs'?`Credits from Discogs (open data). Data provided by Discogs. `:`Credits from MusicBrainz (open data). `}You own ${n} of ${path.length} here.</p>`;
   openSheet('credit');
-  if(!P.known&&!DEMO)fillBio(c.name,c.mbid);
+  fillBio(c.name,c.mbid);
 }
 function openCredit(key){const c=CR[key];if(c)buildCredit(c)}
 function openCreditName(name,role,pid,mbid){
@@ -2318,6 +2321,7 @@ function startQueue(items,src,opt){
    Plays with the Apple Music account already on the phone, so there is no second sign-in. While a track plays, the screen shows
    who played on it, from the credits we already have, and every name opens that person's page. */
 const npOK=()=>{try{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.nativePromise&&(C.PluginHeaders||[]).some(h=>h.name==='AppleMusic'&&(h.methods||[]).some(m=>m.name==='play')))}catch(e){return false}};
+const npWhy=()=>{try{const C=window.Capacitor;if(!(C&&C.isNativePlatform&&C.isNativePlatform()))return 'This is the web page, not the Memory Wax app. Apple’s embedded player cannot share your Apple sign-in here, so full songs only play in the app (or tap “Open in the Apple Music app” below).';return 'This build of the app has no built-in Apple Music player (update the app).'}catch(e){return ''}};
 const NP={rec:null,info:null,err:'',s:null,timer:0};
 const npCall=(m,a)=>Capacitor.nativePromise('AppleMusic',m,a||{});
 const fmtDur=x=>{x=Math.round(+x||0);return x?Math.floor(x/60)+':'+String(x%60).padStart(2,'0'):''};
@@ -2401,7 +2405,7 @@ function renderListen(){
      :`<p style="font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.15;margin:14px 0 4px">${finding?`Finding ${esc(r.t)} in ${v.n}…`:`We couldn’t find ${esc(r.t)} in ${v.n}.`}</p>`}
     ${multi?`<div class="lctl" style="margin-top:12px;justify-content:space-between"><button class="sm" data-lprev="1" aria-label="Previous record"${L.qi===0?' disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true">${ICO.prev}</svg></button><span class="fine2" style="margin:0;color:var(--cream)">Record ${L.qi+1} of ${L.q.length}</span><button data-lnext="1" aria-label="Next record"${L.qi===L.q.length-1?' disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true">${ICO.next}</svg></button></div>`:''}
     ${up.length?`<div class="lup"><div class="k">Up next</div>${up.map(([x,i])=>{const q=recOf(x.rec),c=cov(q);return `<button data-lq="${i}"><div class="tile m${q.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div>${q.t}<br><span>${q.a}</span></div></button>`}).join('')}</div>`:''}</div>
-   <p class="fine2" style="margin:10px 0 6px">${NPn?'Plays with the Apple Music account on this phone. Full songs need a subscription.':v.need} Plays the album’s streaming release, which may not be the exact pressing on your shelf.</p>
+   <p class="fine2" style="margin:10px 0 6px">${NPn?'Plays with the Apple Music account on this phone. Full songs need a subscription.':v.need+' '+npWhy()} Plays the album’s streaming release, which may not be the exact pressing on your shelf.</p>
    <button class="ghost" data-qsave="${L.svc}">Save ${L.q.length>1?'this queue':'this album'} to ${v.n}</button>
    <a class="ghost" href="${v.url(r)}" target="_blank" rel="noopener">Open in the ${v.n} app instead</a>`;
   if(NPn)npStart();
