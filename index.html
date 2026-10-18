@@ -1599,7 +1599,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.18 · no-barcode records and covers';
+const BUILD='0.18.1 · clearer Apple Music errors';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -2336,9 +2336,14 @@ async function amNative(name,note,items){
   const list=items.map(it=>{const r=recOf(it.rec),t=it.track==null?'':(recTracks(it.rec)[it.track]||'').split(' · ').pop();return {artist:r.a,album:r.t,track:t}});
   try{const r=await Capacitor.nativePromise('AppleMusic','savePlaylist',{name,note:note||'',items:list});return {url:'https://music.apple.com/library/playlists',n:r.n,miss:r.missed||[]}}
   catch(e){const m=String((e&&e.message)||e||'');
-    if(m==='denied')throw new Error('Apple Music access is off. Turn it on in Settings, then Memory Wax.');
-    if(/token|developer|not.*entitled|permission/i.test(m))throw new Error('Apple Music isn’t switched on for this build yet. The app ID needs MusicKit turned on.');
-    throw new Error(m||'Apple Music didn’t accept the playlist.')}
+    const words={
+      denied:'Apple Music access is off for Memory Wax. Turn it on in Settings, then Memory Wax.',
+      notSignedIn:'This iPhone isn’t signed in to Apple Music, or the subscription is inactive. Open the Music app, sign in, and try again.',
+      privacy:'Open the Music app once and accept Apple Music’s terms, then try again.',
+      userToken:'Apple Music wouldn’t sign you in just now. Check your connection and try again.',
+      developerToken:'Apple hasn’t switched MusicKit on for this build yet. In Xcode turn Automatically manage signing off and on, run again, and give it a few minutes.'};
+    if(words[m])throw new Error(words[m]);
+    throw new Error('Apple Music said: '+(m||'no reason given')+'.')}
 }
 async function saveTo(svc,name,note,items,pid){
   try{
