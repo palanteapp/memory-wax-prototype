@@ -321,7 +321,7 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .rgrid .tile:not(.has-img) .ta{position:absolute;left:28px;right:8px;bottom:7px;margin:0;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .rgrid .tile:not(.has-img) .tile-main{padding-bottom:26px}
 .rgrid .tile:not(.has-img) .ta{display:block;margin-top:7px;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;line-height:1.25;opacity:.85}
-.plus{position:absolute;right:6px;top:6px;height:24px;padding:0 9px;border-radius:999px;background:var(--ox);color:var(--cream);font-family:var(--mono);font-weight:800;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;line-height:24px;text-align:center;z-index:3;box-shadow:0 0 0 1.5px rgba(255,243,176,.45);transition:transform 160ms ease-out}
+.plus{position:absolute;right:6px;top:6px;width:24px;height:24px;border-radius:50%;background:var(--ox);color:var(--cream);font-weight:800;font-size:17px;line-height:23px;text-align:center;z-index:3;box-shadow:0 0 0 1.5px rgba(255,243,176,.45);transition:transform 160ms ease-out}
 .plus:active{transform:scale(.9)}
 .plus.sm{width:24px;padding:0;font-size:17px;letter-spacing:0;line-height:23px}
 .tile.has-img .plus{box-shadow:0 0 0 2px var(--cream)}
@@ -1599,7 +1599,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.18.1 · clearer Apple Music errors';
+const BUILD='0.18.2 · Apple Music matching, plus icon';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -2032,7 +2032,7 @@ const cov=r=>{if(COVERURL[r.id])return COVERURL[r.id];const u=r.cover?r.cover:r.
 function tileHTML(r){
   const c=cov(r),img=c?` has-img" style="background-image:url('${c}')`:'';
   const on=st.sel&&st.sel.has(r.id);
-  return `<div class="tile m${r.m}${img}${on?' sel':''}"><button class="tile-main" data-open="${r.id}" aria-label="${on?'Selected: ':''}${r.t}, ${r.a}"><span class="tt">${r.t}</span><span class="ta">${r.a}</span></button><i class="st ${r.c}" title="${stLabel[r.c]}"></i><i class="ck" aria-hidden="true"></i><button class="plus${st.shelves.some(sh=>sh.recs.includes(r.id))?' sm':''}" data-plus="${r.id}" aria-label="Add ${r.t} to ${st.shelves.some(sh=>sh.recs.includes(r.id))?'another':'a'} shelf">${st.shelves.some(sh=>sh.recs.includes(r.id))?'+':'Shelf'}</button></div>`;
+  return `<div class="tile m${r.m}${img}${on?' sel':''}"><button class="tile-main" data-open="${r.id}" aria-label="${on?'Selected: ':''}${r.t}, ${r.a}"><span class="tt">${r.t}</span><span class="ta">${r.a}</span></button><i class="st ${r.c}" title="${stLabel[r.c]}"></i><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`;
 }
 /* search across credits, labels, matrix, year and your own memories. returns null (no match), '' (title/artist) or a reason */
 function match(r,q){
@@ -2088,7 +2088,7 @@ function renderCollection(){
   $('#selBar').hidden=!(st.sel&&st.screen==='collection');$('#selN').textContent=st.sel?`${st.sel.size} selected`:'';
   const asList=st.view==='list'||!!q,g=$('#rgrid');g.className=(asList?'rlist':'rgrid')+(st.sel?' selmode':'');
   g.innerHTML=!items.length?'<p class="empty">Nothing matches. Try another word or filter.</p>':!asList?items.map(x=>tileHTML(x.r)).join(''):
-    items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus${st.shelves.some(sh=>sh.recs.includes(r.id))?' sm':''}" data-plus="${r.id}" aria-label="Add ${r.t} to ${st.shelves.some(sh=>sh.recs.includes(r.id))?'another':'a'} shelf">${st.shelves.some(sh=>sh.recs.includes(r.id))?'+':'Shelf'}</button></div>`).join('');
+    items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`).join('');
   const loose=all.filter(r=>r.c!=='confirmed').length;
   $('#nudge').innerHTML=(!st.account&&all.length?`<button class="nudge n2" data-acctopen="1"><div><b>Saved on this phone only</b><span>${DEMO?'Back it up with a free account.':'Download a backup file.'}</span></div><i>Back up</i></button>`:'')+(loose?`<button class="nudge" data-nudge="1"><div><b>${loose} could be confirmed</b><span>Scan their deadwax to name the exact pressing.</span></div><i>Scan</i></button>`:'');
   renderShelves();renderWants();
