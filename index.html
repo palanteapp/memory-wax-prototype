@@ -437,6 +437,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 #modes button[hidden]{display:none}
 .cands{display:grid;gap:8px;margin:12px 0 4px}
 .candrow{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:center;text-align:left;padding:10px;background:rgba(84,11,14,.07);border-left:6px solid var(--ox);color:inherit}
+.candrow .ctier{color:var(--ox);opacity:.85;letter-spacing:.08em;text-transform:uppercase;font-size:10px}
 .candrow .nophoto{width:56px;height:56px;background:rgba(84,11,14,.12);display:block}
 .candrow mark{background:rgba(224,168,58,.45);color:inherit;border-radius:4px;padding:0 3px}
 .candrow img{width:56px;height:56px;object-fit:cover;background:rgba(84,11,14,.12)}
@@ -1591,7 +1592,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.21.0 · trust';
+const BUILD='0.22.0 · find';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -1797,6 +1798,8 @@ const MODES={
     rows:[['Label',L('impulse','Impulse!')],['Catalog','Not confirmed'],['Country','Not confirmed'],['Matrix','<span style="color:var(--gold)">Scan the deadwax to confirm</span>'],['Format','12-inch LP']],
     evid:'Cover art was recognised. Many pressings share this cover, so the etched matrix is needed to name yours.'},
   import:{a:'Release found',b:'Imported',cls:'cover',rows:[],evid:'This record came in from an import. Its pressing hasn’t been checked yet; scan the label, barcode or deadwax to confirm it.'},
+  named:{a:'Album found',b:'Matched by name',cls:'cover',rows:[],evid:'The album was matched by its name. Many pressings share a name, so which pressing you hold isn’t known yet. Scan the label, barcode or deadwax to find yours.'},
+  typed:{a:'Added by you',b:'Typed by you',cls:'cover',rows:[],evid:'You entered these details yourself. Nothing here was matched to a database record or guessed. Scan the label, barcode or deadwax whenever you want to match it.'},
   label:{a:'Release found',b:'Label read',cls:'cover',rows:[],evid:'The label name and catalog number were read from the center label and matched to a release. Several pressings can share them; the deadwax tells them apart.'},
   barcode:{a:'Release found',b:'Pressing unconfirmed',cls:'cover',
     rows:[['Label',L('impulse','Impulse!')],['Catalog','Matched by barcode'],['Country','Not confirmed'],['Matrix','<span style="color:var(--gold)">Scan the deadwax to confirm</span>'],['Format','12-inch LP']],
@@ -2215,7 +2218,7 @@ async function amWebFind(r,artist,album){
   }catch(e){return undefined}
 }
 async function amFindAlbum(r){
-  const k=r.id;if(amKnown(k))return amKnown(k);if(AMC.has(k))return AMC.get(k);
+  const k=r.id;if(r.am)return String(r.am);if(amKnown(k))return amKnown(k);if(AMC.has(k))return AMC.get(k);
   const album=String(r.t||'').replace(/\(.*?\)|\[.*?\]/g,' ').trim(),artist=r.a&&!/^unknown/i.test(r.a)?r.a:'';
   let id=null;
   if(amNativeOK()){   /* in the iPhone app Apple's own MusicKit does the lookup */
@@ -3034,14 +3037,14 @@ function renderFound(){
     $('#foundBody').innerHTML=`<h4 class="disp" style="font-size:36px">${err?'Couldn’t look it up':'No match yet'}</h4>
      <p class="sub">${err?esc(err.message):'The barcode <span class="fcode">'+esc(code)+'</span> isn’t in the public database.'}</p>
      <p class="fine2">${err?'Check your signal and try again.':'Many older pressings have no barcode, and some newer ones aren’t listed. Try the label or the cover, or type the artist and title.'}</p>
-     <button class="go press" data-foundno="1">Scan again</button><button class="ghost" data-catmanual="1">No barcode? Search by artist and title</button>`;return;
+     <button class="go press" data-foundno="1">Scan again</button><button class="ghost" data-catmanual="1">Type the artist and title instead</button>`;return;
   }
   if(hit.all&&hit.all.length>1){
     $('#foundBody').innerHTML=`<p class="fine2" style="margin:0 0 6px">Barcode <span class="fcode">${esc(code)}</span></p>
      <h4 class="disp" style="font-size:36px">${hit.all.length} releases share this barcode</h4>
      <p class="sub">We won’t guess which one you have. ${candHint(hit.all)}</p>
      ${candList(hit.all,'data-bcpick')}
-     <button class="ghost" data-foundno="1">None of these. Scan again</button><button class="ghost" data-catmanual="1">Search by artist and title</button>
+     <button class="ghost" data-foundno="1">None of these. Scan again</button><button class="ghost" data-catmanual="1">Type the artist and title instead</button>
      <p class="fine2" style="margin-top:8px">${hit.src==='discogs'?'Data provided by Discogs.':'Data from MusicBrainz and the Cover Art Archive.'} Whichever you pick stays at “Release found” until the label or deadwax narrows it.</p>`;return;
   }
   const meta=[hit.y||'',[hit.lab,hit.cat].filter(Boolean).join(' · '),hit.ctry,hit.fmt].filter(Boolean).join('  ·  ');
@@ -3086,12 +3089,14 @@ function realReport(r,mode){
   if(e.bc)steps.push(`<b>Barcode</b> ${esc(e.bc.code)} matched a release in ${r.src==='discogs'?'the Discogs catalogue':'MusicBrainz'}${e.bc.n>1?' ('+e.bc.n+' releases share it)':''}.`);
   if(e.dg)steps.push(`<b>Imported</b> from your Discogs collection · <a href="https://www.discogs.com/release/${e.dg.id}" target="_blank" rel="noopener">Data provided by Discogs</a>.`);
   if(e.csv)steps.push('<b>Imported</b> from a CSV, as typed.');
+  if(e.named)steps.push(`<b>Matched by name</b> from ${e.named.src==='apple'?'Apple Music':e.named.src==='discogs'?'Discogs':'MusicBrainz'}${e.named.typed?', using the words you typed':''}. You picked it from the list.`);
+  if(e.typed)steps.push('<b>Typed by you.</b> Nothing was matched or guessed.');
   if(e.label)steps.push(`<b>Center label</b> read as ${esc([e.label.lab,e.label.cat].filter(Boolean).join(' '))}${e.label.side?' · side '+esc(e.label.side):''}, matched by catalog number.`);
   if(dw&&dw.mx)steps.push(dw.typed?`<b>Matrix</b> <code>${esc(dw.mx)}</code> came from your import, not a scan.`:dw.match?`<b>Deadwax</b> read <code>${esc(dw.mx)}</code>: ${dw.match.hit} of ${dw.match.n} parts match the runout listed for ${esc(dw.match.title)}${dw.match.uri?' · <a href="https://www.discogs.com'+esc(dw.match.uri)+'" target="_blank" rel="noopener">Data provided by Discogs</a>':''}.`:`<b>Deadwax</b> read <code>${esc(dw.mx)}</code> over ${dw.frames} frame${dw.frames===1?'':'s'}. Not matched to a database runout yet.`);
   if(dw&&dw.gloss&&dw.gloss.length)steps.push('<b>Marks:</b> '+dw.gloss.map(esc).join(' '));
   if(!steps.length)steps.push('Added without a scan.');
   $('#evidIn').innerHTML=steps.join('<br>');
-  const b={confirmed:'Matrix match',likely:'Matrix read',label:'Label read',barcode:'Barcode match',import:'Imported'}[mode];if(b)$('#sealB').textContent=b;
+  const b={confirmed:'Matrix match',likely:'Matrix read',label:'Label read',barcode:'Barcode match',import:'Imported',named:'Matched by name',typed:'Typed by you'}[mode];if(b)$('#sealB').textContent=b;
 }
 /* ---------- identify engine: barcode, label and deadwax, stacked into one answer with evidence ----------
    Design (from the research round):
@@ -3181,20 +3186,97 @@ async function mbByCat(cats,lab){
   return [...out.values()].sort((a,b)=>b.rank-a.rank).slice(0,6);
 }
 
-/* artist and title read off the label: fuzzy words, either way round, then the biggest line alone */
+/* ---------- finding a record from words ----------
+   Typed by hand, or read off a cover or a label. Several sources are asked at the same time and every answer is scored on how well its
+   title and artist match the words. Vinyl, label and year only break ties, so a different album on the same label can never outrank
+   the one that was typed. Nothing is picked for the person: they see the candidates, with covers where there are any. */
+const VA_MBID='89ad4ac3-39f7-470e-963a-56509c546377';
+const nz=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
+const nzT=s=>nz(s).split(' ').filter(w=>w&&!/^(the|a|an|and|of)$/.test(w)).join(' ');
+const noParen=s=>String(s||'').replace(/\s*[\(\[].*?[\)\]]\s*/g,' ').replace(/\s+/g,' ').trim();
+const isVarious=a=>/^(various( artists)?|v\.? ?a\.?|multiple artists?|compilation)$/i.test(String(a||'').trim());
+function simText(a,b){
+  a=nzT(a);b=nzT(b);if(!a||!b)return 0;if(a===b)return 1;
+  const A=a.split(' '),B=b.split(' '),near=(w,x)=>w===x||(w.length>4&&x.length>4&&lev(w,x)<=1);
+  const hit=A.filter(w=>B.some(x=>near(w,x))).length,tok=hit/Math.max(A.length,B.length);
+  const inside=A.length<=B.length?A.every(w=>B.some(x=>near(w,x))):B.every(w=>A.some(x=>near(w,x)));      // every typed word is in the other, plus some extra words
+  const sub=inside?Math.max(.6,.92-.05*Math.abs(A.length-B.length)):0;
+  return Math.max(tok,sub,1-lev(a,b)/Math.max(a.length,b.length));
+}
+function simArtist(typed,cand){
+  if(!typed)return null;
+  if(isVarious(typed))return isVarious(cand)?1:.35;
+  if(isVarious(cand))return .35;
+  const t=nzT(typed),c=nzT(cand);
+  return Math.max(simText(typed,cand),(t.length>=4&&c.length>=4&&(c.includes(t)||t.includes(c)))?.85:0);
+}
+function scoreCand(c,q){
+  const one=(T,A)=>{if(!T)return A?(simArtist(A,c.a)||0)*.8:0;const st=Math.max(simText(T,c.t),simText(T,noParen(c.t))),sa=simArtist(A,c.a);return sa===null?st*.9:(st*.62+sa*.38)*(q.strict&&sa<.4&&!isVarious(A)?.7:1)};
+  let s=Math.max(one(q.title,q.artist),(q.title&&q.artist)?one(q.artist,q.title)*.96:0);
+  if(q.label&&c.lab&&simText(q.label,c.lab)>=.8)s+=.05;
+  if(q.cat&&c.cat&&fold(q.cat)===fold(c.cat))s+=.1;
+  if(q.year&&c.y&&+q.year===+c.y)s+=.04;
+  if(c.vinyl)s+=.02;
+  return Math.min(1,s);
+}
+const tierOf=c=>c.src==='apple'?'Album only · no pressing details':c.score>=.88?'Matches what you typed':c.score>=.65?'Close':'Possible';
+const withTimeout=(p,ms)=>Promise.race([p,new Promise((_,no)=>setTimeout(()=>no(new Error('timed out')),ms))]);
+const fzs=t=>{const x=fz(String(t||''));return x==='()'?null:x};
+async function srcIdx(q){
+  if(!IDX)return [];
+  const out=new Map(),add=j=>((j&&j.releases)||[]).forEach(x=>{if(!out.has(x.dg))out.set(x.dg,idxCand(x))}),A=isVarious(q.artist)?'':q.artist;
+  add(await idxGet('/v1/search?artist='+encodeURIComponent(A)+'&title='+encodeURIComponent(q.title)));
+  if(!out.size&&q.artist&&q.title)add(await idxGet('/v1/search?artist='+encodeURIComponent(q.title)+'&title='+encodeURIComponent(q.artist)));
+  if(!out.size&&q.title&&A)add(await idxGet('/v1/search?title='+encodeURIComponent(q.title)));
+  return [...out.values()];
+}
+async function srcMB(q){
+  const A=q.artist,T=q.title,qs=[],qq=x=>String(x).replace(/["\\]/g,' ');
+  if(T&&A&&!isVarious(A)){qs.push(`release:"${qq(T)}" AND artist:"${qq(A)}"`);if(fzs(A)&&fzs(T))qs.push(`(artist:${fzs(A)} AND release:${fzs(T)})`)}
+  if(T&&isVarious(A)&&fzs(T))qs.push(`arid:${VA_MBID} AND release:${fzs(T)}`);
+  if(T&&fzs(T))qs.push(`release:${fzs(T)}`);
+  if(A&&!T&&fzs(A))qs.push(`artist:${fzs(A)}`);
+  if(T&&A&&!isVarious(A)&&fzs(A)&&fzs(T))qs.push(`(artist:${fzs(T)} AND release:${fzs(A)})`);
+  const all=new Map();
+  for(const x of qs.slice(0,4)){
+    (await mbQ(x)).forEach(r0=>{const r=mbRel(r0);r.via='name';if(!all.has(r.mbid))all.set(r.mbid,r)});
+    if([...all.values()].filter(r=>scoreCand(r,q)>=.88).length>=3)break;
+  }
+  return [...all.values()];
+}
+async function srcApple(q){
+  const term=[isVarious(q.artist)?'':q.artist,q.title].filter(Boolean).join(' ').trim();if(!term)return [];
+  const ac=new AbortController(),t=setTimeout(()=>ac.abort(),8000);
+  try{
+    const j=await (await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(term)+'&entity=album&media=music&limit=15&country=us',{signal:ac.signal})).json();
+    return (j.results||[]).map(x=>({mbid:'',src:'apple',am:String(x.collectionId),t:String(x.collectionName||'').replace(/\s+-\s+(Single|EP)$/i,''),a:x.artistName||'',y:+String(x.releaseDate||'').slice(0,4)||0,lab:'',cat:'',ctry:'',fmt:'Album on Apple Music',dis:'',pack:'',vinyl:false,via:'name'}));
+  }finally{clearTimeout(t)}
+}
+async function srcDiscogs(q){
+  const u='https://api.discogs.com/database/search?type=release&per_page=12&'+(isVarious(q.artist)||!q.artist?'':'artist='+encodeURIComponent(q.artist)+'&')+'release_title='+encodeURIComponent(q.title||q.artist);
+  const j=await dgFetch(u);
+  return (j.results||[]).map(x=>{const parts=String(x.title||'').split(' - '),a=parts.length>1?parts.shift():'';return {mbid:'',src:'discogs',dg:x.id,t:parts.join(' - ')||x.title,a,y:+x.year||0,lab:(x.label||[])[0]||'',cat:x.catno||'',ctry:x.country||'',fmt:(x.format||[]).join(', '),dis:'',pack:'',vinyl:(x.format||[]).some(f=>/vinyl|lp/i.test(f)),via:'name'}});
+}
+/* words in, ranked candidates out. Never throws: a source that is busy or offline just doesn't contribute, and the sheet says so. */
+async function wordsFind(q){
+  q={artist:String(q.artist||'').trim(),title:String(q.title||'').trim(),label:String(q.label||'').trim(),cat:String(q.cat||'').trim(),year:String(q.year||'').trim(),strict:!!q.strict};
+  const errs=[],run=(name,fn,ms)=>withTimeout(fn(q),ms).catch(e=>{errs.push({src:name,msg:(e&&e.message)||String(e)});return []});
+  const [ix,mb,ap,dg]=await Promise.all([run('index',srcIdx,12000),run('MusicBrainz',srcMB,16000),run('Apple Music',srcApple,9000),dgTok()?run('Discogs',srcDiscogs,9000):Promise.resolve([])]);
+  let main=[...ix,...mb,...dg].map(c=>({...c,score:scoreCand(c,q)}));
+  const seen=new Set();main=main.filter(c=>{const k=c.cat&&c.y?nz(c.t)+'|'+nz(c.a)+'|'+c.y+'|'+fold(c.cat):'id'+(c.mbid||c.dg);if(seen.has(k))return false;seen.add(k);return true});
+  let apple=ap.map(c=>({...c,score:scoreCand(c,q)})).filter(a=>!main.some(c=>c.score>=.8&&simText(c.t,a.t)>=.85));      // Apple only fills in when nothing better names that album
+  const all=[...main,...apple].filter(c=>c.score>=.6).sort((a,b)=>b.score-a.score||(b.vinyl-a.vinyl)||((a.y||9999)-(b.y||9999)));
+  all.forEach(c=>{c.tier=(c.src!=='apple'&&q.artist&&q.title&&!isVarious(q.artist)&&simArtist(q.artist,c.a)<.4&&simText(q.title,c.t)>=.9)?'Title matches · artist differs':tierOf(c)});
+  return {cands:all.slice(0,6),errs,q};
+}
+/* artist and title read off the label or cover: fuzzy words, either way round */
 const fz=t=>'('+t.replace(/[^A-Za-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>=2).map(w=>w.length>=5?w+'~1':w).join(' AND ')+')';
 async function mbByNames(names,lab){
-  if(IDX){const n=names.slice(0,3),out=new Map();for(const [i,j] of [[0,1],[1,0],[0,2],[2,0],[1,2],[2,1]]){if(!n[i]||!n[j])continue;const r=await idxGet('/v1/search?artist='+encodeURIComponent(n[i])+'&title='+encodeURIComponent(n[j]));((r&&r.releases)||[]).forEach(x=>{if(!out.has(x.dg))out.set(x.dg,{...idxCand(x),via:'name'})});if(out.size>=4)break}if(out.size)return [...out.values()].slice(0,6)}
-  const n=names.slice(0,3),qs=[];
-  for(const [i,j] of [[0,1],[0,2],[1,2]])if(n[i]&&n[j])qs.push(`(artist:${fz(n[i])} AND release:${fz(n[j])}) OR (artist:${fz(n[j])} AND release:${fz(n[i])})`);
-  if(n[0])qs.push(`release:${fz(n[0])} OR artist:${fz(n[0])}`);
-  const out=new Map();
-  for(const q of qs.slice(0,3)){
-    const rels=await mbQ(q);
-    rels.forEach(x=>{const r=mbRel(x);r.via='name';r.rank=(r.vinyl?2:0)+(/12"|LP/i.test(r.fmt)?1:0)+(lab&&fold(r.lab).includes(fold(lab))?2:0)+r.score/100;const p=out.get(r.mbid);if(!p||p.rank<r.rank)out.set(r.mbid,r)});
-    if([...out.values()].filter(r=>r.score>=70).length>=3)break;
-  }
-  return [...out.values()].sort((a,b)=>b.rank-a.rank).slice(0,6);
+  const n=names.slice(0,3);let best=[];
+  const take=R=>{if(R.cands.length&&(!best.length||R.cands[0].score>best[0].score))best=R.cands};
+  if(n.length===1){take(await wordsFind({title:n[0],label:lab,strict:true}));if(!best.length||best[0].score<.88)take(await wordsFind({artist:n[0],label:lab,strict:true}))}
+  else for(const [a,b] of [[0,1],[1,2],[0,2]].filter(([a,b])=>n[a]&&n[b])){take(await wordsFind({artist:n[a],title:n[b],label:lab,strict:true}));if(best.length&&best[0].score>=.88)break}
+  return best.slice(0,6);
 }
 
 /* ---- Discogs: candidate pressings and their known runouts (needs the user's own token; CC0 data, attributed) ---- */
@@ -3303,14 +3385,14 @@ const RUNOUT_GLOSS=[
 function decodeRunout(mx){const u=canon(mx),out=[];RUNOUT_GLOSS.forEach(([re,txt])=>{if(re.test(u)&&!out.includes(txt))out.push(txt)});return out}
 
 /* ---- the flows ---- */
-function evMode(r){const e=r.ev||{};if(e.dw&&e.dw.match&&e.dw.match.sc>=.8)return 'confirmed';if(e.dw&&e.dw.mx)return 'likely';if(e.label)return 'label';if(e.bc)return 'barcode';return (e.dg||e.csv)?'import':'barcode'}
+function evMode(r){const e=r.ev||{};if(e.dw&&e.dw.match&&e.dw.match.sc>=.8)return 'confirmed';if(e.dw&&e.dw.mx)return 'likely';if(e.label)return 'label';if(e.bc)return 'barcode';if(e.named)return 'named';if(e.typed)return 'typed';return (e.dg||e.csv)?'import':'barcode'}
 function addRel(hit,ev){
-  const ex=RECS.find(r=>r.real&&(hit.mbid?r.mb===hit.mbid:(hit.dg&&r.dg===hit.dg)));let id;
+  const ex=RECS.find(r=>r.real&&(hit.mbid?r.mb===hit.mbid:hit.dg?r.dg===hit.dg:hit.am?r.am===hit.am:(hit.src==='typed'&&r.src==='typed'&&nz(r.t)===nz(hit.t)&&nz(r.a)===nz(hit.a))));let id;
   if(ex){id=ex.id;st.owned.add(id);ex.ev={...(ex.ev||{}),...ev};if(!ex.cat&&hit.cat)ex.cat=hit.cat;if(!ex.lab&&hit.lab)ex.lab=hit.lab;if(!ex.ctry&&hit.ctry)ex.ctry=hit.ctry}
   else{id=Math.max(100,...RECS.map(r=>r.id))+1;const ord=Math.max(...RECS.map(r=>r.ord||0))+1;
-    RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid||'',dg:hit.dg||undefined,src:hit.src||undefined,rg:hit.rg||'',bc:ev.bc?ev.bc.code:undefined,cover:hit.mbid?'https://coverartarchive.org/release/'+hit.mbid+'/front-250':'',ev});st.owned.add(id);st.justAdded=id}
+    RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid||'',dg:hit.dg||undefined,am:hit.am||undefined,src:hit.src||undefined,rg:hit.rg||'',bc:ev.bc?ev.bc.code:(ev.bcRaw||undefined),cover:hit.mbid?'https://coverartarchive.org/release/'+hit.mbid+'/front-250':'',ev});st.owned.add(id);st.justAdded=id}
   const r=recOf(id);if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
-  if(r.src==='discogs'&&!r.mb)attachMB(r);
+  if((r.src==='discogs'||r.src==='apple')&&!r.mb)attachMB(r);
   saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
 }
 /* the label, cut out of the middle of the frame and enlarged: a tight crop first (label fills it), then the whole circle */
@@ -3429,21 +3511,24 @@ function candDiff(cs){const d=new Set();if(!cs||cs.length<2)return d;DIFFKEYS.fo
 function candHint(cs){const d=candDiff(cs);if(!d.size)return 'They look the same on the details we have. Pick the one that matches the print on your copy.';const names=DIFFKEYS.filter(([k])=>d.has(k)).map(([,n])=>n);return 'Where they differ: <b>'+names.slice(0,4).join('</b>, <b>')+'</b>. Check those on your copy, then pick.'}
 function candList(cs,fn){const d=candDiff(cs);return '<div class="cands">'+cs.map((c,i)=>candRow(c,i,d,fn)).join('')+'</div>'}
 function candRow(c,i,d,fn){d=d||new Set();const mk=(k,t)=>t?(d.has(k)?'<mark>'+esc(t)+'</mark>':esc(t)):'';
-  const meta=[mk('y',c.y||''),[mk('lab',c.lab),mk('cat',c.cat)].filter(Boolean).join(' '),mk('ctry',c.ctry),mk('fmt',c.fmt),mk('pack',c.pack&&c.pack!=='None'?c.pack:''),mk('dis',c.dis)].filter(Boolean).join(' · ');return `<button class="candrow press" data-foundpick="${i}">${c.mbid?`<img alt="" src="https://coverartarchive.org/release/${c.mbid}/front-250" onerror="this.style.visibility='hidden'">`:'<i class="nophoto"></i>'}<span><b>${esc(c.t)}</b><em>${esc(c.a)}</em><small>${meta}</small></span></button>`.replace('data-foundpick',fn||'data-foundpick')}
+  const meta=[mk('y',c.y||''),[mk('lab',c.lab),mk('cat',c.cat)].filter(Boolean).join(' '),mk('ctry',c.ctry),mk('fmt',c.fmt),mk('pack',c.pack&&c.pack!=='None'?c.pack:''),mk('dis',c.dis)].filter(Boolean).join(' · ');return `<button class="candrow press" data-foundpick="${i}">${c.mbid?`<img alt="" src="https://coverartarchive.org/release/${c.mbid}/front-250" onerror="this.style.visibility='hidden'">`:'<i class="nophoto"></i>'}<span><b>${esc(c.t)}</b><em>${esc(c.a)}</em><small>${meta}</small>${c.tier?`<small class="ctier">${esc(c.tier)}</small>`:''}</span></button>`.replace('data-foundpick',fn||'data-foundpick')}
+const srcNote=cs=>[(cs||[]).some(c=>!c.src)?'Data from MusicBrainz and the Cover Art Archive.':'',(cs||[]).some(c=>c.src==='discogs')?'Data provided by Discogs.':'',(cs||[]).some(c=>c.src==='apple')?'Album names from Apple Music.':''].filter(Boolean).join(' ');
 function renderFoundX(){
   const F=st.found,B=$('#foundBody');
   if(F.kind==='label'){
     const P=F.parse,readLine=(F.typed||F.src==='cover')?P.names.slice(0,2).join(' · '):[P.lab,P.cats[0]||P.names.slice(0,2).join(' · ')].filter(Boolean).join(' · ');
-    if(!F.cands.length){B.innerHTML=`<h4 class="disp" style="font-size:36px">${F.err?'Couldn’t look it up':readLine?'No match yet':'Couldn’t read the label'}</h4>
-      <p class="sub">${F.err?esc(F.err.message):readLine?'Read <span class="fcode">'+esc(readLine)+'</span>, but nothing in the public database matched it. Check the spelling below, or type what the label says.':'The center label usually carries the label name and a catalog number. Fill the circle with the label, keep it flat, and angle away from glare.'}</p>
-      ${P.raw.length?`<p class="fine2">Seen on the label: ${esc(P.raw.slice(0,6).join(' · ')).slice(0,180)}</p>`:''}
-      <button class="go press" data-foundno="1">Try again</button><button class="ghost" data-catmanual="1">Type the catalog number</button>`;return}
+    const down=(F.errs||[]).map(e=>e.src),downNote=down.length?`<p class="fine2">${down.join(' and ')} didn’t answer, so this list may be missing matches. Try again in a minute.</p>`:'';
+    if(!F.cands.length){B.innerHTML=`<h4 class="disp" style="font-size:36px">${F.typed?'Nothing matched yet':F.err?'Couldn’t look it up':readLine?'No match yet':'Couldn’t read the label'}</h4>
+      <p class="sub">${F.typed?`Nothing matched <span class="fcode">${esc(readLine)}</span>. It can still go in your collection exactly as you typed it, and nothing will be guessed.`:F.err?esc(F.err.message):readLine?'Read <span class="fcode">'+esc(readLine)+'</span>, but nothing in the public databases matched it. Check the spelling below, or type what the label says.':'The center label usually carries the label name and a catalog number. Fill the circle with the label, keep it flat, and angle away from glare.'}</p>
+      ${downNote}${P.raw.length?`<p class="fine2">Seen on the label: ${esc(P.raw.slice(0,6).join(' · ')).slice(0,180)}</p>`:''}
+      ${F.typed?`<button class="go press" data-addtyped="1">Add it as I typed it</button><button class="ghost" data-catmanual="1">Change what I typed</button><button class="ghost" data-foundno="1">Scan it instead</button>`
+        :`<button class="go press" data-foundno="1">Try again</button><button class="ghost" data-catmanual="1">Type it yourself</button>`}`;return}
     B.innerHTML=`<p class="fine2" style="margin:0 0 6px">${F.typed?'You searched':F.src==='cover'?'Cover read':'Label read'}: <span class="fcode">${esc(readLine)}</span>${P.side?' · side '+esc(P.side):''}</p>
      <h4 class="disp" style="font-size:36px">${F.cands.length===1?'Is this it?':'Which one is yours?'}</h4>${F.cands.length>1?`<p class="sub" style="margin-top:0">${candHint(F.cands)}</p>`:''}
      <p class="sub">${F.via==='name'?(F.typed?'Matched on the artist and title you typed. Check the label and year before you pick.':F.src==='cover'?'Matched on the artist and title read from the cover. Check the label and year before you pick.':'No catalog number came through, so this is matched on the artist and title printed on the label. Check the label and year before you pick.'):F.cands.length===1?'One release carries that catalog number.':F.cands.length+' releases share that catalog number. Pick yours; the deadwax can confirm the pressing after.'}</p>
      ${candList(F.cands)}
-     <button class="ghost" data-foundno="1">None of these. Scan again</button><button class="ghost" data-catmanual="1">Type the catalog number</button>
-     <p class="fine2" style="margin-top:8px">Data from MusicBrainz and the Cover Art Archive.</p>`;return;
+     ${downNote}${F.typed?`<button class="ghost" data-addtyped="1">None of these. Add it as I typed it</button><button class="ghost" data-catmanual="1">Change what I typed</button>`:`<button class="ghost" data-foundno="1">None of these. Scan again</button><button class="ghost" data-catmanual="1">Type it yourself</button>`}
+     <p class="fine2" style="margin-top:8px">${srcNote(F.cands)}</p>`;return;
   }
   if(F.kind==='deadwax'){
     const D=F.dw,ctx=F.ctx?recOf(F.ctx):null;
@@ -3467,25 +3552,38 @@ function renderFoundX(){
      ${F.dgErr?`<p class="fine2">${esc(F.dgErr.message)}</p>`:''}${dgTok()&&ctx?DG_NOTE:''}`;return;
   }
 }
-function openCatEntry(){
-  $('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Find it by typing</h4><p class="sub">Artist and album title is enough. Add the catalog number or label if you can see them, and the match gets exact.</p>
-   <div class="hf"><label for="catArt">Artist</label><input class="txt sm" id="catArt" placeholder="David Bowie" autocomplete="off" autocapitalize="words"></div>
-   <div class="hf"><label for="catTitle">Album title</label><input class="txt sm" id="catTitle" placeholder="Scary Monsters" autocomplete="off" autocapitalize="words"></div>
-   <div class="hf"><label for="catIn">Catalog number (optional)</label><input class="txt sm" id="catIn" placeholder="AQL1-3647" autocomplete="off" autocapitalize="characters"></div>
-   <div class="hf"><label for="catLab">Label (optional)</label><input class="txt sm" id="catLab" placeholder="RCA" autocomplete="off"></div>
-   <button class="go press" data-catlook="1">Look it up</button>`;closeSheets();openSheet('barcode');setTimeout(()=>{const i=$('#catArt');i&&i.focus()},400);
+function openCatEntry(pre){
+  pre=pre||{};st.fromCode=(st.found&&!st.found.kind&&st.found.code)||(st.found&&st.found.fromCode)||'';
+  const v=k=>esc(pre[k]||'');
+  $('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Find it by typing</h4><p class="sub">Artist and album title is enough. Compilations: type Various. Add the label, year or catalog number if you can see them, and they help sort the list.</p>
+   <div class="hf"><label for="catArt">Artist</label><input class="txt sm" id="catArt" placeholder="David Bowie" value="${v('artist')}" autocomplete="off" autocapitalize="words"></div>
+   <div class="hf"><label for="catTitle">Album title</label><input class="txt sm" id="catTitle" placeholder="Scary Monsters" value="${v('title')}" autocomplete="off" autocapitalize="words"></div>
+   <div class="hf"><label for="catLab">Label (optional)</label><input class="txt sm" id="catLab" placeholder="RCA" value="${v('label')}" autocomplete="off"></div>
+   <div class="hf"><label for="catYear">Year (optional)</label><input class="txt sm" id="catYear" inputmode="numeric" maxlength="4" placeholder="1980" value="${v('year')}" autocomplete="off"></div>
+   <div class="hf"><label for="catIn">Catalog number (optional)</label><input class="txt sm" id="catIn" placeholder="AQL1-3647" value="${v('cat')}" autocomplete="off" autocapitalize="characters"></div>
+   <button class="go press" data-catlook="1">Look it up</button>`;closeSheets();openSheet('barcode');setTimeout(()=>{const i=$(pre.title?'#catLab':'#catArt');i&&i.focus()},400);
 }
 async function catLook(){
-  const art=($('#catArt').value||'').trim(),ti=($('#catTitle').value||'').trim(),c=canon($('#catIn').value).replace(/\s+/g,'-'),l=($('#catLab').value||'').trim();
+  const art=($('#catArt').value||'').trim(),ti=($('#catTitle').value||'').trim(),c=canon($('#catIn').value).replace(/\s+/g,'-'),l=($('#catLab').value||'').trim(),yr=($('#catYear').value||'').replace(/\D/g,'').slice(0,4);
   if(c.length<2&&!art&&!ti){toast('Type an artist and title, or a catalog number.');return}
-  const names=[art,ti].filter(Boolean);
-  closeSheets();setPrompt('Looking it up…');$('#guide').textContent=[...names,l,c.length>=2?c:''].filter(Boolean).join(' · ');
-  let cands=[],err=null,via='';
+  const names=[art,ti].filter(Boolean),q={artist:art,title:ti,label:l,cat:c.length>=2?c:'',year:yr};
+  closeSheets();setPrompt('Looking it up…');$('#guide').textContent=[...names,l,q.cat].filter(Boolean).join(' · ');
+  let cands=[],err=null,via='',errs=[];
   try{
-    if(c.length>=2){cands=await mbByCat([c],l||null);if(cands.length)via='cat'}
-    if(!cands.length&&names.length){cands=await mbByNames(names,l||null);if(cands.length)via='name'}
+    if(names.length){const R=await wordsFind(q);cands=R.cands;errs=R.errs;if(cands.length)via='name'}
+    if(q.cat&&(!cands.length||cands[0].score<.88)){      /* a catalog number is a second way in */
+      const have=new Set(cands.map(x=>x.mbid||x.dg));
+      (await mbByCat([c],l||null)).forEach(x=>{if(!have.has(x.mbid||x.dg)){x.score=Math.max(scoreCand(x,q),.7);x.tier=fold(x.cat)===fold(q.cat)?'Matches the catalog number':'Possible';cands.push(x)}});
+      cands.sort((a,b)=>b.score-a.score);cands=cands.slice(0,6);if(!via&&cands.length)via='cat';
+    }
   }catch(e){err=e}
-  st.found={kind:'label',parse:{lab:l||null,cats:c.length>=2?[c]:[],side:null,raw:[],names},cands,err,via,typed:true,src:'typed'};renderFound();openSheet('found');resetScan();
+  st.found={kind:'label',parse:{lab:l||null,cats:q.cat?[q.cat]:[],side:null,raw:[],names},cands,err,errs,via,typed:true,src:'typed',q,fromCode:st.fromCode||''};renderFound();openSheet('found');resetScan();
+}
+/* what the person typed, kept exactly as typed. Nothing is matched or guessed. */
+function addTyped(){
+  const F=st.found,q=F&&F.q;if(!q)return;
+  if(!q.title){toast('Add the album title to keep it as typed.');return}
+  addRel({mbid:'',src:'typed',t:q.title,a:q.artist||'Unknown artist',y:+q.year||0,lab:q.label,cat:q.cat,ctry:'',fmt:''},{typed:{at:Date.now()},bcRaw:F.fromCode||''});
 }
 function openDgToken(){
   $('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Discogs token</h4><p class="sub">Lets the deadwax reader compare your etching with the runouts Discogs lists for each pressing.</p>
@@ -3915,7 +4013,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid);return}
@@ -3964,12 +4062,15 @@ document.addEventListener('click',e=>{
   if(t.dataset.lab){labDo(t.dataset.lab);return}
   if(t.dataset.foundadd){addFound();return}
   if(t.dataset.bcpick!==undefined){const F=st.found,c=F.hit&&F.hit.all&&F.hit.all[+t.dataset.bcpick];if(c)addRel(c,{bc:{code:F.code,n:F.hit.n||1}});return}
-  if(t.dataset.foundpick!==undefined){const F=st.found,c=(F.kind==='label'?F.cands:F.albums)[+t.dataset.foundpick];if(c)addRel(c,F.kind==='label'?{label:{lab:F.parse.lab,cat:c.cat||F.parse.cats[0],side:F.parse.side}}:{dw:F.dw});return}
+  if(t.dataset.foundpick!==undefined){const F=st.found,c=(F.kind==='label'?F.cands:F.albums)[+t.dataset.foundpick];if(c){
+    const named=F.kind==='label'&&(F.typed||F.via==='name'||F.src==='cover'||c.src==='apple');
+    addRel(c,F.kind==='label'?(named?{named:{src:c.src||'musicbrainz',typed:!!F.typed},bcRaw:F.fromCode||''}:{label:{lab:F.parse.lab,cat:c.cat||F.parse.cats[0],side:F.parse.side}}):{dw:F.dw})}return}
+  if(t.dataset.addtyped){addTyped();return}
   if(t.dataset.dwattach){dwAttach();return}
   if(t.dataset.dwagain){closeSheets();resetScan();setTimeout(startDeadwaxScan,300);return}
   if(t.dataset.dwreset){st.dwAcc=null;closeSheets();toast('Cleared. Read it fresh.');return}
   if(t.dataset.dwscan){st.dwCtx=+t.dataset.dwscan;st.dwAcc=null;setScanMode('deadwax');go('scan');toast('Torch on. Hold the phone low over the runout and tilt slowly.');return}
-  if(t.dataset.catmanual){openCatEntry();return}
+  if(t.dataset.catmanual){const F=st.found;openCatEntry(F&&F.q?F.q:F&&F.parse?{artist:(F.parse.names||[])[0]||'',title:(F.parse.names||[])[1]||'',label:F.parse.lab||'',cat:(F.parse.cats||[])[0]||''}:null);return}
   if(t.dataset.catlook){catLook();return}
   if(t.dataset.dgtoken){openDgToken();return}
   if(t.dataset.imprun){dgImport();return}
