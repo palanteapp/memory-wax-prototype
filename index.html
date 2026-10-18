@@ -1639,7 +1639,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.24.0 · fluid';
+const BUILD='0.24.1 · fluid';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -1687,8 +1687,8 @@ function closeBack(){
 }
 /* sheets that move like objects: springs, grabbable at any moment, flick to dismiss, a page opened over another pushes it back */
 const rband=(x,d)=>x*d*.55/(d+.55*Math.abs(x));
-function mkSheet(id,onY){
-  const el=$('#'+id),o={el,id,y:1200,v:0,raf:0,s:1,b:1,H:800,open:false,drag:false,pv:undefined};
+function mkSheet(src,onY){
+  const el=typeof src==='string'?$('#'+src):src,id=el.id,locked=/^sheet-(cands|unsure|sure)$/.test(id),o={el,id,y:1200,v:0,raf:0,s:1,b:1,H:800,open:false,drag:false,pv:undefined};
   el.classList.add('sp');el.style.visibility='hidden';
   o.paint=()=>{el.style.transformOrigin='50% 100%';el.style.transform='translateY('+o.y+'px)'+(o.s!==1?' scale('+o.s+')':'');el.style.filter=o.b<1?'brightness('+o.b+')':''};
   o.set=y=>{o.y=y;o.paint();if(onY)onY(o)};
@@ -1713,10 +1713,11 @@ function mkSheet(id,onY){
     else{el.style.visibility='visible';const v=o.pv;o.pv=undefined;o.to(o.H,{resp:.34,damp:1,v})}
   }).observe(el,{attributes:true,attributeFilter:['class']});
   let g=null,touched=0;
-  const down=(y,t)=>{if(o.open)g={y0:y,on:false,hist:[]}};
+  const down=(y,t,tg)=>{if(o.open&&!locked&&!(tg&&tg.closest&&tg.closest('input,textarea,select,[contenteditable]')))g={y0:y,on:false,hist:[],tg:tg}};
+  const inner=tg=>{for(let n=tg;n&&n!==el;n=n.parentElement)if(n.scrollTop>0)return true;return false};
   const move=(y,t,ev)=>{
     if(!g)return;
-    if(!g.on){if(y-g.y0>6&&el.scrollTop<=0){g.on=true;cancelAnimationFrame(o.raf);o.v=0;g.base=o.y;g.y0=y;o.drag=true}else return}
+    if(!g.on){if(y-g.y0>6&&el.scrollTop<=0&&!inner(g.tg)){g.on=true;cancelAnimationFrame(o.raf);o.v=0;g.base=o.y;g.y0=y;o.drag=true}else return}
     let ny=g.base+(y-g.y0);if(ny<0)ny=-rband(-ny,o.H);
     o.set(ny);g.hist.push({t,y:ny});if(g.hist.length>6)g.hist.shift();
     if(!(id==='sheet-credit'&&st.ret==='listen'))$('#backdrop').style.opacity=String(Math.max(0,Math.min(1,1-o.y/o.H)));
@@ -1730,12 +1731,11 @@ function mkSheet(id,onY){
     if(proj>o.H*.45){o.pv=v;if(id==='sheet-credit')closeBack();else closeSheets()}
     else o.to(0,{v,resp:.34,damp:Math.abs(v)>300?.8:1});
   };
-  el.addEventListener('touchstart',e=>{touched=Date.now();down(e.touches[0].clientY,e.timeStamp)},{passive:true});
+  el.addEventListener('touchstart',e=>{touched=Date.now();down(e.touches[0].clientY,e.timeStamp,e.target)},{passive:true});
   el.addEventListener('touchmove',e=>move(e.touches[0].clientY,e.timeStamp,e),{passive:false});
   el.addEventListener('touchend',up);el.addEventListener('touchcancel',up);
-  el.addEventListener('mousedown',e=>{if(Date.now()-touched<600)return;down(e.clientY,e.timeStamp)});
-  addEventListener('mousemove',e=>{if(g&&!(Date.now()-touched<600))move(e.clientY,e.timeStamp,e)});
-  addEventListener('mouseup',()=>{if(Date.now()-touched>=600)up()});
+  const mm=e=>move(e.clientY,e.timeStamp,e),mu=()=>{removeEventListener('mousemove',mm);removeEventListener('mouseup',mu);up()};
+  el.addEventListener('mousedown',e=>{if(Date.now()-touched<600)return;down(e.clientY,e.timeStamp,e.target);if(g){addEventListener('mousemove',mm);addEventListener('mouseup',mu)}});
   return o;
 }
 let SHL=null,SHC=null;
@@ -1745,6 +1745,7 @@ function initSheets(){
     const L=SHL;if(!L)return;const stacked=L.el.classList.contains('on'),p=stacked?Math.max(0,Math.min(1,1-o.y/o.H)):0;
     L.s=1-.05*p;L.b=1-.3*p;L.paint();L.el.style.pointerEvents=p>.02?'none':'';
   });
+  $$('.sheet').forEach(e=>{if(e.id!=='sheet-listen'&&e.id!=='sheet-credit')mkSheet(e)});
 }
 initSheets();
 $('#backdrop').addEventListener('click',()=>{if(!openSheetsLocked())closeBack()});
