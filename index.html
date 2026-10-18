@@ -1595,7 +1595,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.16 · multi-track playlists';
+const BUILD='0.17 · Apple Music saving';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -2304,17 +2304,27 @@ function renderSvc(){
    <div class="hbtns"><button class="go press" data-svcgo="am">Connect Apple Music</button></div>`}
    <p class="fine2">This is how the prototype tests real playlists. A shipping app uses Memory Wax’s own approved keys, and you would just tap Connect. Never share a token you didn’t make.</p>`;
   $('#svcBody').innerHTML=configured?`<h4 class="disp">Connect your music</h4>${dev}`:`<h4 class="disp">Save to Spotify or Apple Music</h4>
-   <p class="sub">Coming soon, and there is nothing for you to set up. You will tap Connect, sign in to your own account, and the playlist appears there.</p>
+   <p class="sub">${amNativeOK()?'Apple Music saving is on. Tap Save to Apple Music on any playlist and allow access once. Spotify is coming soon. Nothing to set up for either.':'Coming soon, and there is nothing for you to set up. You will tap Connect, sign in to your own account, and the playlist appears there.'}</p>
    <div class="dsrc"><b>Today</b><span>Play any record or playlist inside Memory Wax with Spotify’s and Apple Music’s own players, or share the playlist link with a friend.</span></div>
    <details class="devset"><summary>Developer setup, for testing only</summary>${dev}</details>`;
 }
 function showSaved(){
   const x=st.lastSave;if(!x)return;
   $('#savedBody').innerHTML=`<h4 class="disp">Saved to ${SVC[x.svc].n}</h4><p class="sub">“${esc(x.name)}” is in your ${SVC[x.svc].n} with ${x.n} track${x.n===1?'':'s'}. It’s private to you.</p>
-   ${x.miss&&x.miss.length?`<div class="dsrc"><b>Left out</b><span>${x.miss.map(esc).join(', ')} isn’t wired to ${SVC[x.svc].n} in this prototype yet.</span></div>`:''}
+   ${x.miss&&x.miss.length?`<div class="dsrc"><b>Left out</b><span>${x.miss.map(esc).join(', ')} wasn’t found in ${SVC[x.svc].n}, so it was left out.</span></div>`:''}
    ${x.url?`<a class="go press" style="display:block;text-align:center" href="${esc(x.url)}" target="_blank" rel="noopener">Open in ${SVC[x.svc].n}</a>`:''}
    <button class="ghost" data-close="1">Done</button>`;
   openSheet('saved');
+}
+/* inside the iPhone app, Apple Music is saved with Apple's own MusicKit: no tokens, the person's own sign-in */
+const amNativeOK=()=>{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.nativePromise&&(C.PluginHeaders||[]).some(h=>h.name==='AppleMusic'))};
+async function amNative(name,note,items){
+  const list=items.map(it=>{const r=recOf(it.rec),t=it.track==null?'':(recTracks(it.rec)[it.track]||'').split(' · ').pop();return {artist:r.a,album:r.t,track:t}});
+  try{const r=await Capacitor.nativePromise('AppleMusic','savePlaylist',{name,note:note||'',items:list});return {url:'https://music.apple.com/library/playlists',n:r.n,miss:r.missed||[]}}
+  catch(e){const m=String((e&&e.message)||e||'');
+    if(m==='denied')throw new Error('Apple Music access is off. Turn it on in Settings, then Memory Wax.');
+    if(/token|developer|not.*entitled|permission/i.test(m))throw new Error('Apple Music isn’t switched on for this build yet. The app ID needs MusicKit turned on.');
+    throw new Error(m||'Apple Music didn’t accept the playlist.')}
 }
 async function saveTo(svc,name,note,items,pid){
   try{
@@ -2324,9 +2334,9 @@ async function saveTo(svc,name,note,items,pid){
         if(!cid||!spOK()){st.pendSave={svc,name,note,items,pid};renderSvc();openSheet('svc');toast('Connect Spotify first.');return}
         toast('Opening Spotify to sign in…');await spConnect(cid);
       }
-    }else if(!amMusic){st.pendSave={svc,name,note,items,pid};renderSvc();openSheet('svc');toast('Connect Apple Music first.');return}
+    }else if(!amMusic&&!amNativeOK()){st.pendSave={svc,name,note,items,pid};renderSvc();openSheet('svc');toast('Connect Apple Music first.');return}
     toast(`Saving to ${SVC[svc].n}…`);
-    const r=svc==='sp'?await spSave(name,note,items):await amSave(name,note,items);
+    const r=svc==='sp'?await spSave(name,note,items):amNativeOK()?await amNative(name,note,items):await amSave(name,note,items);
     st.pendSave=null;
     if(pid){const p=st.playlists.find(x=>x.id===pid);if(p){p.saved[svc]=true;renderPlView(pid)}}
     st.lastSave={svc,name,...r};showSaved();
@@ -4180,7 +4190,7 @@ function applyState(d){
   (d.owned||[]).forEach(id=>st.owned.add(id));
   Object.assign(st.copies,d.copies||{});
   if(d.shelves&&d.shelves.length){st.shelves=d.shelves;st.nextShelf=Math.max(d.nextShelf||1,...d.shelves.map(s=>s.id+1))}
-  if(d.wants)st.wants=d.wants;if(d.playlists)st.playlists=d.playlists;
+  if(d.wants)st.wants=d.wants;if(d.playlists){st.playlists=d.playlists;st.nextPl=Math.max(st.nextPl||1,...d.playlists.map(p=>p.id+1));const seen=new Set();st.playlists.forEach(p=>{if(seen.has(p.id))p.id=st.nextPl++;seen.add(p.id)})}
   if(d.sessions){st.sessions=d.sessions;st.nextSess=d.nextSess||st.sessions.length+1}
   if(d.series)st.series=d.series;if(d.spin)st.spin=d.spin;
   st.photoKeys=d.photoKeys||{};st.lastImport=d.lastImport||null;
