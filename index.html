@@ -1581,7 +1581,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.13 · label reader, remove and select';
+const BUILD='0.14 · steady MusicBrainz';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -3038,13 +3038,12 @@ async function getBarDet(){
   return barDet={detect:async c=>{try{return reader.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(c)))).getText()}catch(e){return null}}};
 }
 async function mbSearch(code){
-  const r=await fetch('https://musicbrainz.org/ws/2/release/?query=barcode:'+encodeURIComponent(code)+'&fmt=json&limit=10');
-  if(!r.ok)throw new Error(r.status===503?'MusicBrainz is busy. Try again in a few seconds.':'The lookup service returned an error ('+r.status+').');
-  return (await r.json()).releases||[];
+  const j=await mbGet('release/?query=barcode:'+encodeURIComponent(code)+'&limit=10',{hi:true});
+  return (j||{}).releases||[];
 }
 async function mbLookup(code){
   let rels=await mbSearch(code);
-  if(!rels.length){const alt=code.length===13&&code[0]==='0'?code.slice(1):code.length===12?'0'+code:'';if(alt){await new Promise(r=>setTimeout(r,1100));rels=await mbSearch(alt)}}
+  if(!rels.length){const alt=code.length===13&&code[0]==='0'?code.slice(1):code.length===12?'0'+code:'';if(alt)rels=await mbSearch(alt)}
   if(!rels.length)return null;
   const isV=x=>(x.media||[]).some(m=>/vinyl|lp/i.test(m.format||'')),x=rels.find(isV)||rels[0],li=(x['label-info']||[])[0]||{};
   return {mbid:x.id,t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),vinyl:isV(x),n:rels.length};
@@ -3204,7 +3203,7 @@ function parseLabel(lines){
 }
 
 /* MusicBrainz release search by catalog number (matched regardless of case, spaces or separators) */
-async function mbQ(q){const j=await mbGet('release/?query='+encodeURIComponent(q)+'&limit=25');return (j||{}).releases||[]}
+async function mbQ(q){const j=await mbGet('release/?query='+encodeURIComponent(q)+'&limit=25',{hi:true});return (j||{}).releases||[]}
 function mbRel(x){const li=(x['label-info']||[])[0]||{},vinyl=(x.media||[]).some(m=>/vinyl|lp|12"|7"|10"/i.test(m.format||''));return {mbid:x.id,t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),dis:x.disambiguation||'',pack:x.packaging||'',vinyl,score:x.score||0,n:1}}
 async function mbByCat(cats,lab){
   const out=new Map();let i=0;
@@ -3445,14 +3444,39 @@ function openDgToken(){
 /* ---------- real credits: who played on it, from MusicBrainz core data (CC0), fetched once per record and kept on the phone ----------
    Instruments, vocals, producer and engineer live on each recording; composers on the work; the studio and session dates on
    "recorded at" relationships. Where MusicBrainz is thin, the page says so instead of inventing anything. */
-let mbQueue=Promise.resolve();   /* MusicBrainz asks for about one request a second */
-const mbPaced=fn=>{const p=mbQueue.then(async()=>{const r=await fn();await sleepMs(1050);return r});mbQueue=p.catch(()=>{});return p};
-async function mbGet(path){return mbPaced(async()=>{
-  const url='https://musicbrainz.org/ws/2/'+path+(path.includes('?')?'&':'?')+'fmt=json';
-  let r=await fetch(url);
-  if(r.status===503){await sleepMs(2500);r=await fetch(url)}   /* one polite retry when MusicBrainz is busy */
-  if(r.status===503)throw new Error('MusicBrainz is busy. Try again in a few seconds.');
-  if(r.status===404)return null;if(!r.ok)throw new Error('MusicBrainz returned '+r.status);return r.json()})}
+/* The one door to MusicBrainz. It allows about one request a second for everyone, so every call in the app waits in this line.
+   A scan the person is waiting on goes ahead of background work (credits). "Busy" answers are retried with a growing pause before
+   anyone sees a message, and recent answers are remembered so tapping Try again doesn't ask twice. */
+const MBQ={hi:[],lo:[],run:false,next:0,cache:new Map(),live:new Map()};
+function mbNote(m){try{if(m&&st&&st.scanning)$('#guide').textContent=m}catch(e){}}
+function mbGet(path,o={}){
+  const hit=MBQ.cache.get(path);if(hit&&Date.now()-hit.t<9e5)return Promise.resolve(hit.v);
+  if(MBQ.live.has(path)){const p=MBQ.live.get(path);if(o.hi&&!p.hi){p.hi=true;const i=MBQ.lo.indexOf(p);if(i>-1){MBQ.lo.splice(i,1);MBQ.hi.unshift(p)}}return p.pr}
+  const job={path,hi:!!o.hi};
+  job.pr=new Promise((ok,no)=>{job.ok=ok;job.no=no});MBQ.live.set(path,job);
+  (o.hi?MBQ.hi:MBQ.lo).push(job);mbPump();return job.pr;
+}
+async function mbPump(){
+  if(MBQ.run)return;MBQ.run=true;
+  while(MBQ.hi.length||MBQ.lo.length){
+    const j=MBQ.hi.shift()||MBQ.lo.shift();
+    const wait=MBQ.next-Date.now();if(wait>0)await sleepMs(wait);
+    try{const v=await mbFetch(j.path,j.hi?4:2);MBQ.cache.set(j.path,{t:Date.now(),v});j.ok(v)}catch(e){j.no(e)}
+    MBQ.live.delete(j.path);MBQ.next=Date.now()+1100;
+  }
+  MBQ.run=false;
+}
+async function mbFetch(path,tries){
+  const url='https://musicbrainz.org/ws/2/'+path+(path.includes('?')?'&':'?')+'fmt=json',pause=[2000,4000,8000,8000];
+  for(let a=0;a<tries;a++){
+    let r;try{r=await fetch(url)}catch(e){if(a===tries-1)throw new Error('Couldn’t reach MusicBrainz. Check your signal and try again.');mbNote('Reconnecting…');await sleepMs(1500*(a+1));continue}
+    if(r.status===503||r.status===429){if(a===tries-1)break;mbNote('MusicBrainz is busy. Trying again…');await sleepMs(pause[a]);continue}
+    if(r.status===404)return null;
+    if(!r.ok)throw new Error('MusicBrainz returned '+r.status+'.');
+    return r.json();
+  }
+  throw new Error('MusicBrainz is busy right now. It’s a free service shared by many apps. Try again in a minute.');
+}
 const MB_INC='recordings+artist-credits+artist-rels+place-rels+recording-level-rels+work-rels+work-level-rels+release-groups+labels';
 const ROLE_NICE={'drums (drum set)':'drums','double bass':'bass','electric bass guitar':'electric bass','acoustic guitar':'guitar','electric guitar':'guitar','grand piano':'piano','lead vocals':'vocals','background vocals':'backing vocals','tenor saxophone':'tenor sax','alto saxophone':'alto sax','baritone saxophone':'baritone sax','soprano saxophone':'soprano sax','Hammond organ':'organ','Rhodes piano':'Rhodes','Fender Rhodes':'Rhodes','percussion':'percussion'};
 const nice=s=>ROLE_NICE[s]||s;
