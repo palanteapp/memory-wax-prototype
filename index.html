@@ -521,6 +521,27 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .lcard .lh .tile{width:64px;flex:none}
 .lcard .lh b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:24px;line-height:.9;text-transform:uppercase}
 .lcard .lh span{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.nph{display:flex;gap:14px;align-items:center;margin:10px 0 12px}
+.npart{width:84px;height:84px;flex:none;background:rgba(255,243,176,.12);object-fit:cover;border-radius:4px}
+.nph b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:28px;line-height:.9;text-transform:uppercase}
+.nph span{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.npctl{display:flex;align-items:center;justify-content:center;gap:18px;margin:6px 0 12px}
+.npctl button{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--cream);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.5);transition:transform 160ms ease-out}
+.npctl button.npplay{width:60px;height:60px;background:var(--ac);color:var(--ox);box-shadow:none}
+.npctl button:active{transform:scale(.95)}.npctl svg{width:22px;height:22px;fill:currentColor}
+.npnow{border-left:4px solid var(--ac);padding:2px 0 2px 12px;margin:0 0 12px}
+.npk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+.npt{font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:26px;line-height:.95;text-transform:uppercase;margin-top:2px}
+.npchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.npchip{text-align:left;padding:7px 11px;border-radius:14px;background:rgba(255,243,176,.14);color:var(--cream);transition:transform 160ms ease-out}
+.npchip:active{transform:scale(.97)}
+.npchip b{display:block;font:700 14px/1.1 var(--sans,system-ui)}.npchip span{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
+.nplist{list-style:none;margin:0;padding:0;max-height:240px;overflow:auto}
+.nplist button{display:flex;gap:10px;align-items:baseline;width:100%;padding:9px 6px;text-align:left;color:var(--cream);border-top:1px solid rgba(255,243,176,.18)}
+.nplist button i{font-style:normal;font-family:var(--mono);font-size:11px;opacity:.6;width:22px}
+.nplist button span{flex:1;font-size:15px}.nplist button em{font-style:normal;font-family:var(--mono);font-size:10.5px;opacity:.6}
+.nplist button.on{background:rgba(255,243,176,.16)}.nplist button.on span{font-weight:700}
+.npmsg{font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.2;margin:12px 0}
 .lsvc{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.9;margin-bottom:10px}
 .lsvc i{width:9px;height:9px;border-radius:50%;background:var(--ac)}
 .ltr{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 0;border-top:1.5px solid rgba(255,243,176,.2);font-weight:600;font-size:14px}
@@ -663,6 +684,9 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .crmeta{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-top:6px;opacity:.85}
 .dcbtn{display:inline-block;margin-top:6px;padding:5px 10px;border-radius:999px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;box-shadow:inset 0 0 0 1.5px var(--ox);transition:transform 160ms ease-out}
 .dcbtn:active{transform:scale(.97)}.dcbtn[aria-pressed=true]{background:var(--ox);color:var(--cream)}
+.biodesc{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 6px;color:var(--ox);opacity:.9}
+.biotext{font:400 16px/1.5 Georgia,serif;margin:0 0 6px}
+.bioload{opacity:.6}
 .crrole{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:8px;opacity:.8}
 .path{margin:6px 0 14px;border-left:3px solid var(--ox);padding-left:0}
 .path li{list-style:none;position:relative;padding:10px 0 10px 18px;border-bottom:1.5px solid rgba(84,11,14,.16)}
@@ -1592,7 +1616,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.22.0 · find';
+const BUILD='0.23.0 · learn';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -1983,6 +2007,54 @@ $('#addOwn').addEventListener('click',()=>{st.owned.add(st.rec);$('#notown').hid
 
 /* ---------- credits graph ---------- */
 const typeOf=role=>/producer/i.test(role)?'Producer':/engineer/i.test(role)?'Engineer':/studio/i.test(role)?'Studio':/label/i.test(role)?'Label':'Musician';
+/* ---------- short bios: Wikipedia (CC BY-SA), reached through MusicBrainz's own link to the person, or a careful search ----------
+   A bio is shown only when the page found is clearly a musician of some kind. When in doubt it shows nothing rather than the wrong person. */
+const MUSICY=/music|singer|vocalist|guitar|bass|drum|piano|saxophon|trumpet|trombone|clarinet|violin|cello|flute|keyboard|organ|percuss|producer|composer|songwriter|conductor|arranger|rapper|\bDJ\b|\bband\b|group|duo|trio|quartet|orchestra|engineer|bandleader|multi-instrumentalist|harmonica|banjo|lyricist|choir/i;
+const BIOC=new Map();
+async function wikiSummary(title){
+  const r=await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(String(title).replace(/ /g,'_'))+'?redirect=true');
+  if(!r.ok)return null;const j=await r.json();
+  if(j.type==='disambiguation'||!j.extract)return null;
+  return {title:j.title,desc:j.description||'',text:j.extract,url:(j.content_urls&&j.content_urls.desktop&&j.content_urls.desktop.page)||('https://en.wikipedia.org/wiki/'+encodeURIComponent(j.title))};
+}
+async function wikiViaMB(mbid){
+  const j=await mbGet('artist/'+mbid+'?inc=url-rels'),rels=(j&&j.relations)||[];let title='';
+  const w=rels.find(r=>r.type==='wikipedia'&&r.url&&/\/\/en\.wikipedia\.org\/wiki\//.test(r.url.resource));
+  if(w)title=decodeURIComponent(w.url.resource.split('/wiki/')[1]);
+  else{const d=rels.find(r=>r.type==='wikidata'&&r.url);if(d){const q=d.url.resource.split('/').pop(),wd=await (await fetch('https://www.wikidata.org/w/api.php?action=wbgetentities&ids='+q+'&props=sitelinks&sitefilter=enwiki&format=json&origin=*')).json(),sl=((wd.entities||{})[q]||{}).sitelinks;if(sl&&sl.enwiki)title=sl.enwiki.title}}
+  return title?wikiSummary(title):null;
+}
+async function wikiSearch(name){
+  const j=await (await fetch('https://en.wikipedia.org/w/rest.php/v1/search/page?q='+encodeURIComponent(name)+'&limit=6')).json();
+  for(const p of (j.pages||[])){
+    if(simText(noParen(p.title),name)<.85||!MUSICY.test((p.description||'')+' '+(p.excerpt||'')))continue;
+    const s=await wikiSummary(p.title);if(s&&MUSICY.test(s.desc+' '+s.text.slice(0,300)))return s;
+  }
+  return null;
+}
+/* the first few sentences, cut at a sentence end */
+function shortBio(t,max){
+  const parts=String(t).replace(/\s+/g,' ').split(/(?<=[.!?])\s+(?=[A-Z“"])/);let out='';
+  for(const x of parts){if(out&&(out+' '+x).length>max)break;out=out?out+' '+x:x;if(out.length>=max*.7)break}
+  return out.length>max+80?out.slice(0,max).replace(/\s+\S*$/,'')+'…':out;
+}
+async function bioFor(name,mbid){
+  const k=mbid||nz(name);if(BIOC.has(k))return BIOC.get(k);
+  try{const o=JSON.parse(localStorage.getItem('mw_bio_'+k)||'null');if(o&&Date.now()-o.at<(o.v?30:1)*864e5){BIOC.set(k,o.v);return o.v}}catch(e){}
+  let b=null;
+  if(mbid){try{b=await wikiViaMB(mbid)}catch(e){}}
+  if(!b){try{b=await wikiSearch(name)}catch(e){}}
+  if(b)b.short=shortBio(b.text,520);
+  BIOC.set(k,b);try{localStorage.setItem('mw_bio_'+k,JSON.stringify({at:Date.now(),v:b}))}catch(e){}
+  return b;
+}
+async function fillBio(name,mbid){
+  const el=$('#cbio');if(!el)return;
+  el.innerHTML='<p class="fine2 bioload">Looking for a bio…</p>';
+  let b=null;try{b=await bioFor(name,mbid)}catch(e){}
+  const h=$('#creditBody h4'),e2=$('#cbio');if(!e2||!h||h.textContent!==name)return;
+  e2.innerHTML=b?`${b.desc?`<div class="biodesc">${esc(b.desc)}</div>`:''}<p class="biotext">${esc(b.short)}</p><p class="fine2">From <a href="${esc(b.url)}" target="_blank" rel="noopener">Wikipedia</a> (<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>), shortened.</p>`:'';
+}
 function buildCredit(c){
   const owns=t=>RECS.some(r=>r.t===t&&st.owned.has(r.id));
   const P=PEOPLE[c.name]||{};
@@ -1995,20 +2067,22 @@ function buildCredit(c){
     ${meta?`<div class="crmeta">${esc(meta)}</div>`:''}
     <div class="crrole">${esc(c.role)}</div>
     <p class="sub">${esc(P.known||c.blurb)}</p>
+    <div id="cbio"></div>
     ${(c.alts||[]).length?`<p class="fine2" style="margin:0 0 6px">Showing the most-credited ${esc(c.name)}. Not them?</p><div class="opts" style="margin:0 0 8px">${c.alts.map(a=>`<button class="pb" data-pidpick="${a.id}">${a.releases} credit${a.releases===1?'':'s'}</button>`).join('')}</div>`:''}
     <div class="pathh">Albums and sessions · ${path.length}</div>
     <ul class="path">${path.map(p=>{const rr=RECS.find(x=>x.t===p[0]),o=owns(p[0]);const by=p[3]&&p[3]!==c.name?` · ${esc(p[3])}`:'';const inner=`<b>${esc(p[0])}${o?'<em>In your collection</em>':''}</b><span>${p[1]} · ${esc(p[2])}${rr?'':by}</span>`;
       const want=st.wants.some(w=>w.t===p[0]);
       return `<li class="${o?'own':''}">${rr?`<button data-open="${rr.id}">${inner}</button>`:`${inner}<button class="dcbtn" data-dc="${esc(p[0])}|${esc(p[3]||c.name)}" aria-pressed="${want}">${want?'In your Dream Crate':'+ Dream Crate'}</button>`}</li>`}).join('')}</ul>
     ${al.length?`<div class="pathh">Played alongside</div><div class="opts" style="margin-top:8px">${al.map(x=>`<button class="pb" aria-pressed="true" data-crn="${esc(x)}" data-crr="">${esc(x)}</button>`).join('')}</div>`:''}
-    <p class="fine" style="margin-top:12px;font-weight:600">${P.known?`Sample bio, written for this prototype and kept short. In the real product bios and credits come from sourced data (Wikipedia, MusicBrainz, Discogs), with attribution and links. `:c.src==='discogs'?`Credits from Discogs (open data). Data provided by Discogs. `:`Credits from MusicBrainz (open data). A short bio with its source comes next. `}You own ${n} of ${path.length} here.</p>`;
+    <p class="fine" style="margin-top:12px;font-weight:600">${P.known?`Sample bio, written for this prototype and kept short. In the real product bios and credits come from sourced data (Wikipedia, MusicBrainz, Discogs), with attribution and links. `:c.src==='discogs'?`Credits from Discogs (open data). Data provided by Discogs. `:`Credits from MusicBrainz (open data). `}You own ${n} of ${path.length} here.</p>`;
   openSheet('credit');
+  if(!P.known&&!DEMO)fillBio(c.name,c.mbid);
 }
 function openCredit(key){const c=CR[key];if(c)buildCredit(c)}
-function openCreditName(name,role,pid){
+function openCreditName(name,role,pid,mbid){
   const hits=RECS.filter(r=>(r.cred||[]).includes(name)||r.a===name||r.a.split(' & ').includes(name));
   const roleFor=r=>{const cr=((REP[r.id]||{}).crew||[]).find(x=>x[0]===name);return cr?cr[1]:(r.a.includes(name)?'Leader':'Credited')};
-  const base={type:typeOf(role||''),name,role:role||'',blurb:`Credited on ${hits.length} record${hits.length===1?'':'s'} in ${DEMO?'this sample catalog':'your collection'}.`,path:hits.map(r=>[r.t,String(r.y),roleFor(r)])};
+  const base={mbid:mbid||'',type:typeOf(role||''),name,role:role||'',blurb:`Credited on ${hits.length} record${hits.length===1?'':'s'} in ${DEMO?'this sample catalog':'your collection'}.`,path:hits.map(r=>[r.t,String(r.y),roleFor(r)])};
   st.pbase=base;buildCredit(base);
   if(IDX&&!DEMO)idxPerson(name,role,pid?+pid:0,base);
 }
@@ -2240,24 +2314,97 @@ function startQueue(items,src,opt){
   if(opt.shuffle)for(let i=q.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[q[i],q[j]]=[q[j],q[i]]}
   const L=st.listen;L.q=q;L.src=src;L.shuffle=!!opt.shuffle;lGo(0);openSheet('listen');
 }
+/* ---------- the app's own Apple Music player (iPhone app) ----------
+   Plays with the Apple Music account already on the phone, so there is no second sign-in. While a track plays, the screen shows
+   who played on it, from the credits we already have, and every name opens that person's page. */
+const npOK=()=>{try{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.nativePromise&&(C.PluginHeaders||[]).some(h=>h.name==='AppleMusic'&&(h.methods||[]).some(m=>m.name==='play')))}catch(e){return false}};
+const NP={rec:null,info:null,err:'',s:null,timer:0};
+const npCall=(m,a)=>Capacitor.nativePromise('AppleMusic',m,a||{});
+const fmtDur=x=>{x=Math.round(+x||0);return x?Math.floor(x/60)+':'+String(x%60).padStart(2,'0'):''};
+function npEnsure(r){
+  if(r.real&&r.mbc&&!r.mbc.byTrack&&!r.mbcBT){r.mbcBT=1;ensureCredits(r,true)}
+  if(NP.rec===r.id)return;
+  NP.rec=r.id;NP.info=null;NP.err='';
+  (async()=>{
+    try{const id=await amFindAlbum(r);if(!id){NP.err='notfound';return}
+      const info=await npCall('albumInfo',{id});if(!info||!info.title){NP.err='notfound';return}NP.info={...info,id}}
+    catch(e){NP.err='error'}
+    finally{if(NP.rec===r.id&&$('#sheet-listen').classList.contains('on'))renderListen()}
+  })();
+}
+function npHTML(r){
+  npEnsure(r);const I=NP.info,v=SVC.am;
+  if(!I)return `<p class="npmsg">${NP.err==='notfound'?`We couldn’t find ${esc(r.t)} in Apple Music.`:NP.err?'Apple Music didn’t answer. Try again in a moment.':`Finding ${esc(r.t)} in Apple Music…`}</p>`;
+  const rows=(I.tracks||[]).map((t,i)=>`<li><button data-npa="play" data-i="${i}"><i>${i+1}</i><span>${esc(t.title)}</span><em>${fmtDur(t.duration)}</em></button></li>`).join('');
+  return `<div class="nph">${I.artwork?`<img class="npart" alt="" src="${esc(I.artwork)}">`:'<div class="npart"></div>'}<div><b>${esc(I.title)}</b><span>${esc(I.artist)}${I.year?' · '+I.year:''}</span></div></div>
+   <div class="npctl"><button data-npa="previous" aria-label="Previous track"><svg viewBox="0 0 24 24" aria-hidden="true">${ICO.prev}</svg></button><button class="npplay" id="npPlay" data-npa="toggle" aria-label="Play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button><button data-npa="next" aria-label="Next track"><svg viewBox="0 0 24 24" aria-hidden="true">${ICO.next}</svg></button></div>
+   <div id="npMsg"></div><div id="npNow" class="npnow"></div>
+   <ol class="nplist">${rows}</ol>`;
+}
+/* who is on a given track: by title first, then by position when the track counts agree */
+function trackCrew(r,title,idx){
+  const C=r.mbc;if(!C||!C.byTrack||!Object.keys(C.byTrack).length)return null;
+  const tt=C.tracks||[];let ti=tt.findIndex(t=>simText(t.t,title)>=.9);
+  if(ti<0&&NP.info&&tt.length===NP.info.tracks.length)ti=idx;
+  if(ti<0)return null;
+  const m=new Map();(C.byTrack[ti]||[]).forEach(([n,role,mb,pid])=>{const p=m.get(n)||{n,roles:[],mb,pid};if(!p.roles.includes(role))p.roles.push(role);m.set(n,p)});
+  return [...m.values()].sort((a,b)=>(NONPERF.test(a.roles.join(' '))?1:0)-(NONPERF.test(b.roles.join(' '))?1:0));
+}
+const npChip=p=>`<button class="npchip" data-crn="${esc(p.n)}" data-crr="${esc(p.roles.join(', '))}"${p.mb?` data-mbid="${p.mb}"`:''}${p.pid?` data-pid="${p.pid}"`:''}><b>${esc(p.n)}</b><span>${esc(p.roles.slice(0,2).join(', '))}</span></button>`;
+function npPaint(){
+  const I=NP.info,btn=$('#npPlay');if(!I||!btn)return;
+  const S=NP.s||{},playing=!!S.playing;
+  const j=(I.tracks[S.index]&&nz(I.tracks[S.index].title)===nz(S.title))?S.index:I.tracks.findIndex(t=>nz(t.title)===nz(S.title)),idx=S.title&&j>=0?j:-1;
+  btn.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${playing?'<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>':'<path d="M8 5v14l11-7z"/>'}</svg>`;btn.setAttribute('aria-label',playing?'Pause':'Play');
+  $$('.nplist button').forEach((b,i)=>b.classList.toggle('on',i===idx));
+  const r=recOf(NP.rec),now=$('#npNow');if(!now)return;
+  if(idx<0){now.innerHTML='<p class="fine2" style="color:var(--cream);margin:0">Tap a track to start. While it plays, you’ll see who played on it.</p>';return}
+  const tc=trackCrew(r,I.tracks[idx].title,idx);
+  const album=(r.mbc&&r.mbc.crew||[]).slice(0,8).map(c=>({n:c[0],roles:String(c[1]).split(', '),mb:c[2],pid:c[3]}));
+  now.innerHTML=`<div class="npk">Now playing · ${idx+1}</div><div class="npt">${esc(I.tracks[idx].title)}</div>
+   ${tc&&tc.length?`<div class="npk" style="margin-top:10px">On this track</div><div class="npchips">${tc.map(npChip).join('')}</div>`
+     :album.length?`<div class="npk" style="margin-top:10px">On this record</div><div class="npchips">${album.map(npChip).join('')}</div>`
+     :`<p class="fine2" style="color:var(--cream);margin:8px 0 0">${r.real&&!r.mbc?'Looking up who played on it…':'No credits are listed for this record yet.'}</p>`}`;
+}
+async function npTick(){
+  if(!NP.info||!$('#sheet-listen').classList.contains('on'))return;
+  try{NP.s=await npCall('state');npPaint()}catch(e){}
+}
+function npStart(){if(!NP.timer)NP.timer=setInterval(npTick,1000);setTimeout(npTick,150)}
+function npFail(reason){
+  const I=NP.info,el=$('#npMsg');if(!el)return;
+  const link=`<a class="ghost" style="display:block;text-align:center;margin-top:8px" href="${esc((I&&I.url)||'https://music.apple.com')}" target="_blank" rel="noopener">Open in Apple Music</a>`;
+  el.innerHTML={denied:`<p class="npmsg">Memory Wax needs permission to use Apple Music. Turn it on in Settings → Memory Wax → Media &amp; Apple Music.</p>`,
+    subscription:`<p class="npmsg">Playing full songs needs an Apple Music subscription on this phone.</p>${link}`}[reason]||`<p class="npmsg">That didn’t play. Try again, or open it in Apple Music.</p>${link}`;
+}
+async function npAct(a,i){
+  const I=NP.info;if(!I)return;const el=$('#npMsg');if(el)el.innerHTML='';
+  try{
+    if(a==='play'||(a==='toggle'&&!(NP.s&&NP.s.title))){const r=await npCall('play',{id:I.id,index:a==='play'?i:0});if(!r.ok){npFail(r.reason);return}}
+    else if(a==='toggle')await npCall('transport',{action:NP.s&&NP.s.playing?'pause':'resume'});
+    else await npCall('transport',{action:a});
+    setTimeout(npTick,300);
+  }catch(e){npFail('error')}
+}
 function renderListen(){
   st.listen.svc='am';
-  const L=st.listen,v=SVC[L.svc],e=lCur(),r=recOf(e.rec),cv=cov(r),multi=L.q.length>1,src=embedSrc(L.svc,r.id),finding=!src&&!AMC.has(r.id);
+  const L=st.listen,v=SVC[L.svc],e=lCur(),r=recOf(e.rec),cv=cov(r),multi=L.q.length>1,NPn=npOK(),src=NPn?null:embedSrc(L.svc,r.id),finding=!NPn&&!src&&!AMC.has(r.id);
   if(finding)amFindAlbum(r).then(()=>{if(st.listen===L&&lCur()===e&&$('#sheet-listen').classList.contains('on'))renderListen()});
   $('#listenSub').textContent=L.src?`Playing ${L.src}.`:`${r.t} plays in the service you already use.`;
   const up=L.q.map((x,i)=>[x,i]).filter(([x,i])=>i>L.qi).slice(0,4);
   const pick=e.track!=null?recTracks(r.id)[e.track]:null;
-  $('#listenBody').innerHTML=`<div class="lcard" style="--ac:${v.ac}"><div class="lsvc"><i></i>${v.n} · plays in their own player</div>
+  $('#listenBody').innerHTML=`<div class="lcard" style="--ac:${v.ac}"><div class="lsvc"><i></i>${v.n} · ${NPn?'plays with your account':'plays in their own player'}</div>
     ${multi?`<div class="lsrc">${L.qi+1} of ${L.q.length}${L.shuffle?' · shuffled':''}</div>`:''}
-    ${src?'':`<div class="lh"><div class="tile m${r.m}${cv?' has-img':''}"${cv?` style="background-image:url('${cv}')"`:''}></div><div><b>${r.t}</b><span>${r.a} · ${r.y}</span></div></div>`}
-    ${pick?`<p class="fine2" style="margin:10px 0 0;color:var(--cream)">Their pick: <b>${esc(pick)}</b>. Tap it in the player to start there.</p>`:''}
-    ${src?`<iframe class="emb" title="${v.n} player for ${esc(r.t)}" src="${src}" height="450" loading="lazy" allow="autoplay *; encrypted-media *; clipboard-write; fullscreen; picture-in-picture" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"></iframe>`
+    ${src||NPn?'':`<div class="lh"><div class="tile m${r.m}${cv?' has-img':''}"${cv?` style="background-image:url('${cv}')"`:''}></div><div><b>${r.t}</b><span>${r.a} · ${r.y}</span></div></div>`}
+    ${pick&&!NPn?`<p class="fine2" style="margin:10px 0 0;color:var(--cream)">Their pick: <b>${esc(pick)}</b>. Tap it in the player to start there.</p>`:''}
+    ${NPn?npHTML(r):src?`<iframe class="emb" title="${v.n} player for ${esc(r.t)}" src="${src}" height="450" loading="lazy" allow="autoplay *; encrypted-media *; clipboard-write; fullscreen; picture-in-picture" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"></iframe>`
      :`<p style="font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.15;margin:14px 0 4px">${finding?`Finding ${esc(r.t)} in ${v.n}…`:`We couldn’t find ${esc(r.t)} in ${v.n}.`}</p>`}
     ${multi?`<div class="lctl" style="margin-top:12px;justify-content:space-between"><button class="sm" data-lprev="1" aria-label="Previous record"${L.qi===0?' disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true">${ICO.prev}</svg></button><span class="fine2" style="margin:0;color:var(--cream)">Record ${L.qi+1} of ${L.q.length}</span><button data-lnext="1" aria-label="Next record"${L.qi===L.q.length-1?' disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true">${ICO.next}</svg></button></div>`:''}
     ${up.length?`<div class="lup"><div class="k">Up next</div>${up.map(([x,i])=>{const q=recOf(x.rec),c=cov(q);return `<button data-lq="${i}"><div class="tile m${q.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div>${q.t}<br><span>${q.a}</span></div></button>`}).join('')}</div>`:''}</div>
-   <p class="fine2" style="margin:10px 0 6px">${v.need} Plays the album’s streaming release, which may not be the exact pressing on your shelf.</p>
+   <p class="fine2" style="margin:10px 0 6px">${NPn?'Plays with the Apple Music account on this phone. Full songs need a subscription.':v.need} Plays the album’s streaming release, which may not be the exact pressing on your shelf.</p>
    <button class="ghost" data-qsave="${L.svc}">Save ${L.q.length>1?'this queue':'this album'} to ${v.n}</button>
    <a class="ghost" href="${v.url(r)}" target="_blank" rel="noopener">Open in the ${v.n} app instead</a>`;
+  if(NPn)npStart();
 }
 function openListen(svc,rec){const L=st.listen;L.svc='am';L.q=[{rec:rec||L.rec||1}];L.qi=0;L.src=null;L.shuffle=false;L.rec=L.q[0].rec;L.track=0;renderListen();openSheet('listen')}
 
@@ -2949,17 +3096,21 @@ function pickIdx(rels,r){
 }
 const NONPERF=/producer|engineer|mix|master|record|lacquer|cut|cover|sleeve|packag|photo|design|artwork|art direction|liner|written|composed|arranged|lyrics|words|music by|coordinat|management|a&r|executive|illustrat|layout|typograph|remix|edited|compil|translat/;
 function idxToMbc(d,borrowed){
-  const tracks=(d.tracklist||[]).filter(t=>t[0]&&t[1]).map(t=>({n:t[0],t:t[1],len:t[2]||''})),by=new Map();
+  const tracks=(d.tracklist||[]).filter(t=>t[0]&&t[1]).map(t=>({n:t[0],t:t[1],len:t[2]||''})),by=new Map(),bt={},posIdx=tracks.map(t=>String(t.n).toLowerCase());
+  const specToIdx=spec=>{const out=new Set();String(spec||'').split(/[,;]/).forEach(part=>{part=part.trim().toLowerCase().replace(/^tracks?\s+/,'');if(!part)return;
+    const m=part.match(/^([a-z]?\d*)\s*(?:-|–|to)\s*([a-z]?\d*)$/);
+    if(m&&m[1]&&m[2]){const a=posIdx.indexOf(m[1]),b=posIdx.indexOf(m[2]);if(a>=0&&b>=a){for(let i=a;i<=b;i++)out.add(i);return}}
+    posIdx.forEach((q,i)=>{if(q===part||(/^[a-z]$/.test(part)&&q.startsWith(part)))out.add(i)})});return [...out]};
   (d.credits||[]).forEach(c=>{if(!c.name||!c.role)return;const k=c.id||c.name.toLowerCase(),p=by.get(k)||{name:c.name,pid:c.id,roles:[],tr:new Set(),all:false,first:by.size};
     String(c.role).split(/,\s*(?![^\[]*\])/).forEach(x=>{x=x.trim().toLowerCase();if(x&&!p.roles.includes(x))p.roles.push(x)});
-    if(!c.tracks)p.all=true;else String(c.tracks).split(/[,;]/).forEach(t=>{t=t.replace(/^track\s+/i,'').trim();if(t)p.tr.add(t)});by.set(k,p)});
+    if(!c.tracks)p.all=true;else{String(c.tracks).split(/[,;]/).forEach(t=>{t=t.replace(/^track\s+/i,'').trim();if(t)p.tr.add(t)});specToIdx(c.tracks).forEach(i=>String(c.role).split(/,\s*(?![^\[]*\])/).forEach(x=>{x=x.trim().toLowerCase();if(x)(bt[i]=bt[i]||[]).push([c.name,x,'',c.id||0])}))}by.set(k,p)});
   const list=[...by.values()].map(p=>({...p,perf:p.roles.some(r=>!NONPERF.test(r))}));
   const rank=p=>p.perf?0:p.roles.some(r=>/producer|engineer|mix|master/.test(r))?1:p.roles.some(r=>/written|composed|arranged|lyrics|words|music by/.test(r))?2:3;
   list.sort((a,b)=>rank(a)-rank(b)||a.first-b.first);
   const crew=list.slice(0,40).map(p=>{const rs=p.roles.slice(0,3).join(', ');return [p.name,(!p.all&&p.tr.size&&p.perf&&tracks.length?`${rs} (${p.tr.size} track${p.tr.size===1?'':'s'})`:rs),'',p.pid||0]});
   const covered=new Set();list.forEach(p=>p.tr.forEach(t=>covered.add(t)));
   const studio=[...new Set((d.companies||[]).filter(c=>/recorded at|mixed at|studio/i.test(c[1])).map(c=>c[0]))];
-  return {crew,tracks,studio,dates:[],n:list.some(p=>p.all)?tracks.length:Math.min(covered.size,tracks.length),of:tracks.length,rg:'',ctry:d.ctry||'',date:d.released||'',lab:d.lab||'',cat:d.cat||'',at:Date.now(),
+  return {crew,byTrack:bt,tracks,studio,dates:[],n:list.some(p=>p.all)?tracks.length:Math.min(covered.size,tracks.length),of:tracks.length,rg:'',ctry:d.ctry||'',date:d.released||'',lab:d.lab||'',cat:d.cat||'',at:Date.now(),
     src:'discogs',link:d.link||('https://www.discogs.com/release/'+d.dg),borrowed:borrowed?{ctry:borrowed.ctry,y:borrowed.y}:null,pressed:(d.companies||[]).filter(c=>/pressed by/i.test(c[1])).map(c=>c[0])};
 }
 /* credits from the index; when this pressing has few, borrow them from the best-credited pressing of the same album and say so */
@@ -3472,6 +3623,44 @@ function dwKeep(frames){
   try{if(!DEVTOOLS||!ID_NATIVE())return;const t=Date.now();
     frames.forEach((f,i)=>Capacitor.nativePromise('VisionOCR','saveDebug',{name:`dw_${t}_${i}.jpg`,data:f.toDataURL('image/jpeg',.92).split(',')[1]}).catch(()=>{}))}catch(e){}
 }
+/* ---- deadwax with no record chosen first: use the words the camera also read, mostly the track titles printed on the label ----
+   Track titles are a fingerprint, especially for compilations: a release whose tracklist holds several of them is very likely the one. */
+function readTitles(reads){
+  const seen=new Map();
+  reads.forEach(l=>{
+    let raw=String(l.text||'').replace(/[^A-Za-z&'’. \-]/g,' ').replace(/\b\d+\b/g,' ').replace(/\s+/g,' ').trim().replace(/^[A-Z]\s+(?=[A-Z]{3})/,'');
+    const words=raw.split(' ').filter(Boolean);
+    if(raw.length<5||words.length>7)return;
+    if((raw.match(/[A-Za-z]/g)||[]).length/raw.replace(/ /g,'').length<.85)return;
+    const c=canon(raw);if(JUNK.test(c)||CATRX.test(c.replace(/\s+/g,'-')))return;
+    raw=raw.replace(/[.\-\s]+$/,'').replace(/^[.\-\s]+/,'').replace(/\s+(ION|IN|LO)$/,'');      // dangling marks and OCR crumbs
+    if(/\b(MFG|ROCKEFELLER|PLAZA|CORP)\b/.test(canon(raw))||/\bST[- ]?[A-Z]?$/.test(canon(raw)))return;       // the plant's address and the matrix prefix are not titles
+    const f=fold(raw);if(f.length<5)return;
+    const p=seen.get(f);seen.set(f,{t:raw,n:(p?p.n:0)+1,f});
+  });
+  const list=[...seen.values()].sort((a,b)=>b.n-a.n||b.t.length-a.t.length),out=[];
+  list.forEach(x=>{if(!out.some(y=>y.f.includes(x.f)||x.f.includes(y.f)||lev(x.f,y.f)<=2))out.push(x)});      // one entry per title, however many times it was read
+  return out.map(x=>x.t).slice(0,8);
+}
+const DG_REL=new Map();
+async function dgRelease(id){if(DG_REL.has(id))return DG_REL.get(id);const j=await dgFetch('https://api.discogs.com/releases/'+id);DG_REL.set(id,j);return j}
+async function findByTracks(titles,label){
+  if(!dgTok()||titles.length<2)return [];
+  const found=new Map(),q=[...titles].sort((a,b)=>b.length-a.length).slice(0,3);
+  for(const t of q){
+    let j;try{j=await dgFetch('https://api.discogs.com/database/search?type=release&per_page=20&track='+encodeURIComponent(t)+(label?'&label='+encodeURIComponent(label):''))}catch(e){break}
+    (j.results||[]).forEach(x=>{const e=found.get(x.id)||{x,hits:0};e.hits++;found.set(x.id,e)});
+  }
+  const out=[];
+  for(const {x} of [...found.values()].sort((a,b)=>b.hits-a.hits).slice(0,6)){
+    let d;try{d=await dgRelease(x.id)}catch(e){continue}
+    const tl=(d.tracklist||[]).map(t=>t.title||''),m=titles.filter(t=>tl.some(u=>simText(t,u)>=.85)).length;
+    if(m<2)continue;
+    const parts=String(x.title||'').split(' - '),a=parts.length>1?parts.shift():'';
+    out.push({mbid:'',src:'discogs',dg:x.id,t:parts.join(' - ')||x.title,a,y:+x.year||0,lab:(x.label||[])[0]||'',cat:x.catno||'',ctry:x.country||'',fmt:(x.format||[]).join(', '),dis:'',pack:'',vinyl:(x.format||[]).some(f=>/vinyl|lp/i.test(f)),score:m/Math.max(2,Math.min(tl.length,titles.length)),tier:m+' of the titles read are on this release',via:'tracks'});
+  }
+  return out.sort((a,b)=>b.score-a.score);
+}
 async function startDeadwaxScan(){
   if(st.scanning)return;st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');
   const ctx=st.dwCtx?recOf(st.dwCtx):null,live=!!camStream;
@@ -3494,8 +3683,17 @@ async function startDeadwaxScan(){
     const V=dwVote(all);let match=null;
     if(V.mx&&cands.length)cands.forEach(c=>{const m=matchRunout(V.mx,c.ids||[]);if(m&&(!match||m.sc>match.sc))match={sc:m.sc,id:c.id,title:c.title,uri:c.uri,v:m.v,hit:m.hit,n:m.n,year:c.year,country:c.country}});
     let albums=[];if(!ctx&&V.mx){if(IDX){const j=await idxGet('/v1/matrix?q='+encodeURIComponent(V.mx));albums=((j&&j.releases)||[]).slice(0,6).map(idxCand)}if(!albums.length){const d=deriveCat(V.mx);if(d.length){try{albums=await mbByCat(d,null)}catch(e){}}}}
+    let names=[];
+    if(!ctx&&V.mx){
+      names=readTitles(all);
+      if(!albums.length&&names.length){
+        try{albums=await findByTracks(names,null)}catch(e){}
+        if(!albums.length||albums[0].score<.5){try{albums=[...albums,...await mbByNames(names.slice(0,2),null)].slice(0,6)}catch(e){}}
+        if(!albums.length){try{albums=await mbByNames(names.slice(0,1),null)}catch(e){}}
+      }
+    }
     $('#vf').classList.remove('reading');if(V.mx){$('#vf').classList.add('locked');shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}}
-    st.found={kind:'deadwax',ctx:ctx?ctx.id:null,dw:{mx:V.mx,conf:V.conf,frames:V.frames,n:V.n,parts:V.parts,match,gloss:decodeRunout(V.mx),cands:cands.map(c=>({id:c.id,title:c.title,year:c.year,country:c.country,uri:c.uri,ids:(c.ids||[]).map(i=>i.v)}))},albums,dgErr};
+    st.found={kind:'deadwax',ctx:ctx?ctx.id:null,dw:{mx:V.mx,conf:V.conf,frames:V.frames,n:V.n,parts:V.parts,match,gloss:decodeRunout(V.mx),cands:cands.map(c=>({id:c.id,title:c.title,year:c.year,country:c.country,uri:c.uri,ids:(c.ids||[]).map(i=>i.v)}))},albums,names,dgErr};
     renderFound();openSheet('found');setTimeout(resetScan,400);
   }catch(e){await torch(false);stopReal();toast(e.message||'Something went wrong reading the deadwax.')}
 }
@@ -3542,10 +3740,11 @@ function renderFoundX(){
      <div class="mxbig">${esc(D.mx)}</div>
      ${m?`<p class="sub">${m.hit} of ${m.n} parts match the runout Discogs lists for <b>${esc(m.title)}</b>${m.year?' · '+esc(m.year):''}${m.country?' · '+esc(m.country):''}${m.uri?' · <a href="https://www.discogs.com'+esc(m.uri)+'" target="_blank" rel="noopener">Data provided by Discogs</a>':''}.</p>`
         :ctx?`<p class="sub">${(dgTok()||IDX)?(D.cands.length?'None of the '+D.cands.length+' listed pressings carry this runout. That often means an unlisted variant, not a wrong read. Save it as Likely.':'No pressings with that catalog number came back from Discogs.'):'Add your Discogs token in Settings to match this against known runouts for the exact pressing.'}</p>`
-        :`<p class="sub">Read without a record to compare against. ${F.albums.length?'The number looks like one of these:':'Scan the label or barcode first, then confirm with the deadwax.'}</p>`}
+        :`<p class="sub">${F.albums.length?'Your record looks like one of these. Pick yours to add it, and this matrix is saved with it.':'The etching alone doesn’t say which record this is. Type it in, and this matrix is saved with it.'}</p>`}
      ${D.gloss.length?`<div class="gloss"><small>What the marks mean · a reading, not a fact</small>${D.gloss.map(g=>`<p>${esc(g)}</p>`).join('')}</div>`:''}
      ${ctx?`<button class="go press" data-dwattach="1">${m&&m.sc>=.8?'Save as this pressing':'Save to '+esc(ctx.t)}</button>`:''}
      ${!ctx&&F.albums.length?candList(F.albums):''}
+     ${!ctx?`<button class="${F.albums.length?'ghost':'go press'}" data-catmanual="1">${F.albums.length?'None of these. Type it yourself':'Type it yourself'}</button>`:''}
      <button class="ghost" data-dwagain="1">Turn the record a quarter and read more</button>
      <a class="ghost" style="display:block;text-align:center" href="${webq}" target="_blank" rel="noopener">Search the web for this runout</a>
      ${D.parts.length>1?`<p class="fine2" style="margin-top:8px">Parts: ${D.parts.map(p=>esc(p.s)+' ('+Math.round(p.cov*100)+'%)').join(' · ')}</p>`:''}
@@ -3577,13 +3776,13 @@ async function catLook(){
       cands.sort((a,b)=>b.score-a.score);cands=cands.slice(0,6);if(!via&&cands.length)via='cat';
     }
   }catch(e){err=e}
-  st.found={kind:'label',parse:{lab:l||null,cats:q.cat?[q.cat]:[],side:null,raw:[],names},cands,err,errs,via,typed:true,src:'typed',q,fromCode:st.fromCode||''};renderFound();openSheet('found');resetScan();
+  st.found={kind:'label',parse:{lab:l||null,cats:q.cat?[q.cat]:[],side:null,raw:[],names},cands,err,errs,via,typed:true,src:'typed',q,fromCode:st.fromCode||'',dw:st.dwPend||null};renderFound();openSheet('found');resetScan();
 }
 /* what the person typed, kept exactly as typed. Nothing is matched or guessed. */
 function addTyped(){
   const F=st.found,q=F&&F.q;if(!q)return;
   if(!q.title){toast('Add the album title to keep it as typed.');return}
-  addRel({mbid:'',src:'typed',t:q.title,a:q.artist||'Unknown artist',y:+q.year||0,lab:q.label,cat:q.cat,ctry:'',fmt:''},{typed:{at:Date.now()},bcRaw:F.fromCode||''});
+  addRel({mbid:'',src:'typed',t:q.title,a:q.artist||'Unknown artist',y:+q.year||0,lab:q.label,cat:q.cat,ctry:'',fmt:''},{typed:{at:Date.now()},bcRaw:F.fromCode||'',...(F.dw?{dw:F.dw}:{})});
 }
 function openDgToken(){
   $('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Discogs token</h4><p class="sub">Lets the deadwax reader compare your etching with the runouts Discogs lists for each pressing.</p>
@@ -3636,7 +3835,7 @@ const TYPE_ROLE={producer:'producer',recording:'engineer',engineer:'engineer',mi
 const fmtLen=ms=>ms?`${Math.floor(ms/60000)}:${String(Math.round(ms/1000)%60).padStart(2,'0')}`:'';
 const mbArtistName=rel=>(rel.artist||{}).name||'';
 function mbCredits(j){
-  const people=new Map(),bump=(name,mbid,role,trackIdx)=>{if(!name||!role)return;const k=name.toLowerCase();const p=people.get(k)||{name,mbid,roles:new Map(),tracks:new Set(),first:people.size};const n=(p.roles.get(role)||0)+1;p.roles.set(role,n);if(trackIdx!=null)p.tracks.add(trackIdx);people.set(k,p)};
+  const people=new Map(),bt={},bump=(name,mbid,role,trackIdx)=>{if(!name||!role)return;if(trackIdx!=null)(bt[trackIdx]=bt[trackIdx]||[]).push([name,role,mbid||'']);const k=name.toLowerCase();const p=people.get(k)||{name,mbid,roles:new Map(),tracks:new Set(),first:people.size};const n=(p.roles.get(role)||0)+1;p.roles.set(role,n);if(trackIdx!=null)p.tracks.add(trackIdx);people.set(k,p)};
   const studios=new Map(),dates=new Set(),tracks=[];let withRels=0,ti=0;
   (j.media||[]).forEach(m=>(m.tracks||[]).forEach(t=>{
     const rec=t.recording||{},rels=rec.relations||[];tracks.push({n:t.number||String(ti+1),t:t.title||rec.title||'',len:fmtLen(t.length||rec.length)});
@@ -3657,7 +3856,7 @@ function mbCredits(j){
   const studio=[...studios.entries()].sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
   const ds=[...dates].sort();
   const li=(j['label-info']||[])[0]||{};
-  return {crew,tracks,studio,dates:ds,n:withRels,of:tracks.length,rg:(j['release-group']||{}).id||'',ctry:j.country||'',date:j.date||'',lab:(li.label||{}).name||'',cat:li['catalog-number']||'',at:Date.now()};
+  return {crew,byTrack:bt,tracks,studio,dates:ds,n:withRels,of:tracks.length,rg:(j['release-group']||{}).id||'',ctry:j.country||'',date:j.date||'',lab:(li.label||{}).name||'',cat:li['catalog-number']||'',at:Date.now()};
 }
 const whenText2=ds=>{if(!ds.length)return '';const f=s=>{const [y,m,d]=s.split('-');const M=['January','February','March','April','May','June','July','August','September','October','November','December'];return d?`${M[+m-1]} ${+d}, ${y}`:m?`${M[+m-1]} ${y}`:y};return ds.length===1?f(ds[0]):(ds[0].slice(0,4)===ds[ds.length-1].slice(0,4)?`${f(ds[0])} to ${f(ds[ds.length-1])}`:`${f(ds[0])} to ${f(ds[ds.length-1])}`)};
 function realRep(r){
@@ -4013,10 +4212,10 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
-  if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid);return}
+  if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
   if(t.dataset.pidpick){const b=st.pbase;if(b)idxPerson(b.name,b.role,+t.dataset.pidpick,{...b,alts:[]});return}
   if(t.dataset.plan){setPlan(st.rec||1,t.dataset.plan);return}
   if(t.dataset.notes){openNotes();return}
@@ -4064,13 +4263,14 @@ document.addEventListener('click',e=>{
   if(t.dataset.bcpick!==undefined){const F=st.found,c=F.hit&&F.hit.all&&F.hit.all[+t.dataset.bcpick];if(c)addRel(c,{bc:{code:F.code,n:F.hit.n||1}});return}
   if(t.dataset.foundpick!==undefined){const F=st.found,c=(F.kind==='label'?F.cands:F.albums)[+t.dataset.foundpick];if(c){
     const named=F.kind==='label'&&(F.typed||F.via==='name'||F.src==='cover'||c.src==='apple');
-    addRel(c,F.kind==='label'?(named?{named:{src:c.src||'musicbrainz',typed:!!F.typed},bcRaw:F.fromCode||''}:{label:{lab:F.parse.lab,cat:c.cat||F.parse.cats[0],side:F.parse.side}}):{dw:F.dw})}return}
+    addRel(c,F.kind==='label'?(named?{named:{src:c.src||'musicbrainz',typed:!!F.typed},bcRaw:F.fromCode||'',...(F.dw?{dw:F.dw}:{})}:{label:{lab:F.parse.lab,cat:c.cat||F.parse.cats[0],side:F.parse.side}}):{dw:F.dw})}return}
   if(t.dataset.addtyped){addTyped();return}
+  if(t.dataset.npa){npAct(t.dataset.npa,+t.dataset.i);return}
   if(t.dataset.dwattach){dwAttach();return}
   if(t.dataset.dwagain){closeSheets();resetScan();setTimeout(startDeadwaxScan,300);return}
   if(t.dataset.dwreset){st.dwAcc=null;closeSheets();toast('Cleared. Read it fresh.');return}
   if(t.dataset.dwscan){st.dwCtx=+t.dataset.dwscan;st.dwAcc=null;setScanMode('deadwax');go('scan');toast('Torch on. Hold the phone low over the runout and tilt slowly.');return}
-  if(t.dataset.catmanual){const F=st.found;openCatEntry(F&&F.q?F.q:F&&F.parse?{artist:(F.parse.names||[])[0]||'',title:(F.parse.names||[])[1]||'',label:F.parse.lab||'',cat:(F.parse.cats||[])[0]||''}:null);return}
+  if(t.dataset.catmanual){const F=st.found;st.dwPend=F&&F.kind==='deadwax'&&F.dw&&F.dw.mx?F.dw:null;openCatEntry(F&&F.kind==='deadwax'?{title:(F.names||[])[0]||''}:F&&F.q?F.q:F&&F.parse?{artist:(F.parse.names||[])[0]||'',title:(F.parse.names||[])[1]||'',label:F.parse.lab||'',cat:(F.parse.cats||[])[0]||''}:null);return}
   if(t.dataset.catlook){catLook();return}
   if(t.dataset.dgtoken){openDgToken();return}
   if(t.dataset.imprun){dgImport();return}
