@@ -437,6 +437,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 #modes button[hidden]{display:none}
 .cands{display:grid;gap:8px;margin:12px 0 4px}
 .candrow{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:center;text-align:left;padding:10px;background:rgba(84,11,14,.07);border-left:6px solid var(--ox);color:inherit}
+.candrow .nophoto{width:56px;height:56px;background:rgba(84,11,14,.12);display:block}
 .candrow mark{background:rgba(224,168,58,.45);color:inherit;border-radius:4px;padding:0 3px}
 .candrow img{width:56px;height:56px;object-fit:cover;background:rgba(84,11,14,.12)}
 .candrow span{display:grid;gap:2px;min-width:0}.candrow b{font-weight:800;font-size:16px;line-height:1.1}.candrow em{font-family:var(--serif);font-style:italic;font-size:15px}.candrow small{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
@@ -1599,7 +1600,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.19.1 · store checks';
+const BUILD='0.20.0 · index';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -1814,7 +1815,7 @@ const copyOf=id=>(st.copies[id]=st.copies[id]||{cond:null,paid:'',where:''});
 const MODEOF={confirmed:'confirmed',likely:'likely',album:'cover'};
 const realModeOf=r=>r.ev?evMode(r):'barcode';
 const NAMEKEY={'John Coltrane':'coltrane','McCoy Tyner':'tyner','Jimmy Garrison':'garrison','Elvin Jones':'jones','Bob Thiele':'thiele','Rudy Van Gelder':'rvg','Van Gelder Studio':'studio','Impulse!':'impulse'};
-const nameBtn=(n,role,mbid)=>NAMEKEY[n]?`<button class="cr" data-cr="${NAMEKEY[n]}">${esc(n)}</button>`:`<button class="cr" data-crn="${esc(n)}" data-crr="${esc(role||'')}"${mbid?` data-mbid="${mbid}"`:''}>${esc(n)}</button>`;
+const nameBtn=(n,role,mbid,pid)=>NAMEKEY[n]?`<button class="cr" data-cr="${NAMEKEY[n]}">${esc(n)}</button>`:`<button class="cr" data-crn="${esc(n)}" data-crr="${esc(role||'')}"${mbid?` data-mbid="${mbid}"`:''}${pid?` data-pid="${pid}"`:''}>${esc(n)}</button>`;
 const BATTLE_BY_REC={1:0,7:1,2:2};
 const REP={
  1:{lead:'John Coltrane',cat:'A-77 · mono',ctry:'US · 1965',fmt:'12-inch LP, gatefold',lblnote:'orange and black',
@@ -1934,7 +1935,7 @@ function fillReport(r,mode){
   if(NAMEKEY[lead])by.dataset.cr=NAMEKEY[lead];else{by.dataset.crn=lead;by.dataset.crr='Artist'}
   by.textContent=r.a+' ↗';
   $('#repSent').textContent=R.sent||(r.real?[r.y?'Released '+r.y:'',r.lab?'on '+r.lab:''].filter(Boolean).join(' ')+(r.y||r.lab?'. ':'')+((r.ev&&r.ev.dw&&r.ev.dw.mx)?'Pressing read from the deadwax. ':(r.ev&&r.ev.label)?'Found from the center label. ':(r.ev&&r.ev.bc)?'Found by barcode. ':(r.ev&&r.ev.dg)?'Imported from your Discogs collection. ':(r.ev&&r.ev.csv)?'Imported from your CSV. ':'Added by hand. ')+'Credits and story aren’t filled in yet.':'');
-  $('#repPeople').innerHTML=(R.crew||[]).map(([n,role,mbid])=>`<li>${nameBtn(n,role,mbid)}<span>${esc(role)}</span></li>`).join('');
+  $('#repPeople').innerHTML=(R.crew||[]).map(([n,role,mbid,pid])=>`<li>${nameBtn(n,role,mbid,pid)}<span>${esc(role)}</span></li>`).join('');
   $('#repIh').hidden=!R.ih;$('#repIhP').innerHTML=(R.ih||'')+'<sup><a href="#s2">2</a></sup>';
   $('#repStory').innerHTML=(R.story||'')+'<sup><a href="#s1">1</a></sup>';
   fillCopy(r.id);fillPlan(r.id);fillAvail(r.id);
@@ -1999,19 +2000,31 @@ function buildCredit(c){
     ${meta?`<div class="crmeta">${esc(meta)}</div>`:''}
     <div class="crrole">${esc(c.role)}</div>
     <p class="sub">${esc(P.known||c.blurb)}</p>
+    ${(c.alts||[]).length?`<p class="fine2" style="margin:0 0 6px">Showing the most-credited ${esc(c.name)}. Not them?</p><div class="opts" style="margin:0 0 8px">${c.alts.map(a=>`<button class="pb" data-pidpick="${a.id}">${a.releases} credit${a.releases===1?'':'s'}</button>`).join('')}</div>`:''}
     <div class="pathh">Albums and sessions · ${path.length}</div>
     <ul class="path">${path.map(p=>{const rr=RECS.find(x=>x.t===p[0]),o=owns(p[0]);const by=p[3]&&p[3]!==c.name?` · ${esc(p[3])}`:'';const inner=`<b>${esc(p[0])}${o?'<em>In your collection</em>':''}</b><span>${p[1]} · ${esc(p[2])}${rr?'':by}</span>`;
       const want=st.wants.some(w=>w.t===p[0]);
       return `<li class="${o?'own':''}">${rr?`<button data-open="${rr.id}">${inner}</button>`:`${inner}<button class="dcbtn" data-dc="${esc(p[0])}|${esc(p[3]||c.name)}" aria-pressed="${want}">${want?'In your Dream Crate':'+ Dream Crate'}</button>`}</li>`}).join('')}</ul>
     ${al.length?`<div class="pathh">Played alongside</div><div class="opts" style="margin-top:8px">${al.map(x=>`<button class="pb" aria-pressed="true" data-crn="${esc(x)}" data-crr="">${esc(x)}</button>`).join('')}</div>`:''}
-    <p class="fine" style="margin-top:12px;font-weight:600">${P.known?`Sample bio, written for this prototype and kept short. In the real product bios and credits come from sourced data (Wikipedia, MusicBrainz, Discogs), with attribution and links. `:`Credits from MusicBrainz (open data). A short bio with its source comes next. `}You own ${n} of ${path.length} here.</p>`;
+    <p class="fine" style="margin-top:12px;font-weight:600">${P.known?`Sample bio, written for this prototype and kept short. In the real product bios and credits come from sourced data (Wikipedia, MusicBrainz, Discogs), with attribution and links. `:c.src==='discogs'?`Credits from Discogs (open data). Data provided by Discogs. `:`Credits from MusicBrainz (open data). A short bio with its source comes next. `}You own ${n} of ${path.length} here.</p>`;
   openSheet('credit');
 }
 function openCredit(key){const c=CR[key];if(c)buildCredit(c)}
-function openCreditName(name,role){
+function openCreditName(name,role,pid){
   const hits=RECS.filter(r=>(r.cred||[]).includes(name)||r.a===name||r.a.split(' & ').includes(name));
   const roleFor=r=>{const cr=((REP[r.id]||{}).crew||[]).find(x=>x[0]===name);return cr?cr[1]:(r.a.includes(name)?'Leader':'Credited')};
-  buildCredit({type:typeOf(role||''),name,role:role||'',blurb:`Credited on ${hits.length} record${hits.length===1?'':'s'} in ${DEMO?'this sample catalog':'your collection'}.`,path:hits.map(r=>[r.t,String(r.y),roleFor(r)])});
+  const base={type:typeOf(role||''),name,role:role||'',blurb:`Credited on ${hits.length} record${hits.length===1?'':'s'} in ${DEMO?'this sample catalog':'your collection'}.`,path:hits.map(r=>[r.t,String(r.y),roleFor(r)])};
+  st.pbase=base;buildCredit(base);
+  if(IDX&&!DEMO)idxPerson(name,role,pid?+pid:0,base);
+}
+/* everything a person is credited on, from the index. Names and credited roles only. */
+async function idxPerson(name,role,pid,base){
+  let alts=[];
+  if(!pid){const j=await idxGet('/v1/people?name='+encodeURIComponent(name)),ps=(j&&j.people)||[];if(!ps.length)return;pid=ps[0].id;alts=ps.slice(1,4)}
+  const j=await idxGet('/v1/person/'+pid+'?limit=300');if(!j)return;
+  const open=$('#sheet-credit').classList.contains('on'),h=$('#creditBody h4');if(!open||!h||h.textContent!==name)return;
+  const path=(j.credits||[]).map(x=>[x.t,String(x.y||''),(x.roles||[]).join(', ').toLowerCase(),x.a]);
+  buildCredit({...base,src:'discogs',alts,blurb:`Credited on ${(j.total||0).toLocaleString()} release${j.total===1?'':'s'} in the Discogs catalogue${j.total>path.length?', showing the first '+path.length:''}.${base.path.length?' '+base.path.length+' in your collection.':''}`,path:[...base.path,...path]});
 }
 
 /* ---------- collection ---------- */
@@ -3059,11 +3072,72 @@ async function getBarDet(){
   h.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.UPC_E,Z.BarcodeFormat.EAN_8]);h.set(Z.DecodeHintType.TRY_HARDER,true);reader.setHints(h);
   return barDet={detect:async c=>{try{return reader.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(c)))).getText()}catch(e){return null}}};
 }
+/* ---------- Memory Wax index: our own read-only copy of public catalogue data (see index-server/). Until INDEX_URL is set the app uses MusicBrainz as before. ---------- */
+const INDEX_URL='';
+const IDX=(()=>{let u=INDEX_URL;try{if(DEVTOOLS){const m=location.search.match(/[?&]idx=([^&]*)/);if(m){const v=decodeURIComponent(m[1]);v?localStorage.setItem('mw_idx',v):localStorage.removeItem('mw_idx')}u=localStorage.getItem('mw_idx')||u}}catch(e){}return String(u||'').replace(/\/$/,'')})();
+async function idxGet(path){
+  if(!IDX)return null;const ac=new AbortController(),t=setTimeout(()=>ac.abort(),7000);
+  try{const r=await fetch(IDX+path,{signal:ac.signal});if(!r.ok)return null;return await r.json()}catch(e){return null}finally{clearTimeout(t)}
+}
+const idxCand=x=>({mbid:'',rg:'',dg:x.dg,src:'discogs',t:x.t,a:x.a,y:x.y||0,lab:x.lab||'',cat:x.cat||'',ctry:x.ctry||'',fmt:x.fmt||'',dis:'',pack:'',vinyl:!!x.vinyl,score:x.score?x.score*100:100,master:x.master||0});
+/* which index release is this record? Only answer when the details agree, never guess. */
+function pickIdx(rels,r){
+  const L=rels||[];if(!L.length)return null;
+  const sc=x=>(r.y&&x.y===r.y?2:0)+(r.ctry&&fold(x.ctry)===fold(r.ctry)?2:0)+(r.cat&&fold(x.cat)===fold(r.cat)?1:0)+(x.vinyl?1:0);
+  const best=[...L].sort((a,b)=>sc(b)-sc(a))[0];return (L.length===1||sc(best)>=3)?best:null;
+}
+const NONPERF=/producer|engineer|mix|master|record|lacquer|cut|photo|design|artwork|art direction|liner|written|composed|arranged|lyrics|words|music by|coordinat|management|a&r|executive|illustrat|layout|typograph|remix|edited|compil|translat/;
+function idxToMbc(d,borrowed){
+  const tracks=(d.tracklist||[]).filter(t=>t[0]&&t[1]).map(t=>({n:t[0],t:t[1],len:t[2]||''})),by=new Map();
+  (d.credits||[]).forEach(c=>{if(!c.name||!c.role)return;const k=c.id||c.name.toLowerCase(),p=by.get(k)||{name:c.name,pid:c.id,roles:[],tr:new Set(),all:false,first:by.size};
+    String(c.role).split(/,\s*(?![^\[]*\])/).forEach(x=>{x=x.trim().toLowerCase();if(x&&!p.roles.includes(x))p.roles.push(x)});
+    if(!c.tracks)p.all=true;else String(c.tracks).split(/[,;]/).forEach(t=>{t=t.replace(/^track\s+/i,'').trim();if(t)p.tr.add(t)});by.set(k,p)});
+  const list=[...by.values()].map(p=>({...p,perf:p.roles.some(r=>!NONPERF.test(r))}));
+  const rank=p=>p.perf?0:p.roles.some(r=>/producer|engineer|mix|master/.test(r))?1:p.roles.some(r=>/written|composed|arranged|lyrics|words|music by/.test(r))?2:3;
+  list.sort((a,b)=>rank(a)-rank(b)||a.first-b.first);
+  const crew=list.slice(0,40).map(p=>{const rs=p.roles.slice(0,3).join(', ');return [p.name,(!p.all&&p.tr.size&&p.perf&&tracks.length?`${rs} (${p.tr.size} track${p.tr.size===1?'':'s'})`:rs),'',p.pid||0]});
+  const covered=new Set();list.forEach(p=>p.tr.forEach(t=>covered.add(t)));
+  const studio=[...new Set((d.companies||[]).filter(c=>/recorded at|mixed at|studio/i.test(c[1])).map(c=>c[0]))];
+  return {crew,tracks,studio,dates:[],n:list.some(p=>p.all)?tracks.length:Math.min(covered.size,tracks.length),of:tracks.length,rg:'',ctry:d.ctry||'',date:d.released||'',lab:d.lab||'',cat:d.cat||'',at:Date.now(),
+    src:'discogs',link:d.link||('https://www.discogs.com/release/'+d.dg),borrowed:borrowed?{ctry:borrowed.ctry,y:borrowed.y}:null,pressed:(d.companies||[]).filter(c=>/pressed by/i.test(c[1])).map(c=>c[0])};
+}
+/* credits from the index; when this pressing has few, borrow them from the best-credited pressing of the same album and say so */
+async function idxCredits(r){
+  if(!IDX)return false;
+  if(!r.dg){
+    const code=r.ev&&r.ev.bc&&r.ev.bc.code;let c=null;
+    if(code){const j=await idxGet('/v1/barcode/'+encodeURIComponent(code));c=pickIdx(j&&j.releases,r)}
+    if(!c&&r.cat){const j=await idxGet('/v1/catno?cat='+encodeURIComponent(r.cat)+(r.lab?'&label='+encodeURIComponent(r.lab):''));c=pickIdx(j&&j.releases,r)}
+    if(!c)return false;r.dg=c.dg;
+  }
+  const d=await idxGet('/v1/release/'+r.dg);if(!d)return false;
+  let src=d,borrowed=null;
+  if((d.credits||[]).length<3&&d.master){
+    const m=await idxGet('/v1/master/'+d.master),best=((m&&m.releases)||[]).find(x=>x.dg!==d.dg&&x.credits>=3&&x.credits>(d.credits||[]).length);
+    if(best){const bd=await idxGet('/v1/release/'+best.dg);if(bd&&(bd.credits||[]).length>(d.credits||[]).length){src=bd;borrowed=best}}
+  }
+  r.mbc=idxToMbc(src,borrowed);r.tracks=r.mbc.tracks.map(t=>t.t);r.cred=r.mbc.crew.map(c=>c[0]);r.src='discogs';
+  if(!r.ctry&&d.ctry)r.ctry=d.ctry;if(!r.cat&&d.cat)r.cat=d.cat;if(!r.lab&&d.lab)r.lab=d.lab;if(!r.y&&d.y)r.y=d.y;
+  return true;
+}
+/* records found through the index have no cover yet: look for one in the background, once */
+async function attachMB(r){
+  if(r.mb||r.mbCoverTried)return;r.mbCoverTried=1;
+  try{const mb=await mbResolve(r);if(mb){r.cover='https://coverartarchive.org/release/'+mb+'/front-250';saveReal();if(st.screen==='collection')renderCollection()}}catch(e){}
+}
+async function idxCands(ctx){
+  let ids=[];if(ctx.dg)ids.push(ctx.dg);
+  if(ctx.cat){const j=await idxGet('/v1/catno?cat='+encodeURIComponent(ctx.cat)+(ctx.lab?'&label='+encodeURIComponent(ctx.lab):''));((j&&j.releases)||[]).forEach(x=>{if(!ids.includes(x.dg))ids.push(x.dg)})}
+  ids=ids.slice(0,12);if(!ids.length)return [];
+  const j=await idxGet('/v1/runouts?ids='+ids.join(','));
+  return ((j&&j.releases)||[]).map(x=>({id:x.dg,title:x.a+' - '+x.t,catno:x.cat,year:x.y,country:x.ctry,label:x.lab,fmt:x.fmt,uri:x.uri,ids:(x.ids||[]).map(i=>({v:i.v,d:i.side}))}));
+}
 async function mbSearch(code){
   const j=await mbGet('release/?query=barcode:'+encodeURIComponent(code)+'&limit=10',{hi:true});
   return (j||{}).releases||[];
 }
 async function mbLookup(code){
+  if(IDX){const j=await idxGet('/v1/barcode/'+encodeURIComponent(code));if(j&&(j.releases||[]).length){const all=j.releases.map(idxCand);return {...all[0],n:all.length,all}}}
   let rels=await mbSearch(code);
   if(!rels.length){const alt=code.length===13&&code[0]==='0'?code.slice(1):code.length===12?'0'+code:'';if(alt)rels=await mbSearch(alt)}
   if(!rels.length)return null;
@@ -3110,10 +3184,10 @@ function renderFound(){
      <p class="sub">We won’t guess which one you have. ${candHint(hit.all)}</p>
      ${candList(hit.all,'data-bcpick')}
      <button class="ghost" data-foundno="1">None of these. Scan again</button><button class="ghost" data-catmanual="1">Search by artist and title</button>
-     <p class="fine2" style="margin-top:8px">Data from MusicBrainz and the Cover Art Archive. Whichever you pick stays at “Release found” until the label or deadwax narrows it.</p>`;return;
+     <p class="fine2" style="margin-top:8px">${hit.src==='discogs'?'Data provided by Discogs.':'Data from MusicBrainz and the Cover Art Archive.'} Whichever you pick stays at “Release found” until the label or deadwax narrows it.</p>`;return;
   }
   const meta=[hit.y||'',[hit.lab,hit.cat].filter(Boolean).join(' · '),hit.ctry,hit.fmt].filter(Boolean).join('  ·  ');
-  $('#foundBody').innerHTML=`<img class="fcov" alt="" src="https://coverartarchive.org/release/${hit.mbid}/front-250" onerror="this.style.display='none'">
+  $('#foundBody').innerHTML=`${hit.mbid?`<img class="fcov" alt="" src="https://coverartarchive.org/release/${hit.mbid}/front-250" onerror="this.style.display='none'">`:''}
    <h4 class="disp" style="font-size:36px">${esc(hit.t)}</h4>
    <p class="sub" style="margin:8px 0 4px">${esc(hit.a)}</p>
    <div class="fmeta">${esc(meta)}</div>
@@ -3150,7 +3224,7 @@ function realReport(r,mode){
     ['Matrix',dw&&dw.mx?`<span class="mono-chip">${esc(dw.mx)}</span>`:`<button class="chipbtn press" data-dwscan="${r.id}" style="margin:0;padding:8px 14px">Scan the deadwax</button>`],['Format',r.fmt?esc(r.fmt):'12-inch LP']];
   $('#pressing').innerHTML=rows.map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
   const steps=[];
-  if(e.bc)steps.push(`<b>Barcode</b> ${esc(e.bc.code)} matched a release in MusicBrainz${e.bc.n>1?' ('+e.bc.n+' releases share it)':''}.`);
+  if(e.bc)steps.push(`<b>Barcode</b> ${esc(e.bc.code)} matched a release in ${r.src==='discogs'?'the Discogs catalogue':'MusicBrainz'}${e.bc.n>1?' ('+e.bc.n+' releases share it)':''}.`);
   if(e.dg)steps.push(`<b>Imported</b> from your Discogs collection · <a href="https://www.discogs.com/release/${e.dg.id}" target="_blank" rel="noopener">Data provided by Discogs</a>.`);
   if(e.csv)steps.push('<b>Imported</b> from a CSV, as typed.');
   if(e.label)steps.push(`<b>Center label</b> read as ${esc([e.label.lab,e.label.cat].filter(Boolean).join(' '))}${e.label.side?' · side '+esc(e.label.side):''}, matched by catalog number.`);
@@ -3237,6 +3311,7 @@ function parseLabel(lines){
 async function mbQ(q){const j=await mbGet('release/?query='+encodeURIComponent(q)+'&limit=25',{hi:true});return (j||{}).releases||[]}
 function mbRel(x){const li=(x['label-info']||[])[0]||{},rg=(x['release-group']||{}).id||'',vinyl=(x.media||[]).some(m=>/vinyl|lp|12"|7"|10"/i.test(m.format||''));return {mbid:x.id,rg,t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),dis:x.disambiguation||'',pack:x.packaging||'',vinyl,score:x.score||0,n:1}}
 async function mbByCat(cats,lab){
+  if(IDX){const out=new Map();for(const c of cats.slice(0,3)){const j=await idxGet('/v1/catno?cat='+encodeURIComponent(c)+(lab?'&label='+encodeURIComponent(lab):''));((j&&j.releases)||[]).forEach(x=>{if(!out.has(x.dg))out.set(x.dg,{...idxCand(x),q:c})});if(out.size>=6)break}if(out.size)return [...out.values()].slice(0,6)}
   const out=new Map();let i=0;
   for(const c of cats.slice(0,3)){
     const cq='catno:"'+c.replace(/"/g,'')+'"';let rels=await mbQ(lab?cq+' AND label:"'+lab.replace(/"/g,'')+'"':cq);
@@ -3250,6 +3325,7 @@ async function mbByCat(cats,lab){
 /* artist and title read off the label: fuzzy words, either way round, then the biggest line alone */
 const fz=t=>'('+t.replace(/[^A-Za-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>=2).map(w=>w.length>=5?w+'~1':w).join(' AND ')+')';
 async function mbByNames(names,lab){
+  if(IDX){const n=names.slice(0,3),out=new Map();for(const [i,j] of [[0,1],[1,0],[0,2],[2,0],[1,2],[2,1]]){if(!n[i]||!n[j])continue;const r=await idxGet('/v1/search?artist='+encodeURIComponent(n[i])+'&title='+encodeURIComponent(n[j]));((r&&r.releases)||[]).forEach(x=>{if(!out.has(x.dg))out.set(x.dg,{...idxCand(x),via:'name'})});if(out.size>=4)break}if(out.size)return [...out.values()].slice(0,6)}
   const n=names.slice(0,3),qs=[];
   for(const [i,j] of [[0,1],[0,2],[1,2]])if(n[i]&&n[j])qs.push(`(artist:${fz(n[i])} AND release:${fz(n[j])}) OR (artist:${fz(n[j])} AND release:${fz(n[i])})`);
   if(n[0])qs.push(`release:${fz(n[0])} OR artist:${fz(n[0])}`);
@@ -3370,11 +3446,12 @@ function decodeRunout(mx){const u=canon(mx),out=[];RUNOUT_GLOSS.forEach(([re,txt
 /* ---- the flows ---- */
 function evMode(r){const e=r.ev||{};if(e.dw&&e.dw.match&&e.dw.match.sc>=.8)return 'confirmed';if(e.dw&&e.dw.mx)return 'likely';if(e.label)return 'label';if(e.bc)return 'barcode';return (e.dg||e.csv)?'import':'barcode'}
 function addRel(hit,ev){
-  const ex=RECS.find(r=>r.real&&r.mb===hit.mbid);let id;
+  const ex=RECS.find(r=>r.real&&(hit.mbid?r.mb===hit.mbid:(hit.dg&&r.dg===hit.dg)));let id;
   if(ex){id=ex.id;st.owned.add(id);ex.ev={...(ex.ev||{}),...ev};if(!ex.cat&&hit.cat)ex.cat=hit.cat;if(!ex.lab&&hit.lab)ex.lab=hit.lab;if(!ex.ctry&&hit.ctry)ex.ctry=hit.ctry}
   else{id=Math.max(100,...RECS.map(r=>r.id))+1;const ord=Math.max(...RECS.map(r=>r.ord||0))+1;
-    RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid,rg:hit.rg||'',bc:ev.bc?ev.bc.code:undefined,cover:'https://coverartarchive.org/release/'+hit.mbid+'/front-250',ev});st.owned.add(id);st.justAdded=id}
+    RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid||'',dg:hit.dg||undefined,src:hit.src||undefined,rg:hit.rg||'',bc:ev.bc?ev.bc.code:undefined,cover:hit.mbid?'https://coverartarchive.org/release/'+hit.mbid+'/front-250':'',ev});st.owned.add(id);st.justAdded=id}
   const r=recOf(id);if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
+  if(r.src==='discogs'&&!r.mb)attachMB(r);
   saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
 }
 /* the label, cut out of the middle of the frame and enlarged: a tight crop first (label fills it), then the whole circle */
@@ -3466,7 +3543,8 @@ async function startDeadwaxScan(){
     dwKeep(frames);
     /* known runouts for the candidate pressings become word hints for the reader */
     let cands=[],known=[],dgErr=null;
-    if(dgTok()&&ctx&&(ctx.cat||ctx.dg)){try{cands=ctx.cat?await dgCandidates(ctx.cat,ctx.lab):[];if(ctx.dg&&!cands.some(c=>c.id===ctx.dg))cands.unshift({id:ctx.dg,title:ctx.a+' - '+ctx.t,catno:ctx.cat,year:ctx.y,country:ctx.ctry||'',uri:'/release/'+ctx.dg});for(const c of cands.slice(0,4)){const o=await dgRunouts(c.id);c.ids=o.ids;c.uri=o.uri||c.uri;c.year=c.year||o.year;c.country=c.country||o.country;known=known.concat(o.ids.map(i=>i.v));await sleepMs(1100)}}catch(e){dgErr=e}}
+    if(IDX&&ctx&&(ctx.cat||ctx.dg)){try{const ic=await idxCands(ctx);if(ic.length){cands=ic;known=ic.flatMap(c=>c.ids.map(i=>i.v))}}catch(e){}}
+    if(!cands.length&&dgTok()&&ctx&&(ctx.cat||ctx.dg)){try{cands=ctx.cat?await dgCandidates(ctx.cat,ctx.lab):[];if(ctx.dg&&!cands.some(c=>c.id===ctx.dg))cands.unshift({id:ctx.dg,title:ctx.a+' - '+ctx.t,catno:ctx.cat,year:ctx.y,country:ctx.ctry||'',uri:'/release/'+ctx.dg});for(const c of cands.slice(0,4)){const o=await dgRunouts(c.id);c.ids=o.ids;c.uri=o.uri||c.uri;c.year=c.year||o.year;c.country=c.country||o.country;known=known.concat(o.ids.map(i=>i.v));await sleepMs(1100)}}catch(e){dgErr=e}}
     const words=[...new Set(known.flatMap(v=>canon(v).split(' ')).filter(t=>t.length>=3))].slice(0,200);
     const reads=[];let fi=0;
     for(const f of frames){for(const v of dwViews(f)){const ls=await ocrFrame(v,{words,minHeight:.008});ls.forEach(l=>reads.push({text:l.text,conf:l.conf,frame:fi,x:l.box?l.box.x:0}));if(st.scanGen!==gen)return}fi++;setPrompt(`Reading ${fi} of ${frames.length}…`)}
@@ -3474,7 +3552,7 @@ async function startDeadwaxScan(){
     const all=acc.reads.concat(reads.map(r=>({...r,frame:r.frame+acc.frames,x:r.x+(acc.passes||0)*2})));  /* later passes sort after earlier ones */st.dwAcc={ctx:acc.ctx,reads:all,frames:acc.frames+frames.length,passes:(acc.passes||0)+1};
     const V=dwVote(all);let match=null;
     if(V.mx&&cands.length)cands.forEach(c=>{const m=matchRunout(V.mx,c.ids||[]);if(m&&(!match||m.sc>match.sc))match={sc:m.sc,id:c.id,title:c.title,uri:c.uri,v:m.v,hit:m.hit,n:m.n,year:c.year,country:c.country}});
-    let albums=[];if(!ctx&&V.mx){const d=deriveCat(V.mx);if(d.length){try{albums=await mbByCat(d,null)}catch(e){}}}
+    let albums=[];if(!ctx&&V.mx){if(IDX){const j=await idxGet('/v1/matrix?q='+encodeURIComponent(V.mx));albums=((j&&j.releases)||[]).slice(0,6).map(idxCand)}if(!albums.length){const d=deriveCat(V.mx);if(d.length){try{albums=await mbByCat(d,null)}catch(e){}}}}
     $('#vf').classList.remove('reading');if(V.mx){$('#vf').classList.add('locked');shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}}
     st.found={kind:'deadwax',ctx:ctx?ctx.id:null,dw:{mx:V.mx,conf:V.conf,frames:V.frames,n:V.n,parts:V.parts,match,gloss:decodeRunout(V.mx),cands:cands.map(c=>({id:c.id,title:c.title,year:c.year,country:c.country,uri:c.uri,ids:(c.ids||[]).map(i=>i.v)}))},albums,dgErr};
     renderFound();openSheet('found');setTimeout(resetScan,400);
@@ -3492,7 +3570,7 @@ function candDiff(cs){const d=new Set();if(!cs||cs.length<2)return d;DIFFKEYS.fo
 function candHint(cs){const d=candDiff(cs);if(!d.size)return 'They look the same on the details we have. Pick the one that matches the print on your copy.';const names=DIFFKEYS.filter(([k])=>d.has(k)).map(([,n])=>n);return 'Where they differ: <b>'+names.slice(0,4).join('</b>, <b>')+'</b>. Check those on your copy, then pick.'}
 function candList(cs,fn){const d=candDiff(cs);return '<div class="cands">'+cs.map((c,i)=>candRow(c,i,d,fn)).join('')+'</div>'}
 function candRow(c,i,d,fn){d=d||new Set();const mk=(k,t)=>t?(d.has(k)?'<mark>'+esc(t)+'</mark>':esc(t)):'';
-  const meta=[mk('y',c.y||''),[mk('lab',c.lab),mk('cat',c.cat)].filter(Boolean).join(' '),mk('ctry',c.ctry),mk('fmt',c.fmt),mk('pack',c.pack&&c.pack!=='None'?c.pack:''),mk('dis',c.dis)].filter(Boolean).join(' · ');return `<button class="candrow press" data-foundpick="${i}"><img alt="" src="https://coverartarchive.org/release/${c.mbid}/front-250" onerror="this.style.visibility='hidden'"><span><b>${esc(c.t)}</b><em>${esc(c.a)}</em><small>${meta}</small></span></button>`.replace('data-foundpick',fn||'data-foundpick')}
+  const meta=[mk('y',c.y||''),[mk('lab',c.lab),mk('cat',c.cat)].filter(Boolean).join(' '),mk('ctry',c.ctry),mk('fmt',c.fmt),mk('pack',c.pack&&c.pack!=='None'?c.pack:''),mk('dis',c.dis)].filter(Boolean).join(' · ');return `<button class="candrow press" data-foundpick="${i}">${c.mbid?`<img alt="" src="https://coverartarchive.org/release/${c.mbid}/front-250" onerror="this.style.visibility='hidden'">`:'<i class="nophoto"></i>'}<span><b>${esc(c.t)}</b><em>${esc(c.a)}</em><small>${meta}</small></span></button>`.replace('data-foundpick',fn||'data-foundpick')}
 function renderFoundX(){
   const F=st.found,B=$('#foundBody');
   if(F.kind==='label'){
@@ -3519,7 +3597,7 @@ function renderFoundX(){
      <h4 class="disp" style="font-size:36px">${tier}</h4>
      <div class="mxbig">${esc(D.mx)}</div>
      ${m?`<p class="sub">${m.hit} of ${m.n} parts match the runout Discogs lists for <b>${esc(m.title)}</b>${m.year?' · '+esc(m.year):''}${m.country?' · '+esc(m.country):''}${m.uri?' · <a href="https://www.discogs.com'+esc(m.uri)+'" target="_blank" rel="noopener">Data provided by Discogs</a>':''}.</p>`
-        :ctx?`<p class="sub">${dgTok()?(D.cands.length?'None of the '+D.cands.length+' listed pressings carry this runout. That often means an unlisted variant, not a wrong read. Save it as Likely.':'No pressings with that catalog number came back from Discogs.'):'Add your Discogs token in Settings to match this against known runouts for the exact pressing.'}</p>`
+        :ctx?`<p class="sub">${(dgTok()||IDX)?(D.cands.length?'None of the '+D.cands.length+' listed pressings carry this runout. That often means an unlisted variant, not a wrong read. Save it as Likely.':'No pressings with that catalog number came back from Discogs.'):'Add your Discogs token in Settings to match this against known runouts for the exact pressing.'}</p>`
         :`<p class="sub">Read without a record to compare against. ${F.albums.length?'The number looks like one of these:':'Scan the label or barcode first, then confirm with the deadwax.'}</p>`}
      ${D.gloss.length?`<div class="gloss"><small>What the marks mean · a reading, not a fact</small>${D.gloss.map(g=>`<p>${esc(g)}</p>`).join('')}</div>`:''}
      ${ctx?`<button class="go press" data-dwattach="1">${m&&m.sc>=.8?'Save as this pressing':'Save to '+esc(ctx.t)}</button>`:''}
@@ -3652,6 +3730,7 @@ async function ensureCredits(r,force){
   if(!force&&(r.mbc||(r.mbcTried&&Date.now()-r.mbcTried<864e5)))return;
   CRED_BUSY.add(r.id);
   try{
+    if(IDX&&await idxCredits(r)){r.mbcTried=Date.now();saveReal();saveState();if(st.screen==='reveal'&&st.rec===r.id){fillReport(r,st.cameFromScan?st.mode:realModeOf(r));$$('.rep .blk:not([hidden])').forEach(b=>{if(!b.classList.contains('in'))ios&&ios.observe(b)})}CRED_BUSY.delete(r.id);return}
     const mb=await mbResolve(r);
     if(mb){const j=await mbGet('release/'+mb+'?inc='+MB_INC);if(j){r.mbc=mbCredits(j);r.tracks=r.mbc.tracks.map(t=>t.t);r.cred=r.mbc.crew.map(c=>c[0]);if(!r.ctry&&r.mbc.ctry)r.ctry=r.mbc.ctry;if(!r.cat&&r.mbc.cat)r.cat=r.mbc.cat;if(!r.lab&&r.mbc.lab)r.lab=r.mbc.lab;if(!r.y&&r.mbc.date)r.y=+r.mbc.date.slice(0,4)||0;if(!r.rg&&r.mbc.rg)r.rg=r.mbc.rg;if(!r.cover&&r.mb)r.cover='https://coverartarchive.org/release/'+r.mb+'/front-250';if(r.rg&&r.cover&&COV.bad.has(r.cover)&&!/release-group/.test(r.cover))r.cover='https://coverartarchive.org/release-group/'+r.rg+'/front-250'}}
     r.mbcTried=Date.now();saveReal();saveState();
@@ -3664,6 +3743,9 @@ function creditsNote(r){
   const C=r.mbc,el=$('#repHint');if(!el)return;
   if(!r.real){el.textContent='Tap any name for a short bio and what else they played on';return}
   if(!C){el.innerHTML=r.mbcErr?`Couldn’t fetch credits: ${esc(r.mbcErr)}`:r.mbcTried?'No credits found for this release on MusicBrainz yet.':'Fetching credits from MusicBrainz…';return}
+  if(C.src==='discogs'){const dl=`<a href="${esc(C.link)}" target="_blank" rel="noopener">Discogs</a>`;
+    el.innerHTML=(C.n>=C.of&&C.of?`Credits for all ${C.of} tracks, from ${dl} (open data). Tap a name to see everything they worked on.`:C.n?`Credits on ${C.n} of ${C.of} tracks, from ${dl} (open data). Tap a name to see everything they worked on.`:`${dl} has no player credits for this release yet.`)
+      +(C.borrowed?` These come from the ${[C.borrowed.ctry,C.borrowed.y].filter(Boolean).join(' ')} pressing of the same album, because your pressing lists few. Data provided by Discogs.`:' Data provided by Discogs.');return}
   const link=r.mb?`<a href="https://musicbrainz.org/release/${r.mb}" target="_blank" rel="noopener">MusicBrainz</a>`:'MusicBrainz';
   el.innerHTML=(C.n>=C.of?`Credits for all ${C.of} tracks, from ${link} (open data). Tap a name to follow it.`:C.n?`Credits on ${C.n} of ${C.of} tracks, from ${link} (open data). The rest aren’t entered yet.`:`${link} has the tracklist but no player credits for this release yet. Add them there and they’ll show here.`)+(r.mbHow==='catno'||r.mbHow==='title'?' Matched by '+(r.mbHow==='catno'?'catalog number':'title')+', so check it’s the same release.':'');
 }
@@ -3974,10 +4056,11 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
-  if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr);return}
+  if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid);return}
+  if(t.dataset.pidpick){const b=st.pbase;if(b)idxPerson(b.name,b.role,+t.dataset.pidpick,{...b,alts:[]});return}
   if(t.dataset.plan){setPlan(st.rec||1,t.dataset.plan);return}
   if(t.dataset.planpick){const id=st.planFor||st.rec||1,k=t.dataset.planpick;closeSheets();if(k==='later'){toast('Okay. It’s Keeping it for now. Change it anytime on the record.');return}setPlan(id,k);return}
   if(t.dataset.deal){const a=t.dataset.deal;if(a==='match'){openMatch();return}if(a==='req'){openRequest(+t.dataset.ri);return}dealAct(a,t);return}
