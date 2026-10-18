@@ -1597,8 +1597,10 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'am',conn:{am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.19.0 · cleaner and clearer';
-const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
+/* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
+const DEVTOOLS=true;
+const BUILD='0.19.1 · store checks';
+const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
 /* cover art: drop the file at Prototype/assets/ */
@@ -1941,7 +1943,7 @@ function fillReport(r,mode){
 /* A real (scanned) record has only what the lookup returned. Hide the sections that would otherwise show sample text, and renumber the rest. */
 function tidyReport(r,R){
   const real=!!r.real,has=(k)=>!!R[k]&&(!Array.isArray(R[k])||R[k].length);
-  const show={session:has('crew'),story:has('story'),liner:!real,listen:true,src:!real};
+  const show={session:has('crew'),story:has('story'),liner:!real,listen:true,src:!real,voices:!real};   /* Voices needs a moderated backend: hidden until then */
   $$('.rep .blk').forEach(b=>{const k=[...b.classList].find(c=>c in show);if(k)b.hidden=real&&!show[k]});
   $('.disc-note').hidden=real;
   $('#repSent').hidden=!$('#repSent').textContent;
@@ -2193,15 +2195,24 @@ function amScore(r,x){
   const ry=+String(x.releaseDate||'').slice(0,4);if(r.y&&ry)sc-=Math.min(1,Math.abs(ry-r.y)/40)*.5;
   return {sc,t};
 }
+/* the web version (and test builds) use Apple's public catalog search; undefined means it could not be reached */
+async function amWebFind(r,artist,album){
+  try{
+    const j=await (await fetch('https://itunes.apple.com/search?term='+encodeURIComponent((artist+' '+album).trim())+'&entity=album&media=music&limit=12&country=us')).json();
+    let best=null;(j.results||[]).forEach(x=>{const m=amScore(r,x);if(m.t>=2.5&&(!best||m.sc>best.sc))best={sc:m.sc,id:String(x.collectionId)}});
+    return best?best.id:null;
+  }catch(e){return undefined}
+}
 async function amFindAlbum(r){
   const k=r.id;if(amKnown(k))return amKnown(k);if(AMC.has(k))return AMC.get(k);
+  const album=String(r.t||'').replace(/\(.*?\)|\[.*?\]/g,' ').trim(),artist=r.a&&!/^unknown/i.test(r.a)?r.a:'';
   let id=null;
-  try{
-    const term=(r.a&&!/^unknown/i.test(r.a)?r.a+' ':'')+String(r.t||'').replace(/\(.*?\)|\[.*?\]/g,' ');
-    const j=await (await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(term.trim())+'&entity=album&media=music&limit=12&country=us')).json();
-    let best=null;(j.results||[]).forEach(x=>{const m=amScore(r,x);if(m.t>=2.5&&(!best||m.sc>best.sc))best={sc:m.sc,id:String(x.collectionId)}});
-    id=best?best.id:null;
-  }catch(e){AMC.set(k,null);setTimeout(()=>AMC.delete(k),60000);return null}   /* offline or blocked: ask again in a minute */
+  if(amNativeOK()){   /* in the iPhone app Apple's own MusicKit does the lookup */
+    try{const n=await Capacitor.nativePromise('AppleMusic','findAlbum',{artist,album});id=n&&n.id?String(n.id):null}
+    catch(e){if(DEVTOOLS)console.warn('MusicKit album lookup failed',e&&e.message);if(!DEVTOOLS){AMC.set(k,null);setTimeout(()=>AMC.delete(k),60000);return null}else id=await amWebFind(r,artist,album)}   /* test builds fall back to the web search so a MusicKit problem is visible but not blocking */
+  }else{              /* the web version uses Apple's public catalog search */
+    id=await amWebFind(r,artist,album);if(id===undefined){AMC.set(k,null);setTimeout(()=>AMC.delete(k),60000);return null}   /* offline or blocked: ask again in a minute */
+  }
   AMC.set(k,id);if(id&&r.real){r.am=id;try{saveReal()}catch(e){}}
   return id;
 }
@@ -2248,7 +2259,7 @@ function pickTrack(list,it,nameOf){
 }
 /* Apple Music through MusicKit JS. Needs a developer token from an Apple Developer Program account. */
 let amMusic=null;
-function loadMK(){return new Promise((res,rej)=>{if(window.MusicKit)return res();const s=document.createElement('script');s.src='https://js-cdn.music.apple.com/musickit/v3/musickit.js';s.async=true;s.onload=()=>{if(window.MusicKit)res();else document.addEventListener('musickitloaded',()=>res(),{once:true})};s.onerror=()=>rej(new Error('Could not load Apple’s MusicKit.'));document.head.appendChild(s)})}
+function loadMK(){return new Promise((res,rej)=>{if(!DEVTOOLS)return rej(new Error('Not available in this build.'));if(window.MusicKit)return res();const s=document.createElement('script');s.src='https://js-cdn.music.apple.com/musickit/v3/musickit.js';s.async=true;s.onload=()=>{if(window.MusicKit)res();else document.addEventListener('musickitloaded',()=>res(),{once:true})};s.onerror=()=>rej(new Error('Could not load Apple’s MusicKit.'));document.head.appendChild(s)})}
 async function amConnect(token){
   await loadMK();
   await MusicKit.configure({developerToken:token,app:{name:'Memory Wax',build:'0.8'}});
@@ -2827,7 +2838,7 @@ function nRecv(d){
 const RTCFG=()=>{try{return {url:localStorage.getItem('mw_rt_url')||'',key:localStorage.getItem('mw_rt_key')||''}}catch(e){return {url:'',key:''}}};
 const rtOn=()=>{const c=RTCFG();return !!(c.url&&c.key)};
 let rtLib=null;
-function rtLoad(){return rtLib||(rtLib=new Promise((ok,no)=>{if(window.supabase)return ok(window.supabase);const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';el.onload=()=>window.supabase?ok(window.supabase):no(new Error('Chat library did not start.'));el.onerror=()=>{rtLib=null;no(new Error('Could not load the chat library.'))};document.head.appendChild(el)}))}
+function rtLoad(){return rtLib||(rtLib=new Promise((ok,no)=>{if(!DEVTOOLS)return no(new Error('Not available in this build.'));if(window.supabase)return ok(window.supabase);const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';el.onload=()=>window.supabase?ok(window.supabase):no(new Error('Chat library did not start.'));el.onerror=()=>{rtLib=null;no(new Error('Could not load the chat library.'))};document.head.appendChild(el)}))}
 function rtCheck(url,key){
   if(!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(url))return 'The project URL should look like https://abcd1234.supabase.co';
   if(!key||key.length<20)return 'Paste the publishable (anon) key from Project Settings, API.';
@@ -3037,7 +3048,7 @@ addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='nIn'
 
 /* ---------- real barcode scanning: read the code, look it up on MusicBrainz ---------- */
 let zxP=null,barDet=null;
-function zxLoad(){return zxP||(zxP=new Promise((ok,no)=>{if(window.ZXing)return ok(window.ZXing);const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';el.onload=()=>window.ZXing?ok(window.ZXing):no(new Error('Reader did not start.'));el.onerror=()=>{zxP=null;no(new Error('Could not load the barcode reader.'))};document.head.appendChild(el)}))}
+function zxLoad(){return zxP||(zxP=new Promise((ok,no)=>{if(!DEVTOOLS)return no(new Error('This phone could not read the barcode. Type the number instead.'));if(window.ZXing)return ok(window.ZXing);const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';el.onload=()=>window.ZXing?ok(window.ZXing):no(new Error('Reader did not start.'));el.onerror=()=>{zxP=null;no(new Error('Could not load the barcode reader.'))};document.head.appendChild(el)}))}
 async function getBarDet(){
   if(barDet)return barDet;
   /* on the iPhone app, Apple's own barcode reader runs first; if it can't (the simulator), the web reader takes over */
@@ -3440,7 +3451,7 @@ async function startLabelAuto(kind){
 }
 /* iPhone app only: keep the last few deadwax shots on this phone, so a hard etching can be studied and the reader tuned. Nothing is sent anywhere. */
 function dwKeep(frames){
-  try{if(!ID_NATIVE())return;const t=Date.now();
+  try{if(!DEVTOOLS||!ID_NATIVE())return;const t=Date.now();
     frames.forEach((f,i)=>Capacitor.nativePromise('VisionOCR','saveDebug',{name:`dw_${t}_${i}.jpg`,data:f.toDataURL('image/jpeg',.92).split(',')[1]}).catch(()=>{}))}catch(e){}
 }
 async function startDeadwaxScan(){
@@ -3686,7 +3697,7 @@ function labVariants(cv){
   out.push(mk(false),mk(true));return out;
 }
 let tessP=null,tessW=null;
-function tessLoad(){return tessP||(tessP=new Promise((ok,no)=>{if(window.Tesseract)return ok(window.Tesseract);const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';el.onload=()=>window.Tesseract?ok(window.Tesseract):no(new Error('Reader did not start.'));el.onerror=()=>{tessP=null;no(new Error('Could not load the text reader. Check your signal.'))};document.head.appendChild(el)}))}
+function tessLoad(){return tessP||(tessP=new Promise((ok,no)=>{if(!DEVTOOLS)return no(new Error('Text reading is not available on this phone.'));if(window.Tesseract)return ok(window.Tesseract);const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';el.onload=()=>window.Tesseract?ok(window.Tesseract):no(new Error('Reader did not start.'));el.onerror=()=>{tessP=null;no(new Error('Could not load the text reader. Check your signal.'))};document.head.appendChild(el)}))}
 const LABENG={
   tess:{name:'Tesseract (web)',ok:()=>true,run:async cv=>{
     const T=await tessLoad();if(!tessW){tessW=await T.createWorker('eng');await tessW.setParameters({tessedit_pageseg_mode:T.PSM.SPARSE_TEXT,tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-/.()#*+& '})}
@@ -4364,7 +4375,7 @@ async function renderYourData(){
 }
 
 loadPrefs();applyPrefs();renderSettings();restoreState();renderCollection();loadCovers().then(()=>{try{renderCollection()}catch(e){}});setInterval(saveState,2500);addEventListener('pagehide',saveState);
-{const b=$('#buildTag');if(b){b.textContent='Memory Wax '+BUILD+(DEMO?' · sample data on':'');let n=0,t0=0;b.addEventListener('click',()=>{const now=Date.now();n=now-t0<2500?n+1:1;t0=now;if(n>=7){n=0;closeSheets();openLab()}})}}
+{const b=$('#buildTag');if(b){b.textContent='Memory Wax '+(DEVTOOLS?BUILD:BUILD.split(' ')[0])+(DEMO?' · sample data on':'');let n=0,t0=0;b.addEventListener('click',()=>{const now=Date.now();n=now-t0<2500?n+1:1;t0=now;if(DEVTOOLS&&n>=7){n=0;closeSheets();openLab()}})}}
 renderCollection();updatePills();
 </script>
 </body>
