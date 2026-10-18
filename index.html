@@ -537,6 +537,17 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .npchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .npchip{text-align:left;padding:7px 11px;border-radius:14px;background:rgba(255,243,176,.14);color:var(--cream);transition:transform 160ms ease-out}
 .npchip:active{transform:scale(.97)}
+.mini{position:absolute;left:30px;right:30px;bottom:94px;z-index:41;display:flex;align-items:center;gap:6px;padding:6px 8px 6px 6px;border-radius:16px;background:rgba(42,5,8,.96);border:1.5px solid rgba(255,243,176,.18);color:var(--cream);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);animation:miniIn .28s var(--ease-out)}
+.mini[hidden]{display:none}
+@keyframes miniIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.mini .mopen{flex:1;min-width:0;display:flex;align-items:center;gap:10px;text-align:left;color:inherit;transition:transform 160ms ease-out}
+.mini .mopen:active{transform:scale(.98)}
+.mini img,.mini .mart{width:38px;height:38px;border-radius:8px;flex:none;object-fit:cover;background:rgba(255,243,176,.12)}
+.mini b{display:block;font:700 13px/1.15 var(--sans,system-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini em{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .mtog{width:40px;height:40px;border-radius:50%;background:var(--cream);color:var(--ox);display:grid;place-items:center;flex:none;transition:transform 160ms ease-out}
+.mini .mtog:active{transform:scale(.94)}
+.mini .mtog svg{width:18px;height:18px;fill:currentColor}
 .npchip b{display:block;font:700 14px/1.1 var(--sans,system-ui)}.npchip span{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
 .nplist{list-style:none;margin:0;padding:0;max-height:240px;overflow:auto}
 .nplist button{display:flex;gap:10px;align-items:baseline;width:100%;padding:9px 6px;text-align:left;color:var(--cream);border-top:1px solid rgba(255,243,176,.18)}
@@ -1136,6 +1147,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <button class="tab" data-go="collection" aria-current="false"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="3"/><path d="M4 10.5h16"/></svg>Collection</button>
       <button class="tab" data-go="scene" aria-current="false"><svg viewBox="0 0 24 24"><circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="9.5" r="2.5"/><path d="M3.5 19c.9-3 2.8-4.3 5-4.3s4.1 1.3 5 4.3M14 15.2c2.3-.5 4.8.5 6.5 3.8"/></svg>Community</button>
     </nav>
+    <div class="mini" id="miniNP" hidden><button class="mopen" data-npa="open" aria-label="Open the player"><span class="mart" id="miniArt"></span><span style="min-width:0"><b id="miniT"></b><em id="miniA"></em></span></button><button class="mtog" id="miniTog" data-npa="toggle" aria-label="Pause"></button></div>
 
     <div class="backdrop" id="backdrop"></div>
 
@@ -1254,7 +1266,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <h4 class="disp">Listen</h4>
       <p class="sub" id="listenSub">A Love Supreme plays in the service you already use.</p>
       <div id="listenBody"></div>
-      <p class="fine2">This is Apple Music’s own player, shown unmodified. Memory Wax never plays or stores audio.</p>
+      <p class="fine2">Apple Music plays the audio, with your own account. Memory Wax never stores audio.</p>
     </div>
 
     <div class="sheet" id="sheet-sure" role="alertdialog" aria-label="Are you sure?">
@@ -1436,7 +1448,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <div class="dsrc"><b>Pressings, labels and catalogue numbers</b><span>MusicBrainz and Discogs open data. Data provided by Discogs where it is used.</span></div>
       <div class="dsrc"><b>Credits and who played what</b><span>Discogs and MusicBrainz, with a link to the source on each record.</span></div>
       <div class="dsrc"><b>Cover art</b><span>Shown from the Cover Art Archive to identify a record. It belongs to its rights holders. Covers you photograph yourself stay on your phone.</span></div>
-      <div class="dsrc"><b>Music</b><span>Apple Music, in its own player. Memory Wax never plays or stores audio.</span></div>
+      <div class="dsrc"><b>Music</b><span>Apple Music plays it, with your own account. Memory Wax never stores audio.</span></div>
       <div class="dsrc"><b>Liner notes</b><span>Linked, not copied. Photos of your own copy stay private to you.</span></div>
       <p class="fine" style="margin-top:12px;font-weight:600">Every claim carries a source. Anything unverified is labeled.</p>
     </div>
@@ -1619,7 +1631,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.23.2 · learn';
+const BUILD='0.23.3 · learn';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -1647,7 +1659,7 @@ let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on
 $$('[data-toast]').forEach(b=>b.addEventListener('click',()=>toast(b.dataset.toast)));
 
 const openSheetsLocked=()=>$('#sheet-cands').classList.contains('on')||$('#sheet-unsure').classList.contains('on');
-function openSheet(id){$$('.sheet.on').forEach(x=>{if(x.id!=='sheet-'+id)x.classList.remove('on')});$('#backdrop').classList.add('on');$('#sheet-'+id).classList.add('on')}
+function openSheet(id){if(id==='credit'){if($('#sheet-listen').classList.contains('on')&&npOK())st.ret='listen';else if(!$('#sheet-credit').classList.contains('on'))st.ret=null}else if(id!=='listen')st.ret=null;$$('.sheet.on').forEach(x=>{if(x.id!=='sheet-'+id)x.classList.remove('on')});$('#backdrop').classList.add('on');$('#sheet-'+id).classList.add('on')}
 function maybeAuto(delay=700){
   clearTimeout(maybeAuto.t);
   maybeAuto.t=setTimeout(()=>{
@@ -1656,8 +1668,13 @@ function maybeAuto(delay=700){
   },delay);
 }
 function closeSheets(){maybeAuto(900);phone.scrollTop=0;if(typeof nightStop==='function')nightStop();const lb=$('#listenBody');if(lb)lb.innerHTML='';$('#backdrop').classList.remove('on');$$('.sheet').forEach(s=>s.classList.remove('on'))}
-$('#backdrop').addEventListener('click',()=>{if(!openSheetsLocked())closeSheets()});
-addEventListener('keydown',e=>{if(e.key==='Escape'&&!openSheetsLocked())closeSheets()});
+/* leaving a person's page that was opened from the player goes back to the player, not to the screen behind it */
+function closeBack(){
+  if(st.ret==='listen'&&$('#sheet-credit').classList.contains('on')&&NP.info){st.ret=null;renderListen();openSheet('listen');return}
+  st.ret=null;closeSheets();
+}
+$('#backdrop').addEventListener('click',()=>{if(!openSheetsLocked())closeBack()});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!openSheetsLocked())closeBack()});
 
 /* ---------- navigation ---------- */
 let leaveTimer;
@@ -2374,8 +2391,17 @@ function npPaint(){
      :`<p class="fine2" style="color:var(--cream);margin:8px 0 0">${r.real&&!r.mbc?'Looking up who played on it…':'No credits are listed for this record yet.'}</p>`}`;
 }
 async function npTick(){
-  if(!NP.info||!$('#sheet-listen').classList.contains('on'))return;
-  try{NP.s=await npCall('state');npPaint()}catch(e){}
+  if(!NP.info)return;
+  try{NP.s=await npCall('state');npPaint();npMini()}catch(e){}
+}
+/* the small player bar: the music keeps going when the Listen sheet is closed, so a way back stays on screen */
+function npMini(){
+  const el=$('#miniNP');if(!el)return;const S=NP.s||{},I=NP.info;
+  const show=!!(I&&S.title&&!document.querySelector('.sheet.on')&&st.screen!=='scan'&&st.screen!=='arrive');
+  el.hidden=!show;if(!show)return;
+  $('#miniT').textContent=S.title;$('#miniA').textContent=I.artist||'';
+  const art=$('#miniArt');if(I.artwork&&art.dataset.src!==I.artwork){art.dataset.src=I.artwork;art.style.cssText=`background:url('${I.artwork}') center/cover`}
+  const tg=$('#miniTog');tg.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${S.playing?'<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>':'<path d="M8 5v14l11-7z"/>'}</svg>`;tg.setAttribute('aria-label',S.playing?'Pause':'Play');
 }
 function npStart(){if(!NP.timer)NP.timer=setInterval(npTick,1000);setTimeout(npTick,150)}
 function npFail(reason){
@@ -4252,7 +4278,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.lnext!==undefined){lGo(st.listen.qi+1);return}
   if(t.dataset.lprev!==undefined){lGo(st.listen.qi-1);return}
   if(t.dataset.lq!==undefined){lGo(+t.dataset.lq);return}
-  if(t.dataset.close){closeSheets();return}
+  if(t.dataset.close){closeBack();return}
   if(t.dataset.qsave){const L=st.listen,svc=t.dataset.qsave;saveTo(svc,L.src?L.src.replace(/^your |[“”]/g,''):recOf(L.q[0].rec).t,'',L.q.map(x=>({rec:x.rec,track:x.track})),null);return}
   if(t.dataset.svcdis){try{amMusic&&amMusic.unauthorize()}catch(e){}amMusic=null;renderSvc();return}
   if(t.dataset.svcgo){
@@ -4272,7 +4298,7 @@ document.addEventListener('click',e=>{
     const named=F.kind==='label'&&(F.typed||F.via==='name'||F.src==='cover'||c.src==='apple');
     addRel(c,F.kind==='label'?(named?{named:{src:c.src||'musicbrainz',typed:!!F.typed},bcRaw:F.fromCode||'',...(F.dw?{dw:F.dw}:{})}:{label:{lab:F.parse.lab,cat:c.cat||F.parse.cats[0],side:F.parse.side}}):{dw:F.dw})}return}
   if(t.dataset.addtyped){addTyped();return}
-  if(t.dataset.npa){npAct(t.dataset.npa,+t.dataset.i);return}
+  if(t.dataset.npa){if(t.dataset.npa==='open'){if(NP.rec)openListen('am',NP.rec);return}npAct(t.dataset.npa,+t.dataset.i);return}
   if(t.dataset.dwattach){dwAttach();return}
   if(t.dataset.dwagain){closeSheets();resetScan();setTimeout(startDeadwaxScan,300);return}
   if(t.dataset.dwreset){st.dwAcc=null;closeSheets();toast('Cleared. Read it fresh.');return}
