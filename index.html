@@ -1607,7 +1607,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'am',conn:{am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.18.4 · Apple Music only';
+const BUILD='0.18.5 · deadwax flatten';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -3274,6 +3274,39 @@ function dwVote(reads){
   const mx=keep.map(c=>c.s).join(' '),conf=keep.length?keep.reduce((a,c)=>a+c.score,0)/keep.length:0;
   return {mx,conf,frames:nFrames,n:items.length,parts:keep.map(c=>({s:c.s,cov:c.cov,conf:c.conf}))};
 }
+/* faint etching: flatten the lighting and smooth the grain so shallow strokes stand out (tested on synthetic faint etchings with Apple's reader, see Documents/deadwax_capture_protocol.md) */
+function dwBlur(src,w,h,r){
+  const t=new Float32Array(w*h),o=new Float32Array(w*h),k=2*r+1,cl=(v,m)=>v<0?0:v>m?m:v;
+  for(let y=0;y<h;y++){const b=y*w;let a=0;for(let x=-r;x<=r;x++)a+=src[b+cl(x,w-1)];
+    for(let x=0;x<w;x++){t[b+x]=a/k;a+=src[b+cl(x+r+1,w-1)]-src[b+cl(x-r,w-1)]}}
+  for(let x=0;x<w;x++){let a=0;for(let y=-r;y<=r;y++)a+=t[cl(y,h-1)*w+x];
+    for(let y=0;y<h;y++){o[y*w+x]=a/k;a+=t[cl(y+r+1,h-1)*w+x]-t[cl(y-r,h-1)*w+x]}}
+  return o;
+}
+function dwStretch(v,lo,hi){
+  const n=v.length,bins=2048;let mn=1e9,mx=-1e9;for(let i=0;i<n;i++){const x=v[i];if(x<mn)mn=x;if(x>mx)mx=x}
+  const hist=new Uint32Array(bins),sc=(bins-1)/Math.max(1e-6,mx-mn);for(let i=0;i<n;i++)hist[((v[i]-mn)*sc)|0]++;
+  let a=0,l=0;while(l<bins-1&&(a+=hist[l])<n*lo)l++;a=0;let u=bins-1;while(u>0&&(a+=hist[u])<n*(1-hi))u--;
+  const L=mn+l/sc,U=mn+u/sc,k=255/Math.max(1e-6,U-L),out=new Uint8ClampedArray(n);
+  for(let i=0;i<n;i++)out[i]=(v[i]-L)*k;return out;
+}
+/* grey Float32 in, flattened grey Uint8 out. Window sizes follow the frame width so a 1400 px and a 1920 px frame behave alike. */
+function dwFlatCore(g,w,h){
+  const q=w/1400,r=Math.max(1,Math.round(q)),R=Math.max(8,Math.round(18*q));
+  let sm=g;for(let i=0;i<3;i++)sm=dwBlur(sm,w,h,r);
+  let bg=g;for(let i=0;i<2;i++)bg=dwBlur(bg,w,h,R);
+  const n=w*h,hp=new Float32Array(n);for(let i=0;i<n;i++)hp[i]=sm[i]-bg[i];
+  return dwStretch(hp,.005,.995);
+}
+function dwFlat(cv){
+  const w=cv.width,h=cv.height,im=cv.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h),d=im.data,g=new Float32Array(w*h);
+  for(let i=0,j=0;i<d.length;i+=4,j++)g[j]=d[i]*.3+d[i+1]*.59+d[i+2]*.11;
+  const o=dwFlatCore(g,w,h),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d'),out=x.createImageData(w,h);
+  for(let i=0,j=0;j<o.length;i+=4,j++){out.data[i]=out.data[i+1]=out.data[i+2]=o[j];out.data[i+3]=255}
+  x.putImageData(out,0,0);return c;
+}
+/* what the reader will look at for one frame: stretched, and flattened */
+const dwViews=f=>[labVariants(f)[0],dwFlat(f)];
 /* catalog number derived from a matrix like "A-77-A" or "BN-LP-1577-B" (the part before the side letter / cut number) */
 function deriveCat(mx){
   const out=[];canon(mx).split(' ').forEach(t=>{if(!/\d/.test(t))return;const p=t.split('-');const push=s=>{if(s&&!out.includes(s)&&(CATRX.test(s)||NUMRX.test(s)))out.push(s)};push(t);if(p.length>2&&/^[A-Z0-9]{1,2}$/.test(p[p.length-1]))push(p.slice(0,-1).join('-'));if(p.length>3)push(p.slice(0,-2).join('-'))});
@@ -3394,6 +3427,11 @@ async function startLabelAuto(kind){
     }
   }catch(e){st.autoOff=true;stopReal();toast('Couldn’t read the label automatically. Tap the shutter to try.')}
 }
+/* iPhone app only: keep the last few deadwax shots on this phone, so a hard etching can be studied and the reader tuned. Nothing is sent anywhere. */
+function dwKeep(frames){
+  try{if(!ID_NATIVE())return;const t=Date.now();
+    frames.forEach((f,i)=>Capacitor.nativePromise('VisionOCR','saveDebug',{name:`dw_${t}_${i}.jpg`,data:f.toDataURL('image/jpeg',.92).split(',')[1]}).catch(()=>{}))}catch(e){}
+}
 async function startDeadwaxScan(){
   if(st.scanning)return;st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');
   const ctx=st.dwCtx?recOf(st.dwCtx):null,live=!!camStream;
@@ -3403,12 +3441,13 @@ async function startDeadwaxScan(){
     await camHi(true);await torch(true);
     const frames=await grabFrames(live?6:1,3600,(i,n)=>{$('#guide').textContent=`Capturing ${i} of ${n}…`},true);
     await torch(false);if(st.scanGen!==gen)return;if(!frames.length){stopReal();return}
+    dwKeep(frames);
     /* known runouts for the candidate pressings become word hints for the reader */
     let cands=[],known=[],dgErr=null;
     if(dgTok()&&ctx&&(ctx.cat||ctx.dg)){try{cands=ctx.cat?await dgCandidates(ctx.cat,ctx.lab):[];if(ctx.dg&&!cands.some(c=>c.id===ctx.dg))cands.unshift({id:ctx.dg,title:ctx.a+' - '+ctx.t,catno:ctx.cat,year:ctx.y,country:ctx.ctry||'',uri:'/release/'+ctx.dg});for(const c of cands.slice(0,4)){const o=await dgRunouts(c.id);c.ids=o.ids;c.uri=o.uri||c.uri;c.year=c.year||o.year;c.country=c.country||o.country;known=known.concat(o.ids.map(i=>i.v));await sleepMs(1100)}}catch(e){dgErr=e}}
     const words=[...new Set(known.flatMap(v=>canon(v).split(' ')).filter(t=>t.length>=3))].slice(0,200);
     const reads=[];let fi=0;
-    for(const f of frames){for(const v of [f,...labVariants(f).slice(0,1)]){const ls=await ocrFrame(v,{words,minHeight:.008});ls.forEach(l=>reads.push({text:l.text,conf:l.conf,frame:fi,x:l.box?l.box.x:0}));if(st.scanGen!==gen)return}fi++;setPrompt(`Reading ${fi} of ${frames.length}…`)}
+    for(const f of frames){for(const v of dwViews(f)){const ls=await ocrFrame(v,{words,minHeight:.008});ls.forEach(l=>reads.push({text:l.text,conf:l.conf,frame:fi,x:l.box?l.box.x:0}));if(st.scanGen!==gen)return}fi++;setPrompt(`Reading ${fi} of ${frames.length}…`)}
     const acc=st.dwAcc&&st.dwAcc.ctx===(ctx?ctx.id:null)?st.dwAcc:{ctx:ctx?ctx.id:null,reads:[],frames:0};
     const all=acc.reads.concat(reads.map(r=>({...r,frame:r.frame+acc.frames,x:r.x+(acc.passes||0)*2})));  /* later passes sort after earlier ones */st.dwAcc={ctx:acc.ctx,reads:all,frames:acc.frames+frames.length,passes:(acc.passes||0)+1};
     const V=dwVote(all);let match=null;
