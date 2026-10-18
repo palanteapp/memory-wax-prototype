@@ -600,12 +600,6 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .plsave{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
 .plsave .done{opacity:.75}
 
-/* trade / sale flow */
-.dealcard{display:flex;gap:12px;align-items:center;padding:12px;margin:0 0 12px;background:rgba(84,11,14,.07);border-left:6px solid var(--ox)}
-.dealcard .tile{width:62px;flex:none}
-.dealcard b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:22px;line-height:.9;text-transform:uppercase}
-.dealcard span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.75;margin-top:4px}
-.dealcard em{display:inline-block;font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--gold);padding:3px 7px;margin-top:6px}
 .thread{display:flex;flex-direction:column;margin:6px 0 10px}
 .bub{max-width:84%;padding:9px 12px;margin:4px 0;font-size:14px;line-height:1.3;background:rgba(84,11,14,.09);border-radius:0 14px 14px 14px}
 .bub.me{align-self:flex-end;background:var(--ox);color:var(--cream);border-radius:14px 0 14px 14px}
@@ -1027,10 +1021,8 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
             <div class="cond" id="cond" role="group" aria-label="Condition"><button data-cond="M" aria-pressed="false" data-tip="Mint. Perfect and unplayed, usually still sealed." class="tip-l">M</button><button data-cond="NM" aria-pressed="false" data-tip="Near Mint. Looks and plays like new, with at most faint signs of handling.">NM</button><button data-cond="VG+" aria-pressed="false" data-tip="Very Good Plus. Light wear and a few faint marks. Plays well with little or no noise.">VG+</button><button data-cond="VG" aria-pressed="false" data-tip="Very Good. Visible wear and some surface noise, but plays through fine." class="tip-r">VG</button><button data-cond="G" aria-pressed="false" data-tip="Good. Heavy wear and noticeable noise. It plays, but it’s a listening copy." class="tip-r">G</button></div>
             <p class="mc-note condnote" id="condNote">Tap a grade to see what it means.</p>
             <span class="mc-lab">Plan for this copy</span>
-            <div class="cond" id="plan" role="group" aria-label="Plan for this copy"><button data-plan="keep" aria-pressed="true" class="tip-l" data-tip="Keeping it. Private. Nothing is shown to anyone.">Keeping it</button><button data-plan="trade" aria-pressed="false" data-tip="Open to trade. Collectors looking for this pressing are told it’s available.">Open to trade</button><button data-plan="sale" aria-pressed="false" class="tip-r" data-tip="For sale. Collectors looking for this pressing are told it’s available.">For sale</button></div>
+            <div class="cond" id="plan" role="group" aria-label="Plan for this copy"><button data-plan="keep" aria-pressed="true" class="tip-l" data-tip="Keeping it. Private. Nothing is shown to anyone.">Keeping it</button><button data-plan="trade" aria-pressed="false" data-tip="Open to trade. A private note for you for now.">Open to trade</button><button data-plan="sale" aria-pressed="false" class="tip-r" data-tip="For sale. A private note for you for now.">For sale</button></div>
             <div id="planExtra" hidden>
-              <span class="mc-lab">Who can see it</span>
-              <div class="cond" id="pubSeg" role="group" aria-label="Who can see this listing"><button data-pub="1" aria-pressed="true" class="tip-l" data-tip="Shows on this record’s page and alerts collectors who are looking for it. No name, no location.">On the record page</button><button data-pub="0" aria-pressed="false" class="tip-r" data-tip="Only collectors who are looking for this pressing are told. Nothing shows on the record page.">Matched only</button></div>
               <div class="mc-two"><div><span class="mc-lab">Asking price</span><input class="mc-in" id="mcAsk" inputmode="decimal" placeholder="$ (optional)" aria-label="Asking price"></div></div>
               <p class="mc-note" id="planNote"></p>
             </div>
@@ -1292,17 +1284,6 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 
     <div class="sheet" id="sheet-night" role="dialog" aria-label="Add a night"><div id="nightBody"></div></div>
 
-    <div class="sheet" id="sheet-plan" role="dialog" aria-label="Plan for this copy">
-      <h4 class="disp">What’s the plan for this one?</h4>
-      <p class="sub" id="planSub"></p>
-      <button class="opt-card" data-planpick="keep"><b>Keeping it</b><span>Filed away. Private. Nothing is shown to anyone.</span></button>
-      <button class="opt-card" data-planpick="trade"><b>Open to trade</b><span>Shows on the record’s page, and collectors looking for it are told.</span></button>
-      <button class="opt-card" data-planpick="sale"><b>For sale</b><span>Same, with an asking price if you want one.</span></button>
-      <button class="ghost" data-planpick="later">Decide later</button>
-      <p class="fine2">Your name never shows. Collectors see the pressing, the condition and your plan, and they don’t learn who you are until you accept. You can switch to matched-only on the record.</p>
-    </div>
-
-    <div class="sheet" id="sheet-deal" role="dialog" aria-label="Trade or sale"><div id="dealBody"></div></div>
 
     <div class="sheet" id="sheet-account" role="dialog" aria-label="Keep your collection safe">
       <h4 class="disp">Keep it safe.</h4>
@@ -1337,8 +1318,10 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <button class="opt-card" data-set="csv"><b>Upload a CSV</b><span>Title and Artist columns are enough. Label, catalog number, barcode, matrix, condition and price come along when present.</span></button>
       <div class="sethead">Your data</div>
       <button class="opt-card" data-set="yourdata"><b>What’s on this phone</b><span>Counts, what leaves the phone, and why nothing syncs yet.</span></button>
-      <button class="opt-card" data-set="backup"><b>Download a backup</b><span>One file: records, shelves, grades, prices, Dream Crate, lab results.</span></button>
+      <button class="opt-card" data-set="promises"><b>Our promises</b><span>Free, yours to take with you, and what happens if we ever close.</span></button>
+      <button class="opt-card" data-set="backup"><b>Download a backup</b><span>One file: records, shelves, grades, prices, Dream Crate and your photos. Save it to iCloud Drive or anywhere.</span></button>
       <button class="opt-card" data-set="restore"><b>Restore a backup</b><span>Replaces what is on this phone with a backup file.</span></button>
+      <button class="opt-card" id="safetyBtn" data-set="safety" hidden><b>Go back to before the last update</b><span id="safetySub">Memory Wax keeps a copy of your collection from just before each update.</span></button>
       <button class="opt-card" data-set="export"><b>Export as CSV</b><span>A spreadsheet of your collection. Your records are always yours.</span></button>
       <div class="trow" data-demo-only><div><b>Keep in sync with Discogs</b><span class="d">Changes flow both ways.</span></div><button class="sw" data-set="sync" aria-pressed="true" aria-label="Keep in sync with Discogs"></button></div>
       <div class="sethead">Privacy</div>
@@ -1353,7 +1336,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <div class="trow"><div><b>Read automatically</b><span class="d">Barcode and label scans start on their own and capture the moment they can read it. Turn off to use the shutter button.</span></div><button class="sw" data-set="auto" aria-pressed="true" aria-label="Read automatically"></button></div>
       <button class="opt-card" data-dgtoken="1"><b>Discogs token</b><span>Optional. Needed for the Discogs import and for matching deadwax to known pressings. Stored on this phone only.</span></button>
       <div class="sethead">Legal and safety</div>
-      <button class="opt-card" data-set="legal"><b>Terms, privacy and takedowns</b><span>What Memory Wax is, what it is not, and how to report a problem.</span></button>
+      <button class="opt-card" data-set="legal"><b>Privacy, copyright and contact</b><span>What Memory Wax is and is not, what it keeps, and how to reach us.</span></button>
       <button class="ghost" data-set="about">About our data</button>
       <button class="opt-card danger" data-set="erase" data-clean-only style="margin-top:14px"><b>Erase everything on this phone</b><span>Records, shelves, photos, lab results and tokens. Download a backup first.</span></button>
       <p class="fine2" id="buildTag" style="text-align:center;margin-top:10px"></p>
@@ -1377,7 +1360,6 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 
     <div class="sheet" id="sheet-barcode" role="dialog" aria-label="Type a barcode"><div id="barBody"></div></div>
 
-    <div class="sheet" id="sheet-chatsvc" role="dialog" aria-label="Chat service"><div id="chatsvcBody"></div></div>
 
     <div class="sheet" id="sheet-conf" role="dialog" aria-label="How sure are we?">
       <h4 class="disp">How sure are we?</h4>
@@ -1392,32 +1374,41 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <h4 class="disp">Use your camera?</h4>
       <p class="sub">Memory Wax reads the deadwax, the cover or the barcode through your camera. This is the same step your phone asks for the first time.</p>
       <div class="dsrc"><b>What it does</b><span>Looks at the record in front of you to read it.</span></div>
-      <div class="dsrc"><b>What it doesn’t do</b><span>The camera picture stays on your phone and is never saved or uploaded. When a barcode is read, only the number is sent to MusicBrainz, a public music database, to look up the release.</span></div>
+      <div class="dsrc"><b>What it doesn’t do</b><span>The camera picture stays on your phone and is never saved or uploaded. When a barcode is read, only the number is sent to a public music database to look up the release.</span></div>
       <button class="go press" data-cam="on">Allow camera</button>
       <button class="ghost" data-cam="mock">Keep the illustration</button>
-      <p class="fine2">Allowing opens your browser’s own permission prompt. Barcode scanning is real. Deadwax and cover reading are still simulated in this prototype.</p>
+      <p class="fine2">Allowing opens your phone’s own permission prompt.</p>
     </div>
 
-    <div class="sheet" id="sheet-legal" role="dialog" aria-label="Legal and safety">
-      <h4 class="disp">Legal &amp; safety</h4>
-      <p class="sub">Plain-language summaries. Draft for the prototype.</p>
-      <div class="dsrc"><b>Memory Wax is a meeting place</b><span>We introduce collectors to each other. We are not a party to any trade or sale. We don’t handle payment or shipping, and we don’t guarantee a deal, a condition, or that a record is genuine.</span></div>
-      <div class="dsrc"><b>Your content stays yours</b><span>You own your memories, notes and photos. You let us show them only as you choose. Only post what you have the right to share.</span></div>
-      <div class="dsrc"><b>Copyright and cover art</b><span>Album art, music, liner notes and photos belong to their owners. Cover art appears to identify a record, and music plays in Apple Music’s own player. We never store or stream audio.</span></div>
-      <div class="dsrc"><b>Counterfeits and bootlegs</b><span>Not allowed. We remove listings and accounts that sell them.</span></div>
-      <div class="dsrc"><b>Privacy</b><span>Everything starts as Just me. Prices, places and your location never show. Export your data or delete your account any time. You must be 13 or older.</span></div>
-      <button class="go press" data-toast="Thanks. We review copyright notices, remove what’s infringing, and close accounts that repeatedly infringe. (Prototype: nothing is sent.)">Report a copyright problem</button>
-      <button class="ghost" data-toast="Report received. We review reports and act on anything that breaks the rules. (Prototype: nothing is sent.)">Report a person or listing</button>
-      <p class="fine2">These are drafts, not legal documents. The real Terms, Privacy Policy and takedown process are written and reviewed by a lawyer before launch.</p>
+    <div class="sheet" id="sheet-promises" role="dialog" aria-label="Our promises">
+      <h4 class="disp">Our promises</h4>
+      <p class="sub">What you can count on, written down so you can hold us to it.</p>
+      <div class="dsrc"><b>Free to use</b><span>Scanning, your collection, your shelves and your export are free. No limit on how many records you scan or keep. No ads. If we ever add paid extras, they will be extras: your collection and your export stay free.</span></div>
+      <div class="dsrc"><b>Your collection is yours</b><span>It lives on your phone. You can take all of it with you at any time: a backup file with your photos, or a spreadsheet. Both are open formats that other tools can read.</span></div>
+      <div class="dsrc"><b>Kept safe, without an account</b><span>Before every update the app keeps a copy of your collection so you can go back. On iPhone it also keeps a copy in the Memory Wax folder in the Files app, which iCloud Backup includes.</span></div>
+      <div class="dsrc"><b>If we ever shut down</b><span>We will tell you inside the app at least 90 days before. We will ship a final update that keeps everything working on your phone, and it will keep your export working. Nothing you have saved is held hostage.</span></div>
+      <div class="dsrc"><b>Private by default</b><span>What you paid and where you found a record never leave your phone. We don’t sell data, and there is no tracking in the app.</span></div>
+      <button class="go press" data-set="backup">Download a backup now</button>
+    </div>
+
+    <div class="sheet" id="sheet-legal" role="dialog" aria-label="Privacy, copyright and contact">
+      <h4 class="disp">Privacy, copyright &amp; contact</h4>
+      <p class="sub">Plain-language summaries.</p>
+      <div class="dsrc"><b>What Memory Wax is</b><span>A tool for knowing what you hold: it identifies pressings, shows credits and keeps your collection. It doesn’t sell records or handle payment or shipping, and it can’t promise that a match is right, that a record is genuine, or what condition it is in.</span></div>
+      <div class="dsrc"><b>Your content stays yours</b><span>Your notes, photos, prices and places stay on your phone. Nothing is shared unless you choose to share it.</span></div>
+      <div class="dsrc"><b>Copyright and cover art</b><span>Album art, music, liner notes and photos belong to their owners. Covers are shown from the Cover Art Archive to help you recognise a record. Music plays in Apple Music’s own player, and we never store or stream audio. If you hold the rights to something shown here and want it removed, contact us.</span></div>
+      <div class="dsrc"><b>Privacy</b><span>No account, no ads, no tracking. The camera picture stays on your phone. Prices, places and your location never leave it. You must be 13 or older.</span></div>
+      <div id="legalContact"></div>
+      <p class="fine2">These are summaries, not legal documents.</p>
     </div>
 
     <div class="sheet" id="sheet-data" role="dialog" aria-label="About our data">
       <h4 class="disp">About our data</h4>
-      <p class="sub">Where each thing on a report comes from.</p>
-      <div class="dsrc"><b>Pressings, credits, labels</b><span>Discogs. Credited on every report.</span></div>
-      <div class="dsrc"><b>Recording and artist relationships</b><span>MusicBrainz open data.</span></div>
-      <div class="dsrc"><b>Stories and background</b><span>Wikipedia (CC BY-SA), with a link to the source.</span></div>
-      <div class="dsrc"><b>Cover art</b><span>Belongs to its rights holders. The real app shows it only from licensed sources or as a link. The prototype’s covers are for design only.</span></div>
+      <p class="sub">Where each thing on a record’s page comes from.</p>
+      <div class="dsrc"><b>Pressings, labels and catalogue numbers</b><span>MusicBrainz and Discogs open data. Data provided by Discogs where it is used.</span></div>
+      <div class="dsrc"><b>Credits and who played what</b><span>Discogs and MusicBrainz, with a link to the source on each record.</span></div>
+      <div class="dsrc"><b>Cover art</b><span>Shown from the Cover Art Archive to identify a record. It belongs to its rights holders. Covers you photograph yourself stay on your phone.</span></div>
+      <div class="dsrc"><b>Music</b><span>Apple Music, in its own player. Memory Wax never plays or stores audio.</span></div>
       <div class="dsrc"><b>Liner notes</b><span>Linked, not copied. Photos of your own copy stay private to you.</span></div>
       <p class="fine" style="margin-top:12px;font-weight:600">Every claim carries a source. Anything unverified is labeled.</p>
     </div>
@@ -1594,13 +1585,15 @@ function initState(empty){
     wants:empty?[]:[{t:'Giant Steps',a:'John Coltrane',note:'Atlantic original, mono',list:'3 copies listed',alert:false,m:2},{t:'Sahara',a:'McCoy Tyner',note:'Milestone original',list:'None listed yet',alert:true,m:5},{t:'Karma',a:'Pharoah Sanders',note:'Impulse! original',list:'None listed yet',alert:true,m:3}],
     filter:'All',confOnly:false,sort:'recent',view:'grid',colTab:0,target:null,vis:0,newV:0,addedToast:false,
     q:'',batch:false,queue:[],offline:false,pending:0,copy:{cond:null,paid:'',where:''},
-    sessions:[],host:null,nextSess:1,inbox:[],sold:new Set(),deal:null,matchDismissed:false,matchDone:false,planFor:null,rec:1,cameFromScan:false,copies:{},photos:{},fpeople:new Set(),series:[],
+    sessions:[],host:null,nextSess:1,rec:1,cameFromScan:false,copies:{},photos:{},fpeople:new Set(),series:[],
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'am',conn:{am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.20.0 · index';
+const BUILD='0.21.0 · trust';
+/* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
+const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -1970,8 +1963,7 @@ function playReveal(){
   const d0=reduce?0:260;
   setTimeout(()=>r.classList.add('go1'),d0);
   t2=setTimeout(()=>r.classList.add('go2'),reduce?0:d0+850);
-  t3=setTimeout(()=>{r.classList.add('go3');if(fromScan&&!st.addedToast){st.addedToast=true;toast('Added to your collection. Tap + to put it on a shelf.')}
-    if(fromScan&&!copyOf(r0.id).planAsked&&!st.batch)setTimeout(()=>{if(st.screen==='reveal'&&st.rec===r0.id&&!$('.sheet.on'))openPlanSheet(r0.id)},reduce?300:1500)},reduce?0:d0+1500);
+  t3=setTimeout(()=>{r.classList.add('go3');if(fromScan&&!st.addedToast){st.addedToast=true;toast('Added to your collection. Tap + to put it on a shelf.')}},reduce?0:d0+1500);
   if(ios)ios.disconnect();
   ios=new IntersectionObserver(es=>{let i=0;es.forEach(e=>{if(e.isIntersecting){e.target.style.transitionDelay=(i++*60)+'ms';e.target.classList.add('in');ios.unobserve(e.target)}})},{root:$('#repScroll'),rootMargin:'0px 0px -110px 0px',threshold:.08});
   $$('.blk').forEach(s=>ios.observe(s));
@@ -2101,7 +2093,7 @@ function renderCollection(){
   g.innerHTML=!items.length?'<p class="empty">Nothing matches. Try another word or filter.</p>':!asList?items.map(x=>tileHTML(x.r)).join(''):
     items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`).join('');
   const loose=all.filter(r=>r.c!=='confirmed').length;
-  $('#nudge').innerHTML=(!st.account&&all.length?`<button class="nudge n2" data-acctopen="1"><div><b>Saved on this phone only</b><span>${DEMO?'Back it up with a free account.':'Download a backup file.'}</span></div><i>Back up</i></button>`:'')+(loose?`<button class="nudge" data-nudge="1"><div><b>${loose} could be confirmed</b><span>Scan their deadwax to name the exact pressing.</span></div><i>Scan</i></button>`:'');
+  $('#nudge').innerHTML=(backupStale()?`<button class="nudge n2" data-set="backup"><div><b>${lastBackupAt()?'It’s been a while since your last backup':'Your collection lives on this phone'}</b><span>Save a backup file. It takes a few seconds.</span></div><i>Back up</i></button>`:'')+(loose?`<button class="nudge" data-nudge="1"><div><b>${loose} could be confirmed</b><span>Scan their deadwax to name the exact pressing.</span></div><i>Scan</i></button>`:'');
   renderShelves();renderWants();
   $$('#colTabs button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.t===st.colTab)));
   $('#colTabs').style.setProperty('--i',st.colTab);
@@ -2121,7 +2113,13 @@ function renderShelves(){
 function renderWants(){
   $('#wants').innerHTML=!st.wants.length?'<p class="empty" style="padding-left:0">Nothing here yet. Tap Dream Crate on any record.</p>':st.wants.map((w,i)=>`<div class="want"><div class="tile m${w.m}"><span class="tt">${w.t}</span></div><div class="lt"><b>${w.t}</b><span>${w.a}</span><span style="opacity:.9">${w.note}</span><i class="tag2" style="font-style:normal">${w.list}</i></div><button class="wrm" data-wrm="${i}" aria-label="Remove ${esc(w.t)} from your Dream Crate">×</button></div>`).join('');
 }
-function renderSettings(){$$('#sheet-settings .sw').forEach(b=>b.setAttribute('aria-pressed',String(!!prefs[b.dataset.set])))}
+function fillLegalContact(){
+  const el=$('#legalContact');if(!el)return;
+  const mail=SUPPORT_EMAIL?`<a class="go press" style="display:block;text-align:center;text-decoration:none" href="mailto:${esc(SUPPORT_EMAIL)}?subject=Memory%20Wax">Contact us</a><a class="ghost" style="display:block;text-align:center;text-decoration:none" href="mailto:${esc(SUPPORT_EMAIL)}?subject=Copyright%20problem">Report a copyright problem</a>`:'';
+  const links=SITE_URL?`<p class="fine2">The full <a href="${esc(SITE_URL)}/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="${esc(SITE_URL)}/support.html" target="_blank" rel="noopener">Support</a> pages are on our website.</p>`:'';
+  el.innerHTML=mail+links;
+}
+function renderSettings(){$$('#sheet-settings .sw').forEach(b=>b.setAttribute('aria-pressed',String(!!prefs[b.dataset.set])));const x=safetyInfo(),b=$('#safetyBtn');if(b){b.hidden=!x;if(x)$('#safetySub').textContent=`A copy from ${new Date(x.at).toLocaleDateString()}, before the update from ${x.from} to ${x.to}.`}}
 function renderBatch(){
   const n=st.queue.length,rv=st.queue.filter(q=>q.review).length;
   $('#batchList').innerHTML=st.queue.map(q=>{const r=RECS.find(x=>x.id===q.id);return `<div class="vr"><b>${r.t}</b><span>${q.review?'Needs a second look':'Confirmed'}</span></div>`}).join('');
@@ -2543,122 +2541,20 @@ $('#serCreate').addEventListener('click',()=>{
   st.series.push({n,nights:[]});$('#serName').value='';closeSheets();renderScene();toast(`Created “${n}”. Add your first night.`);
 });
 
-/* ---------- plan, matches, deals ---------- */
-const MATCH_WHO='A collector · 214 records';
-const MATCH={recId:21,who:MATCH_WHO,cond:'VG+',plan:'trade'};
-const WANTERS={1:3,2:1,4:1,7:2,11:3};
+/* ---------- plan for this copy: a private note until trading between collectors exists ---------- */
 const PLANNAME={keep:'Keeping it',trade:'Open to trade',sale:'For sale'};
-function wantNote(id,plan){
-  const n=WANTERS[id]||0;
-  if(plan==='keep')return '';
-  const pub=copyOf(id).pub!==false;
-  return `${pub?'It shows on this record’s page as “A collector,” with the condition and your plan. ':''}${n?`${n} collector${n===1?' is':'s are'} looking for this pressing. `:'No one is looking for this one right now. '}${n?'They’ll be told it’s available. ':'If someone adds it later, they’ll be told. '}They won’t see who you are until you accept. Your location and what you paid never show.${plan==='sale'?' Your asking price shows only to those matched collectors.':''}`;
-}
-const LISTINGS={1:[{who:'A collector · 88 records',cond:'VG+',plan:'sale',ask:'$65'},{who:'A collector · 31 records',cond:'VG',plan:'trade'}],4:[{who:'A collector · 140 records',cond:'NM',plan:'sale',ask:'$48'}],7:[{who:'A collector · 62 records',cond:'VG+',plan:'trade'}],21:[{who:MATCH_WHO,cond:'VG+',plan:'trade'}]};
 function fillAvail(id){
-  const r=recOf(id),cp=copyOf(id),mine=st.owned.has(id)&&cp.plan&&cp.plan!=='keep'&&cp.pub!==false;
-  const rows=(LISTINGS[id]||[]).map((l,i)=>`<div class="avrow"><div><b>${l.who}</b><span><i class="tag" style="font-style:normal">${l.cond}</i>${l.plan==='sale'?'For sale'+(l.ask?' · '+l.ask:''):'Open to trade'}</span></div></div>`);
-  if(st.sold.has(id)&&!st.owned.has(id)){}
-  const own=mine?`<div class="avrow me"><div><b>Your copy</b><span><i class="tag" style="font-style:normal">${cp.cond||'No grade'}</i>${cp.plan==='sale'?'For sale'+(cp.ask?' · '+esc(cp.ask):''):'Open to trade'}</span></div><button class="pb o" data-listing="edit">Change</button></div>`:'';
-  $('#repAvail').innerHTML=(own+rows.join(''))||`<p class="fine2" style="margin:0 0 8px">No one has listed this pressing yet. Save it to your Dream Crate to keep track of it.</p><button class="chipbtn dark press" data-addwant="1">Add to Dream Crate</button>`;
-  if(own||rows.length)$('#repAvail').insertAdjacentHTML('beforeend','<p class="fine2" style="margin:8px 0 0">Names and locations stay private until an owner accepts. Prices appear only on listings. Memory Wax is a meeting place: it doesn’t handle payment or shipping, or guarantee a deal, a condition or authenticity.</p><button class="ghost" data-toast="Report received. We review reports and remove listings that break the rules. (Prototype: nothing is sent.)">Report a listing</button>');
+  $('#repAvail').innerHTML=`<p class="fine2" style="margin:0 0 8px">Trading between collectors isn’t open yet. When it is, copies other people have of this pressing will show here. Until then, add it to your Dream Crate to keep track of it.</p><button class="chipbtn dark press" data-addwant="1">Add to Dream Crate</button>`;
 }
 function fillPlan(id){
   const cp=copyOf(id),pl=cp.plan||'keep';
   $$('#plan button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.plan===pl)));
-  $('#planExtra').hidden=pl==='keep';$('#planNote').textContent=wantNote(id,pl);
-  $$('#pubSeg button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.pub==='1')===(cp.pub!==false))));
+  $('#planExtra').hidden=pl==='keep';$('#planNote').textContent='A private note for you. Nothing is shown to anyone, and nothing leaves this phone.';
   $('#mcAsk').value=cp.ask||'';$('#mcAsk').parentElement.style.display=pl==='sale'?'':'none';
 }
 function setPlan(id,pl){
-  const cp=copyOf(id);cp.plan=pl;fillPlan(id);fillAvail(id);renderCollection();
-  const r=recOf(id);
-  if(pl==='keep'){toast('Filed away. Private to you.');return}
-  const n=WANTERS[id]||0;
-  toast(n?`${PLANNAME[pl]}. ${n} collector${n===1?' is':'s are'} looking for this pressing and will be told.`:`${PLANNAME[pl]}. We’ll tell collectors if someone starts looking for it.`);
-  if(n&&!st.inbox.some(x=>x.recId===id)&&!st.sold.has(id)){
-    setTimeout(()=>{if(copyOf(id).plan==='keep')return;st.inbox.push({recId:id,who:'A collector · 88 records',offerId:13,msg:'Hi! I’ve been looking for this pressing for a while.',plan:pl,ask:cp.ask||''});renderScene();toast(`A collector is interested in your ${r.t}. See Community.`)},3200);
-  }
-}
-function openPlanSheet(id){const r=recOf(id);copyOf(id).planAsked=true;st.planFor=id;$('#planSub').textContent=`${r.t} is in your collection.`;openSheet('plan')}
-
-function dealCard(d){
-  const r=recOf(d.recId),R=REP[r.id]||{},c=cov(r);
-  return `<div class="dealcard"><div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div><b>${r.t}</b><span>${r.a} · ${(R.cat||r.lab||'')}</span><em>${d.cond||'Condition not set'} · ${d.plan==='sale'?'For sale'+(d.ask?' · '+esc(d.ask):''):'Open to trade'}</em></div></div>`;
-}
-function renderDeal(){
-  const d=st.deal,r=recOf(d.recId),buy=d.role==='buy';let h='';
-  if(d.stage==='view'){
-    h=`<h4 class="disp">${buy?'A copy just became available':'A collector wants your copy'}</h4><p class="sub">${buy?'It’s on your Dream Crate list.':`They’ve been looking for your ${r.t}.`}</p>${dealCard(d)}
-     <div class="dsrc"><b>${d.who}</b><span>${buy?'Their name and location stay private until they accept.':'You’ll see more once you accept. They never see your location or what you paid.'}</span></div>
-     <div class="dsrc"><b>${buy?'Matched by deadwax scan':'Matches the pressing you scanned'}</b><span>${buy?'The owner scanned it. Memory Wax doesn’t guarantee authenticity or condition.':'They’re looking for this exact pressing.'}</span></div>
-     ${buy?`<button class="go press" data-deal="interest">I’m interested</button><button class="ghost" data-deal="dismiss">Not now</button>`
-          :`${d.offerId?`<div class="dsrc"><b>They’d offer</b><span>${recOf(d.offerId).t} · ${recOf(d.offerId).a}</span></div>`:''}<p class="quote" style="margin:8px 0">“${esc(d.msg)}”</p><button class="go press" data-deal="accept">Accept</button><button class="ghost" data-deal="dismiss">Decline</button>`}`;
-  }else if(d.stage==='offer'){
-    const mine=own().sort((a,b)=>((copyOf(b.id).plan==='trade')-(copyOf(a.id).plan==='trade')));
-    h=`<h4 class="disp">What would you offer?</h4><p class="sub">Pick a record from your collection, or ask what they’d take.</p>${dealCard(d)}
-     ${mine.slice(0,4).map(x=>`<button class="opt-card" data-deal="offer" data-oid="${x.id}"><b>${x.t}</b><span>${x.a}${copyOf(x.id).plan==='trade'?' · you marked it Open to trade':''}</span></button>`).join('')}
-     <button class="ghost" data-deal="offer" data-oid="0">Ask what they’d take</button>
-     <p class="fine2">Tip: mark records Open to trade and owners can see what you’d swap.</p>`;
-  }else if(d.stage==='wait'){
-    h=`<h4 class="disp">Request sent</h4><p class="sub">Waiting for ${d.who.toLowerCase()} to accept.</p>${dealCard(d)}<div class="shimmer"><i></i></div>
-     <p class="fine2" style="margin:0 0 8px">They’ll see your profile and what you’re offering. They won’t see your location. We’ll tell you the moment they answer.</p><button class="ghost" data-deal="close">Close. I’ll wait for the alert</button>`;
-  }else if(d.stage==='thread'){
-    h=`<h4 class="disp">${buy?'They accepted':'You accepted'}</h4><p class="sub">Talk it through here. Nothing is owed until you both agree.</p>${dealCard(d)}
-     <div class="thread">${d.msgs.map(m=>`<div class="bub${m.me?' me':''}">${esc(m.t)}</div>`).join('')}</div>
-     <div class="dealrow"><input class="txt" id="dealMsg" placeholder="Write a message" aria-label="Message" maxlength="200"><button data-dsend="1">Send</button></div>
-     <div class="opts"><button class="pb" data-dchip="Could we do tracked shipping both ways?" aria-pressed="true">Tracked shipping</button><button class="pb" data-dchip="Would you meet in a public place?" aria-pressed="true">Public meetup</button></div>
-     <button class="go press" data-deal="agree">We’ve agreed</button>`;
-  }else if(d.stage==='settle'){
-    h=`<h4 class="disp">You’ve agreed</h4><p class="sub">Now settle it between you two.</p>${dealCard(d)}
-     <div class="dsrc"><b>Memory Wax is the meeting place</b><span>In this version we don’t handle payment or shipping, hold money, or guarantee the deal.</span></div>
-     <ul class="tips"><li>Ship with tracking and insurance, and share the tracking number.</li><li>Use a payment method with buyer protection. Avoid anything you can’t reverse.</li><li>Meet in a public place if you’re handing it over in person.</li><li>Check the matrix and the label together before you hand it over.</li></ul>
-     ${!buy&&r.memo?`<label class="chk" style="display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:600;margin:6px 0 4px"><input type="checkbox" id="passMemo" checked style="margin-top:3px"> Send my memory with it: “${esc(r.memo)}”</label>`:''}
-     <button class="go press" data-deal="done">Mark as done</button>
-     <button class="ghost" data-toast="Report sent. We’ll look at it and, if needed, limit the other account.">Something’s wrong. Report</button>`;
-  }else if(d.stage==='done'){
-    h=`<h4 class="disp">${buy?'It’s yours':'Passed on'}</h4><p class="sub">${buy?`${r.t} is now in your collection.`:`${r.t} has left your collection. Its story stays with you.`}</p>${dealCard(d)}
-     <p class="fine2" style="margin:0 0 6px">${buy?(d.offerId?`${recOf(d.offerId).t} was removed from your collection as part of the trade.`:'Scan its deadwax to confirm your own copy.'):'If you chose to, your memory went with it.'}</p>
-     <button class="go press" data-set="batchview">View in Collection</button>`;
-  }
-  $('#dealBody').innerHTML=h;
-}
-function openMatch(){
-  st.deal={role:'buy',recId:MATCH.recId,stage:'view',who:MATCH.who,cond:MATCH.cond,plan:MATCH.plan,msgs:[],offerId:null};
-  renderDeal();openSheet('deal');
-}
-function openRequest(i){
-  const q=st.inbox[i];
-  st.deal={role:'sell',recId:q.recId,stage:'view',who:q.who,cond:copyOf(q.recId).cond||null,plan:q.plan,ask:q.ask,msg:q.msg,offerId:q.offerId,msgs:[],inboxIdx:i};
-  renderDeal();openSheet('deal');
-}
-function dealAct(a,t){
-  const d=st.deal;if(!d)return;
-  if(a==='dismiss'||a==='close'){if(a==='dismiss'&&d.role==='buy')st.matchDismissed=true;if(a==='dismiss'&&d.role==='sell')st.inbox.splice(d.inboxIdx,1);closeSheets();renderScene();return}
-  if(a==='interest'){d.stage='offer';renderDeal();return}
-  if(a==='offer'){
-    const oid=+t.dataset.oid;d.offerId=oid||null;d.stage='wait';
-    d.msgs=[{me:true,t:oid?`I’d like to offer my ${recOf(oid).t} for your ${recOf(d.recId).t}.`:`I’d love your ${recOf(d.recId).t}. What would you take for it?`}];
-    renderDeal();const ref=d;
-    setTimeout(()=>{if(st.deal!==ref||ref.stage!=='wait')return;ref.stage='thread';ref.msgs.push({me:false,t:'Hi! Happy to talk. Tell me what you have in mind.'});if($('#sheet-deal').classList.contains('on'))renderDeal();else toast('They accepted. Open the conversation from Collectors.');},reduce?200:2400);
-    return}
-  if(a==='accept'){d.stage='thread';d.msgs=[{me:false,t:d.msg||'Hi!'},{me:true,t:'Happy to. What do you have in mind?'}];st.inbox.splice(d.inboxIdx,1);renderDeal();renderScene();return}
-  if(a==='agree'){d.stage='settle';renderDeal();return}
-  if(a==='done'){
-    const keepMemo=$('#passMemo')?$('#passMemo').checked:false;
-    if(d.role==='buy'){
-      st.owned.add(d.recId);st.wants=st.wants.filter(w=>w.t!==recOf(d.recId).t);st.matchDone=true;
-      if(d.offerId){st.owned.delete(d.offerId);st.sold.add(d.offerId)}
-    }else{
-      st.owned.delete(d.recId);st.sold.add(d.recId);st.shelves.forEach(sh=>{sh.recs=sh.recs.filter(x=>x!==d.recId)});
-      if(!keepMemo&&false){}
-    }
-    d.stage='done';renderDeal();renderCollection();return}
-}
-function dealSend(txt){
-  const d=st.deal;txt=(txt||'').trim();if(!txt)return;
-  d.msgs.push({me:true,t:txt});renderDeal();
-  if(d.msgs.filter(m=>m.me).length<=2){const ref=d;setTimeout(()=>{if(st.deal===ref&&ref.stage==='thread'){ref.msgs.push({me:false,t:'Sounds good to me.'});if($('#sheet-deal').classList.contains('on'))renderDeal()}},reduce?150:1400)}
+  copyOf(id).plan=pl;fillPlan(id);renderCollection();
+  toast(pl==='keep'?'Filed away. Private to you.':`${PLANNAME[pl]}. Noted, privately. Nothing is shown to anyone.`);
 }
 
 /* ---------- hosting a listening session: three guided steps ---------- */
@@ -2673,7 +2569,7 @@ function openHost(){gate(()=>{st.host={step:1,mode:'person',name:'',date:'',time
 function hostCard(H,slug){
   const rs=H.recs.map(id=>recOf(id));
   return `<div class="webcard"><div class="wbar"><i></i><i></i><i></i><span>memorywax.app/night/${slug}</span></div><div class="wbody"><div class="wk">A listening session</div><div class="wt disp">${esc(H.name||'Untitled night')}</div>
-   <p style="margin:0 0 8px;font-weight:700;font-size:14px">${[whenText(H),H.mode==='online'?'Online · live chat':H.where&&esc(H.where)].filter(Boolean).join(' · ')}</p>
+   <p style="margin:0 0 8px;font-weight:700;font-size:14px">${[whenText(H),H.mode==='online'?'Online':H.where&&esc(H.where)].filter(Boolean).join(' · ')}</p>
    ${H.line?`<p class="quote" style="margin:0 0 10px">“${esc(H.line)}”</p>`:''}
    <div class="wgrid">${rs.map(r=>{const c=cov(r);return `<div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}><span class="tt">${r.t}</span></div>`}).join('')}</div>
    <div class="wcta">Open in Memory Wax</div></div></div>`;
@@ -2686,8 +2582,8 @@ function renderHost(){
     h+=`<p class="sub">Name the night and say when and where. Three short steps, then it’s listed and ready to share.</p>
      <div class="hf"><label for="hName">Name of the night</label><input class="txt sm" id="hName" data-hf="name" maxlength="50" placeholder="Spiritual Jazz Sunday" value="${esc(H.name)}"></div>
      <div class="hf2"><div class="hf"><label for="hDate">Date</label><input class="txt sm" id="hDate" type="date" data-hf="date" value="${esc(H.date)}"></div><div class="hf"><label for="hTime">Start time</label><input class="txt sm" id="hTime" type="time" data-hf="time" value="${esc(H.time)}"></div></div>
-     <div class="hf"><label>Where will people be?</label><div class="opts" style="margin:0"><button class="pb" aria-pressed="${H.mode==='person'}" data-hmode="person">In person</button><button class="pb" aria-pressed="${H.mode==='online'}" data-hmode="online">Online with live chat</button></div></div>
-     ${H.mode==='online'?`<p class="fine2" style="margin:-4px 0 12px">Everyone listens wherever they are, on their own copy, their own system or their own streaming account, with a live chat open. Each guest sees the time in their own time zone. Memory Wax doesn’t play the music.</p>`:`<div class="hf"><label for="hWhere">Where</label><input class="txt sm" id="hWhere" data-hf="where" maxlength="60" placeholder="Venue name or neighborhood" value="${esc(H.where)}"></div>
+     <div class="hf"><label>Where will people be?</label><div class="opts" style="margin:0"><button class="pb" aria-pressed="${H.mode==='person'}" data-hmode="person">In person</button><button class="pb" aria-pressed="${H.mode==='online'}" data-hmode="online">Online</button></div></div>
+     ${H.mode==='online'?`<p class="fine2" style="margin:-4px 0 12px">Everyone listens wherever they are, on their own copy, their own system or their own streaming account. Each guest sees the time in their own time zone. Memory Wax doesn’t play the music.</p>`:`<div class="hf"><label for="hWhere">Where</label><input class="txt sm" id="hWhere" data-hf="where" maxlength="60" placeholder="Venue name or neighborhood" value="${esc(H.where)}"></div>
      <p class="fine2" style="margin:-4px 0 12px">Never post a home address. Share the exact spot privately with the people you invite. If the night is in a bar or shop, the venue handles its own music licensing.</p>`}
      <div class="hf"><label for="hLine">One line about it</label><input class="txt sm" id="hLine" data-hf="line" maxlength="90" placeholder="Four records, no phones, good speakers." value="${esc(H.line)}"></div>
      <div class="hbtns"><button class="go press" data-hnext="1">Next: the records</button></div>`;
@@ -2713,7 +2609,7 @@ function hostNext(){
   H.step++;renderHost();
 }
 function publishSession(){
-  const H=st.host,x={id:st.nextSess++,mode:H.mode,name:H.name.trim(),date:H.date,time:H.time,where:H.mode==='online'?'Online · live chat':H.where.trim(),line:H.line.trim(),recs:H.recs.slice(),notes:{...H.notes},vis:H.vis};
+  const H=st.host,x={id:st.nextSess++,mode:H.mode,name:H.name.trim(),date:H.date,time:H.time,where:H.mode==='online'?'Online':H.where.trim(),line:H.line.trim(),recs:H.recs.slice(),notes:{...H.notes},vis:H.vis};
   st.sessions.push(x);st.host=null;closeSheets();renderScene();renderSession(x.id);openSheet('session');
   toast('Your session is listed. Share it when you’re ready.');
 }
@@ -2797,7 +2693,6 @@ const SITK=[['Love’s in Need of Love Today','Side 1'],['Have a Talk with God',
  ['Saturn','Bonus EP, side A'],['Ebony Eyes','Bonus EP, side A'],['All Day Sucker','Bonus EP, side B'],['Easy Goin’ Evening (My Mama’s Call)','Bonus EP, side B']];
 const SITK_NOTES={4:{t:'Stevie’s tribute to Duke Ellington. Stand up for this one.'},10:{t:'Written for his newborn daughter, Aisha.'},15:{t:'Herbie Hancock plays Rhodes piano on this one.',who:['Herbie Hancock']},16:{t:'George Benson on guitar.',who:['George Benson']}};
 const NPOOL_SITK=[['Dana · Oakland','Needle is down. Right on time.'],['Kofi · Accra','Hello from Accra. It is almost 3 in the morning and I regret nothing.'],['Marisol · Mexico City','My dad had this pressing. The second LP always skipped.'],['Jun · Osaka','Streaming tonight, no turntable yet. Does that count?'],['Dana · Oakland','Absolutely counts. Welcome.'],['Priya · London','Sir Duke makes me stand up every single time.'],['Theo · Berlin','That bassline on I Wish.'],['Rae · Chicago','Anyone near Chicago want to do this in person next time?'],['Sam · Austin','Gatefold, booklet and the bonus EP. Worth every inch of shelf.'],['Lucía · Madrid','Pastime Paradise gets me every time.']];
-const NPOOL_GEN=[['Dana · Oakland','Needle is down.'],['Kofi · Accra','Hello from Accra.'],['Priya · London','This is the best part of my week.'],['Jun · Osaka','Streaming tonight. Hope that is okay.'],['Dana · Oakland','Totally okay. Welcome.'],['Theo · Berlin','Great pick.']];
 function nextNightAt(){
   const now=Date.now(),f=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',weekday:'short',hour:'numeric',hour12:false});
   for(let d=0;d<10;d++)for(const h of [3,4]){
@@ -2816,11 +2711,11 @@ function nightDef(key){
   const tracks=[],notes={};
   x.recs.forEach(id=>{const r=recOf(id);((REP[id]||{}).tracks||[r.t]).forEach((t,i)=>{if(i===0&&x.notes[id])notes[tracks.length]={t:x.notes[id]};tracks.push({t,side:r.t,rec:id})})});
   const at=new Date(x.date+'T'+(x.time||'19:00')).getTime();
-  return {key,title:x.name,artist:'',host:'You',sample:false,at:isNaN(at)?Date.now()+864e5:at,ptNote:whenText(x),going:0,cities:0,tracks,notes,pool:NPOOL_GEN,line:x.line,asHost:true};
+  return {key,title:x.name,artist:'',host:'You',sample:false,at:isNaN(at)?Date.now()+864e5:at,ptNote:whenText(x),going:0,cities:0,tracks,notes,pool:[],line:x.line,asHost:true};
 }
 function openRoom(key){
   const D=nightDef(key);if(!D)return;
-  if(!st.nt||st.nt.def.key!==key)st.nt={def:D,phase:'before',at:D.at,mode:'own',svc:'am',asHost:D.asHost,ti:0,sec:0,msgs:[{sys:true,t:'Chat is open. Say hello while you wait.'}],hidden:new Set(),slow:5,locked:false,lastSend:0,count:D.going||1,remind:false,gather:false,pi:0,welcomed:false,lastState:0,bc:null,nick:'Collector '+(1000+Math.floor(Math.random()*9000))};
+  if(!st.nt||st.nt.def.key!==key)st.nt={def:D,phase:'before',at:D.at,mode:'own',svc:'am',asHost:D.asHost,ti:0,sec:0,msgs:[{sys:true,t:D.sample?'Chat is open. Say hello while you wait.':'Chat between phones isn’t open yet. Follow the track list on your own.'}],hidden:new Set(),slow:5,locked:false,lastSend:0,count:D.going||1,remind:false,gather:false,pi:0,welcomed:false,lastState:0,bc:null,nick:'Collector '+(1000+Math.floor(Math.random()*9000))};
   st.shareUrl='https://memorywax.app/night/'+D.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   renderNight();openSheet('night');nightStart();
 }
@@ -2848,25 +2743,14 @@ function nRecv(d){
     }else if(d.phase==='after'&&N.phase!=='after'){N.phase='after';N.ti=N.def.tracks.length-1;renderNight()}
   }
 }
-const RTCFG=()=>{try{return {url:localStorage.getItem('mw_rt_url')||'',key:localStorage.getItem('mw_rt_key')||''}}catch(e){return {url:'',key:''}}};
-const rtOn=()=>{const c=RTCFG();return !!(c.url&&c.key)};
-let rtLib=null;
-function rtLoad(){return rtLib||(rtLib=new Promise((ok,no)=>{if(!DEVTOOLS)return no(new Error('Not available in this build.'));if(window.supabase)return ok(window.supabase);const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';el.onload=()=>window.supabase?ok(window.supabase):no(new Error('Chat library did not start.'));el.onerror=()=>{rtLib=null;no(new Error('Could not load the chat library.'))};document.head.appendChild(el)}))}
-function rtCheck(url,key){
-  if(!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(url))return 'The project URL should look like https://abcd1234.supabase.co';
-  if(!key||key.length<20)return 'Paste the publishable (anon) key from Project Settings, API.';
-  if(/^sb_secret_/i.test(key))return 'That is a secret key. Never put a secret key in an app. Use the publishable or anon key.';
-  try{const p=JSON.parse(atob(key.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));if(p.role==='service_role')return 'That is the service_role key. It gives full access to your data. Use the anon key instead.'}catch(e){}
-  return '';
-}
 function nLink(){
   const N=st.nt,el=$('#nLink');if(!el||!N)return;
-  const t={tab:'Chat is on this browser only.',connecting:'Connecting to the chat service…',live:`Live chat is connected${N.here?` · ${N.here} here now`:''}.`,error:'The chat service didn’t connect, so chat is on this browser only.'}[N.link]||'';
+  const t=N.def.sample?'Sample room: the voices here are written for the demo.':'Chat between phones isn’t open yet. This room works on your own.';
   el.innerHTML=`<span>${t}</span>`;
-  const lb=$('#nLbl');if(lb)lb.textContent=N.link==='live'?'· real people':'· sample voices';
+  const lb=$('#nLbl');if(lb)lb.textContent=N.def.sample?'· sample voices':'· not open yet';
   const g=$('#nGoing');if(g)g.textContent=nGoingText();
 }
-const nGoingText=()=>{const N=st.nt;return N.link==='live'?(N.here||1)+' here now':N.count+' listening now'};
+const nGoingText=()=>{const N=st.nt;return N.def.sample?N.count+' listening now':'Just you so far'};
 function nLocalTx(N){
   if(N.tx||!('BroadcastChannel' in window))return;
   const bc=new BroadcastChannel('mw-room-'+N.def.key);bc.onmessage=ev=>nRecv(ev.data);
@@ -2881,26 +2765,13 @@ function nightStop(){
 function nightStart(){
   const N=st.nt;if(!N)return;nightStop();const gen=N.gen;
   N.iv=setInterval(nTick,1000);
-  if(rtOn()){
-    N.link='connecting';
-    rtLoad().then(sb=>{
-      if(N.gen!==gen)return;
-      const c=RTCFG(),cl=sb.createClient(c.url,c.key,{realtime:{params:{eventsPerSecond:10}}}),ch=cl.channel('mw-room-'+N.def.key,{config:{broadcast:{self:false},presence:{key:NSELF}}});
-      ch.on('broadcast',{event:'m'},p=>{if(N.gen===gen)nRecv(p.payload)});
-      ch.on('presence',{event:'sync'},()=>{if(N.gen!==gen)return;N.here=Object.keys(ch.presenceState()).length;nLink()});
-      ch.subscribe(async status=>{
-        if(N.gen!==gen){try{cl.removeChannel(ch)}catch(e){}return}
-        if(status==='SUBSCRIBED'){N.tx={send:o=>ch.send({type:'broadcast',event:'m',payload:o}),close:()=>{try{cl.removeChannel(ch)}catch(e){}}};N.link='live';try{await ch.track({at:Date.now()})}catch(e){}nLink();nPost({k:'hello'})}
-        else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){N.link='error';try{cl.removeChannel(ch)}catch(e){}nLocalTx(N);nLink();toast('The chat service didn’t connect. Check the project URL and key.')}
-      });
-    }).catch(e=>{if(N.gen!==gen)return;N.link='error';nLocalTx(N);nLink();toast(e.message)});
-  }else nLocalTx(N);
+  nLocalTx(N);
   nLink();nTick();
 }
 const nCur=()=>{const N=st.nt;return N.def.tracks[Math.min(N.ti,N.def.tracks.length-1)]};
 function nPhase(p){
   const N=st.nt,D=N.def;
-  if(p==='before'||p==='count'){N.msgs=[{sys:true,t:'Chat is open. Say hello while you wait.'}];N.hidden=new Set();N.locked=false;N.welcomed=false}
+  if(p==='before'||p==='count'){N.msgs=[{sys:true,t:N.def.sample?'Chat is open. Say hello while you wait.':'Chat between phones isn’t open yet. Follow the track list on your own.'}];N.hidden=new Set();N.locked=false;N.welcomed=false}
   if(p==='before'){N.phase='before';N.at=D.at;N.ti=0;N.sec=0}
   else if(p==='count'){N.phase='before';N.at=Date.now()+9000;N.ti=0;N.sec=0}
   else if(p==='live'){N.phase='live';N.ti=0;N.sec=0;nLiveStart()}
@@ -2936,8 +2807,8 @@ function nTick(){
     const el=$('#nCount');if(el)el.innerHTML=nCountHTML(ms);
   }else if(N.phase==='live'){
     N.sec++;
-    if(N.sec%3===0){if(N.link!=='live')N.count=Math.max(1,N.count+Math.round((Math.random()-.45)*6));const c=$('#nGoing');if(c)c.textContent=nGoingText()}
-    if(N.sec%5===2&&N.link!=='live'){const p=N.def.pool[N.pi%N.def.pool.length];N.pi++;N.msgs.push({who:p[0],t:p[1]});nChat()}
+    if(N.sec%3===0){if(N.def.sample)N.count=Math.max(1,N.count+Math.round((Math.random()-.45)*6));const c=$('#nGoing');if(c)c.textContent=nGoingText()}
+    if(N.sec%5===2&&N.def.sample){const p=N.def.pool[N.pi%N.def.pool.length];N.pi++;N.msgs.push({who:p[0],t:p[1]});nChat()}
     if(N.sec>=10&&(N.asHost||Date.now()-N.lastState>20000))nAdvance(false);
   }
 }
@@ -3011,7 +2882,7 @@ function renderNight(){
   }
   if(N.asHost&&N.phase!=='after')h+=`<div class="nhost"><div class="nkick">Host tools</div>
     <div class="opts" style="margin:8px 0 0">${N.phase==='live'?`<button class="pb" data-nnext="1">Next track</button>`:''}${[[0,'Slow mode off'],[5,'Slow 5s'],[30,'Slow 30s']].map(([s,l])=>pb(N.slow===s,`data-nslow="${s}"`,l)).join('')}${pb(N.locked,'data-nlock="1"','Pause chat')}${N.phase==='live'?`<button class="pb o" data-nend="1">End session</button>`:''}</div></div>`;
-  h+=`<div class="sethead">Live chat <em class="nsmall" id="nLbl" style="text-transform:none;letter-spacing:0">· sample voices</em></div>
+  h+=`<div class="sethead">Live chat <em class="nsmall" id="nLbl" style="text-transform:none;letter-spacing:0">· not open yet</em></div>
    <div class="nchat"><div id="nMsgs" class="nmsgs" role="log" aria-live="polite"></div>
    ${N.phase==='after'?'<p class="fine2" style="margin:8px 0 0">The chat has closed. Thanks for listening.</p>':`<div class="ncomp"><input class="txt sm" id="nIn" maxlength="140" placeholder="${N.locked&&!N.asHost?'Chat is paused by the host':'Say something kind'}" aria-label="Chat message" autocomplete="off" ${N.locked&&!N.asHost?'disabled':''}><button class="pb" data-nsend="1">Send</button></div>
    <p class="fine2" style="margin:6px 0 0">${N.slow?`Slow mode: one message every ${N.slow} seconds. `:''}You’re chatting as ${esc(N.nick)}. No links, 140 characters. Chat is screened for abuse and spam, and hosts can remove anything. Rooms of about 50 so it stays readable.</p>`}</div>`;
@@ -3036,19 +2907,6 @@ function nSend(){
   const v0=v;v=nClean(v);const cut=v!==v0;
   const mid=NSELF+'-'+(++nSeq);N.lastSend=now;N.msgs.push({who:'You',t:v,me:true,host:N.asHost,mid});inp.value='';nChat();nPost({k:'chat',who:N.nick,text:v,host:N.asHost,mid});
   if(cut)toast('Links aren’t allowed in chat, so we removed it.');
-  if(!N.welcomed&&N.link!=='live'){N.welcomed=true;setTimeout(()=>{if(st.nt===N){N.msgs.push({who:'Dana · Oakland',t:'Welcome in.'});nChat()}},1800)}
-}
-function renderChatSvc(){
-  const c=RTCFG(),on=rtOn();
-  $('#chatsvcBody').innerHTML=`<h4 class="disp" style="font-size:38px">Chat service</h4>
-   <p class="sub">${on?'Connected to your project. Everyone who opens the room with the same project shares one chat.':'Connect a real-time service so people in different places can chat in the room.'}</p>
-   <div class="hf"><label for="rtUrl">Project URL</label><input class="txt sm" id="rtUrl" placeholder="https://abcd1234.supabase.co" value="${esc(c.url)}" autocomplete="off" spellcheck="false"></div>
-   <div class="hf"><label for="rtKey">Publishable (anon) key</label><input class="txt sm" id="rtKey" placeholder="Paste the public key" value="${esc(c.key)}" autocomplete="off" spellcheck="false"></div>
-   <button class="go press" data-rtsave="1">${on?'Save and reconnect':'Save and connect'}</button>
-   ${on?'<button class="ghost" data-rtoff="1">Disconnect</button>':''}
-   <div class="sethead">Set up in 5 minutes</div>
-   <ol class="fine2" style="padding-left:18px;margin:0;line-height:1.5"><li>Create a free project at supabase.com.</li><li>Open Project Settings, then API. Copy the Project URL and the publishable (anon) key.</li><li>Open Realtime settings and leave public access on, so this page can use public channels.</li><li>Paste both above. Open the room on two devices to test.</li></ol>
-   <p class="fine2" style="margin-top:12px"><b>Never paste a secret or service_role key.</b> They are stored in this browser only. This prototype trusts the browser: anyone with the page can send messages, so use it for an invited pilot, not the public. Real moderation needs a server, see the brief.</p>`;
 }
 function nCal(){
   const N=st.nt,D=N.def,z=n=>new Date(n).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),e=x=>String(x).replace(/([,;\\])/g,'\\$1');
@@ -3086,7 +2944,7 @@ function pickIdx(rels,r){
   const sc=x=>(r.y&&x.y===r.y?2:0)+(r.ctry&&fold(x.ctry)===fold(r.ctry)?2:0)+(r.cat&&fold(x.cat)===fold(r.cat)?1:0)+(x.vinyl?1:0);
   const best=[...L].sort((a,b)=>sc(b)-sc(a))[0];return (L.length===1||sc(best)>=3)?best:null;
 }
-const NONPERF=/producer|engineer|mix|master|record|lacquer|cut|photo|design|artwork|art direction|liner|written|composed|arranged|lyrics|words|music by|coordinat|management|a&r|executive|illustrat|layout|typograph|remix|edited|compil|translat/;
+const NONPERF=/producer|engineer|mix|master|record|lacquer|cut|cover|sleeve|packag|photo|design|artwork|art direction|liner|written|composed|arranged|lyrics|words|music by|coordinat|management|a&r|executive|illustrat|layout|typograph|remix|edited|compil|translat/;
 function idxToMbc(d,borrowed){
   const tracks=(d.tracklist||[]).filter(t=>t[0]&&t[1]).map(t=>({n:t[0],t:t[1],len:t[2]||''})),by=new Map();
   (d.credits||[]).forEach(c=>{if(!c.name||!c.role)return;const k=c.id||c.name.toLowerCase(),p=by.get(k)||{name:c.name,pid:c.id,roles:[],tr:new Set(),all:false,first:by.size};
@@ -3213,6 +3071,7 @@ async function barLook(){
   closeSheets();setPrompt('Looking it up…');$('#guide').textContent=v;let hit=null,err=null;try{hit=await mbLookup(v)}catch(e){err=e}
   st.found={code:v,hit,err};renderFound();openSheet('found');resetScan();
 }
+safetyCopy();
 restoreReal();
 if(/[?&]lab=1/.test(location.search))setTimeout(openLab,400);
 
@@ -4056,16 +3915,12 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid);return}
   if(t.dataset.pidpick){const b=st.pbase;if(b)idxPerson(b.name,b.role,+t.dataset.pidpick,{...b,alts:[]});return}
   if(t.dataset.plan){setPlan(st.rec||1,t.dataset.plan);return}
-  if(t.dataset.planpick){const id=st.planFor||st.rec||1,k=t.dataset.planpick;closeSheets();if(k==='later'){toast('Okay. It’s Keeping it for now. Change it anytime on the record.');return}setPlan(id,k);return}
-  if(t.dataset.deal){const a=t.dataset.deal;if(a==='match'){openMatch();return}if(a==='req'){openRequest(+t.dataset.ri);return}dealAct(a,t);return}
-  if(t.dataset.dsend){const i=$('#dealMsg');dealSend(i.value);return}
-  if(t.dataset.dchip){dealSend(t.dataset.dchip);return}
   if(t.dataset.notes){openNotes();return}
   if(t.dataset.photo){openPhoto();return}
   if(t.dataset.pdel!==undefined){(st.photos[st.rec||1]||[]).splice(+t.dataset.pdel,1);photoDrop(st.rec||1,+t.dataset.pdel);renderPhotos();return}
@@ -4124,9 +3979,6 @@ document.addEventListener('click',e=>{
   if(t.dataset.foundno){closeSheets();return}
   if(t.dataset.barlook){barLook();return}
   if(t.dataset.barmanual){if(st.scanMode==='barcode')openBarEntry();else openCatEntry();return}
-  if(t.dataset.rtcfg){renderChatSvc();openSheet('chatsvc');return}
-  if(t.dataset.rtsave){const u=$('#rtUrl').value.trim().replace(/\/$/,''),k=$('#rtKey').value.trim(),err=rtCheck(u,k);if(err){toast(err);return}try{localStorage.setItem('mw_rt_url',u);localStorage.setItem('mw_rt_key',k)}catch(e){toast('This browser blocked saving. Chat settings will not stick.')}const key=st.nt&&st.nt.def.key;closeSheets();if(key)openRoom(key);toast('Connecting to your chat service…');return}
-  if(t.dataset.rtoff){try{localStorage.removeItem('mw_rt_url');localStorage.removeItem('mw_rt_key')}catch(e){}const key=st.nt&&st.nt.def.key;closeSheets();if(key)openRoom(key);toast('Disconnected. Chat is on this browser only.');return}
   if(t.dataset.ncal){nCal();return}
   if(t.dataset.nphase){nPhase(t.dataset.nphase);return}
   if(t.dataset.nmode){st.nt.mode=t.dataset.nmode;renderNight();return}
@@ -4154,11 +4006,6 @@ document.addEventListener('click',e=>{
   if(t.dataset.confhelp){openSheet('conf');return}
   if(t.dataset.cam){const k=t.dataset.cam;closeSheets();if(k==='on')camOn();else{st.camPref=false;camOff()}return}
   if(t.dataset.dc){const [ti,by]=t.dataset.dc.split('|');if(st.wants.some(w=>w.t===ti)){toast('Already in your Dream Crate.');return}st.wants.push({t:ti,a:by,note:'Added from credits',list:'None listed yet',alert:true,m:(ti.length%6)});renderCollection();t.setAttribute('aria-pressed','true');t.textContent='In your Dream Crate';toast(`${ti} added to your Dream Crate. We’ll tell you when a copy shows up.`);return}
-  if(t.dataset.pub!==undefined){const id=st.rec||1;copyOf(id).pub=t.dataset.pub==='1';fillPlan(id);fillAvail(id);toast(copyOf(id).pub?'Shows on the record’s page, and matched collectors are told.':'Matched collectors only. Nothing shows on the record’s page.');return}
-  if(t.dataset.listing){
-    if(t.dataset.listing==='edit'){const el=$('#plan');if(el)el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});return}
-    const [id,i]=t.dataset.listing.split('.').map(Number),l=LISTINGS[id][i];
-    st.deal={role:'buy',recId:id,stage:'offer',who:l.who,cond:l.cond,plan:l.plan,ask:l.ask||'',msgs:[],offerId:null};renderDeal();openSheet('deal');return}
   if(t.dataset.shedit){const sh=st.shelves.find(x=>x.id===+t.dataset.shedit);st.editShelf=sh.id;$('#sheName').value=sh.n;$('#sheSub').textContent=`${rc(shelfRecs(sh.id).length)} · ${VNAME[sh.v]}`;openSheet('shedit');return}
   if(t.dataset.shsave){const sh=st.shelves.find(x=>x.id===st.editShelf),n=$('#sheName').value.trim();if(!n){toast('A shelf needs a name.');return}sh.n=n;closeSheets();renderCollection();toast(`Renamed to “${n}”.`);return}
   if(t.dataset.shdel){const sh=st.shelves.find(x=>x.id===st.editShelf);if(!sh)return;askSure({title:'Delete this shelf?',body:`“${sh.n}” goes away, and so does its sharing link. The records on it stay in your collection.`,yes:'Delete shelf',go:()=>{const i=st.shelves.findIndex(x=>x.id===sh.id);if(i>-1)st.shelves.splice(i,1);renderCollection();saveState();toast(`Deleted the shelf “${sh.n}”. Its records are still in your collection.`)}});return}
@@ -4240,6 +4087,8 @@ document.addEventListener('click',e=>{
     else if(k==='cam'){closeSheets();st.camAsked=true;if(camStream){st.camPref=false;camOff();toast('Back to the illustration.')}else openSheet('cam')}
     else if(k==='import'){if(DEMO)gate(()=>openImport());else if(!dgTok()){openDgToken();toast('Add your Discogs token first.')}else{IMP.done=null;IMP.msg='';IMP.pct=0;renderImport();closeSheets();openSheet('import')}}
     else if(k==='csv')$('#csvIn').click();
+    else if(k==='promises'){closeSheets();openSheet('promises')}
+    else if(k==='safety')safetyRestore();
     else if(k==='backup')backupDownload();
     else if(k==='restore')backupRestore();
     else if(k==='erase')eraseAll();
@@ -4306,7 +4155,8 @@ function snapshot(){
     photoKeys:st.photoKeys||{},lastImport:st.lastImport||null};
 }
 let lastSnap='';
-function saveState(){if(DEMO)return;try{const s=JSON.stringify(snapshot());if(s!==lastSnap){localStorage.setItem(DATA_KEY,s);lastSnap=s}}catch(e){}}
+const snapKey=()=>JSON.stringify({...snapshot(),at:0});
+function saveState(){if(DEMO)return;try{const k=snapKey();if(k!==lastSnap){localStorage.setItem(DATA_KEY,JSON.stringify(snapshot()));lastSnap=k;mirrorSave()}}catch(e){}}
 function applyState(d){
   if(!d||d.app!=='memory-wax')return false;
   (d.recs||[]).forEach(r=>{const i=RECS.findIndex(x=>x.id===r.id);if(i>=0)RECS[i]=r;else RECS.push(r)});
@@ -4319,7 +4169,7 @@ function applyState(d){
   st.photoKeys=d.photoKeys||{};st.lastImport=d.lastImport||null;
   loadPhotos();return true;
 }
-function restoreState(){if(DEMO)return;try{const d=JSON.parse(localStorage.getItem(DATA_KEY)||'null');if(d){applyState(d);lastSnap=JSON.stringify(snapshot())}}catch(e){}}
+function restoreState(){if(DEMO)return;try{const d=JSON.parse(localStorage.getItem(DATA_KEY)||'null');if(d){applyState(d);lastSnap=snapKey()}}catch(e){try{const raw=localStorage.getItem(DATA_KEY);if(raw)localStorage.setItem('mw_state_unreadable',raw)}catch(x){}}}
 /* photos of your copy: blobs in IndexedDB (same store the lab uses), keys in the saved state */
 async function photoStore(id,file){try{const k='p'+id+'-'+Date.now()+Math.random().toString(36).slice(2,6);await imgPut(k,file);st.photoKeys=st.photoKeys||{};(st.photoKeys[id]=st.photoKeys[id]||[]).push(k);saveState()}catch(e){}}
 async function photoDrop(id,i){try{const ks=(st.photoKeys||{})[id]||[];const k=ks.splice(i,1)[0];if(k){const d=await labDB();d.transaction('img','readwrite').objectStore('img').delete(k)}saveState()}catch(e){}}
@@ -4329,6 +4179,59 @@ async function photoCount(){let n=0;Object.values(st.photoKeys||{}).forEach(a=>n
 function loadPrefs(){try{Object.assign(prefs,JSON.parse(localStorage.getItem(PREF_KEY)||'{}'))}catch(e){}}
 function savePrefs(){try{localStorage.setItem(PREF_KEY,JSON.stringify({big:prefs.big,motion:prefs.motion,loc:prefs.loc,auto:prefs.auto}))}catch(e){}}
 
+/* ---- keeping a collection safe ----
+   Four layers, none of them needing an account:
+   1. a copy made automatically before an update changes anything
+   2. a copy in the app's Documents folder (iPhone app): iCloud Backup includes it, the Files app can show it, and it survives the web view's storage being cleared
+   3. a backup file you save wherever you like, photos included
+   4. a reminder when you haven't saved one in a while */
+function safetyCopy(){
+  if(DEMO)return;
+  try{
+    const prev=localStorage.getItem('mw_build'),cur=BUILD.split(' ')[0],data=localStorage.getItem('mw_state'),recs=localStorage.getItem('mw_real_recs');
+    if(prev&&prev!==cur&&(data||recs))localStorage.setItem('mw_safety',JSON.stringify({from:prev,to:cur,at:Date.now(),state:data,recs}));
+    localStorage.setItem('mw_build',cur);
+  }catch(e){}
+}
+const safetyInfo=()=>{try{return JSON.parse(localStorage.getItem('mw_safety')||'null')}catch(e){return null}};
+function safetyRestore(){
+  const x=safetyInfo();if(!x)return;
+  askSure({title:'Go back to the copy from before the update?',body:`This puts back what was on this phone on ${new Date(x.at).toLocaleDateString()}, before the update from ${x.from} to ${x.to}. Anything you added since then goes away. Download a backup first if you aren’t sure.`,yes:'Restore that copy',go:()=>{
+    try{if(x.state)localStorage.setItem('mw_state',x.state);if(x.recs)localStorage.setItem('mw_real_recs',x.recs);localStorage.removeItem('mw_safety')}catch(e){toast('Couldn’t restore it.');return}
+    location.reload()}});
+}
+const BK_NATIVE=()=>{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.nativePromise&&(C.PluginHeaders||[]).some(h=>h.name==='Backup'))};
+let mirrorTimer=0,mirrorLast='';
+function mirrorSave(){
+  if(DEMO||!BK_NATIVE())return;
+  clearTimeout(mirrorTimer);
+  mirrorTimer=setTimeout(()=>{
+    let text;try{text=localStorage.getItem('mw_state')}catch(e){return}
+    if(!text||text===mirrorLast)return;
+    Capacitor.nativePromise('Backup','save',{text}).then(()=>{mirrorLast=text;try{localStorage.setItem('mw_mirror_at',String(Date.now()))}catch(e){}}).catch(()=>{});
+  },4000);
+}
+/* if this phone has no records but the Documents folder has a copy (storage cleared, or a fresh install restored from iCloud), offer it back */
+async function mirrorCheck(){
+  if(DEMO||!BK_NATIVE())return;
+  if(RECS.some(r=>r.real)){mirrorSave();return}      // there is data here: make sure the folder has a copy of it
+  let r;try{r=await Capacitor.nativePromise('Backup','load',{})}catch(e){return}
+  if(!r||!r.text)return;
+  let d;try{d=JSON.parse(r.text)}catch(e){return}
+  const n=d&&d.app==='memory-wax'?(d.recs||[]).length:0;if(!n)return;
+  askSure({title:'Found a saved copy of your collection',body:`The Memory Wax folder on this phone has a copy from ${new Date(d.at||0).toLocaleDateString()} with ${n} record${n===1?'':'s'}. Put it back?`,yes:'Restore it',go:()=>{
+    applyState(d);saveReal();saveState();renderCollection();go('collection');toast(`Restored ${n} record${n===1?'':'s'}.`)}});
+}
+const lastBackupAt=()=>{try{return +localStorage.getItem('mw_backup_at')||0}catch(e){return 0}};
+const backupStale=()=>{const n=RECS.filter(r=>r.real).length;return n>=3&&Date.now()-lastBackupAt()>30*864e5};
+/* your own photos, shrunk so a backup file stays a sensible size */
+async function photoBlobs(maxPx){
+  const out={};
+  for(const ks of Object.values(st.photoKeys||{}))for(const k of ks){
+    try{const b=await imgGet(k);if(!b)continue;out[k]=(await fileToCanvas(b,maxPx)).toDataURL('image/jpeg',.82)}catch(e){}
+  }
+  return out;
+}
 /* ---- backup file ---- */
 const stamp=()=>new Date().toISOString().slice(0,10);
 function downloadBlob(b,name){
@@ -4336,11 +4239,15 @@ function downloadBlob(b,name){
   if(navigator.canShare&&navigator.canShare({files:[f]})&&/iPhone|iPad|Android/.test(navigator.userAgent)){navigator.share({files:[f],title:name}).catch(()=>{});return}
   const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();
 }
-function backupDownload(){
-  const d=snapshot();d.lab=LAB;d.prefs={big:prefs.big,motion:prefs.motion,loc:prefs.loc};
+async function backupDownload(){
+  const d=snapshot();d.v=2;d.lab=LAB;d.prefs={big:prefs.big,motion:prefs.motion,loc:prefs.loc};
+  const hasPh=Object.values(st.photoKeys||{}).some(a=>a.length);
+  if(hasPh){toast('Packing your photos…');d.photos=await photoBlobs(1600)}
   downloadBlob(new Blob([JSON.stringify(d)],{type:'application/json'}),'memory-wax-backup-'+stamp()+'.json');
   st.lastBackup=Date.now();try{localStorage.setItem('mw_backup_at',String(st.lastBackup))}catch(e){}
-  toast(`Backup ready: ${d.recs.length} record${d.recs.length===1?'':'s'}, shelves, grades, prices and photos list. Keep it somewhere safe.`);
+  const np=Object.keys(d.photos||{}).length;
+  toast(`Backup ready: ${d.recs.length} record${d.recs.length===1?'':'s'}, shelves, grades, prices${np?` and ${np} photo${np===1?'':'s'}`:''}. Save it somewhere safe, like iCloud Drive.`);
+  renderCollection();
 }
 function pickFile(accept){return new Promise(ok=>{let i=$('#anyFile');if(!i){i=document.createElement('input');i.type='file';i.id='anyFile';i.style.display='none';document.body.appendChild(i)}i.accept=accept;i.value='';i.onchange=()=>ok(i.files&&i.files[0]||null);i.click()})}
 async function backupRestore(){
@@ -4350,14 +4257,17 @@ async function backupRestore(){
   const n=(d.recs||[]).length;
   if(!confirm(`Restore ${n} record${n===1?'':'s'} from ${new Date(d.at||0).toLocaleDateString()}? This replaces what is on this phone now.`))return;
   for(let i=RECS.length-1;i>=0;i--)if(RECS[i].real)RECS.splice(i,1);
+  if(d.photos){for(const [k,u] of Object.entries(d.photos)){try{await imgPut(k,await (await fetch(u)).blob())}catch(e){}}}
   initState(true);applyState(d);if(d.lab){LAB=d.lab;labSave()}if(d.prefs){Object.assign(prefs,d.prefs);applyPrefs();savePrefs()}
   saveReal();saveState();closeSheets();renderCollection();go('collection');toast(`Restored ${n} record${n===1?'':'s'}.`);
 }
 /* ---- erase ---- */
 async function eraseAll(){
-  if(!confirm('Erase everything Memory Wax keeps on this phone? Records, shelves, grades, prices, photos, lab results and tokens. Download a backup first if you want any of it back.'))return;
+  if(!confirm('Erase everything Memory Wax keeps on this phone? Records, shelves, grades, prices, photos, lab results and tokens, and the copy in the Memory Wax folder. Download a backup first if you want any of it back.'))return;
   try{['mw_state','mw_real_recs','mw_prefs','mw_lab','mw_backup_at','mw_demo'].forEach(k=>localStorage.removeItem(k));localStorage.removeItem('mw_rt')}catch(e){}
   try{indexedDB.deleteDatabase('mwlab')}catch(e){}
+  try{['mw_build','mw_safety','mw_mirror_at','mw_state_unreadable'].forEach(k=>localStorage.removeItem(k))}catch(e){}
+  if(BK_NATIVE()){try{await Capacitor.nativePromise('Backup','clear',{})}catch(e){}}
   location.reload();
 }
 
@@ -4435,21 +4345,23 @@ async function renderYourData(){
   const R=RECS.filter(r=>r.real&&st.owned.has(r.id)),conf=R.filter(r=>r.c==='confirmed').length,photos=await photoCount();
   const kb=(()=>{try{let n=0;for(const k in localStorage)if(k.startsWith('mw_'))n+=(localStorage.getItem(k)||'').length;return Math.round(n/1024)}catch(e){return 0}})();
   const back=(()=>{try{const t=+localStorage.getItem('mw_backup_at');return t?new Date(t).toLocaleString():''}catch(e){return ''}})();
-  const rt=(()=>{try{return !!localStorage.getItem('mw_rt')}catch(e){return false}})();
+  const mir=(()=>{try{const t=+localStorage.getItem('mw_mirror_at');return t?new Date(t).toLocaleString():''}catch(e){return ''}})(),sf=safetyInfo();
   $('#yourdataBody').innerHTML=`<h4 class="disp">What’s on this phone</h4><p class="sub">Everything Memory Wax keeps, and where it goes.</p>
    <div class="kvlist">
     <div><b>${R.length}</b><span>record${R.length===1?'':'s'} · ${conf} with the pressing confirmed</span></div>
     <div><b>${st.shelves.length}</b><span>shel${st.shelves.length===1?'f':'ves'} · ${st.wants.length} in your Dream Crate</span></div>
     <div><b>${photos}</b><span>photo${photos===1?'':'s'} of your copies, stored only here</span></div>
-    <div><b>${(LAB.trials||[]).length}</b><span>Phase 0 lab trial${(LAB.trials||[]).length===1?'':'s'}</span></div>
+    ${DEVTOOLS?`<div><b>${(LAB.trials||[]).length}</b><span>Phase 0 lab trial${(LAB.trials||[]).length===1?'':'s'}</span></div>`:''}
     <div><b>${kb} KB</b><span>saved in this browser${back?' · last backup '+esc(back):' · never backed up'}</span></div>
+    <div><b>${BK_NATIVE()?'On':'Off'}</b><span>${BK_NATIVE()?'copy in the Memory Wax folder (Files app), included in iCloud Backup'+(mir?' · saved '+esc(mir):''):'copy in the Memory Wax folder: iPhone app only'}</span></div>
+    <div><b>${sf?'Kept':'None yet'}</b><span>${sf?'copy from before the last update, '+new Date(sf.at).toLocaleDateString()+'. Restore it in Settings.':'a copy is made automatically before each update'}</span></div>
    </div>
    <div class="sethead">What leaves this phone</div>
    <p class="fine2" style="margin:0 0 6px">Only when you use the feature, and only what the lookup needs:</p>
    <ul class="plain">
     <li><b>MusicBrainz</b> and the <b>Cover Art Archive</b>: the barcode or catalog number you scan, to find the release and its cover.</li>
     <li><b>Discogs</b>${dgTok()?' (token set)':' (no token)'}: catalog numbers and your collection list, with your token.</li>
-    <li><b>Supabase</b>${rt?' (connected)':' (not set up)'}: live chat messages in a listening room, with the keys you pasted.</li>
+    <li><b>Memory Wax index</b>: only when it is switched on, the barcode, catalogue number or artist and title you search for, to find the release.</li>
     <li><b>Apple Music</b>: only if you connect it, to play or save playlists.</li>
    </ul>
    <p class="fine2">No account exists yet, so nothing syncs by itself. Your backup is a file you keep. Prices and places you paid never leave the phone.</p>
@@ -4457,7 +4369,7 @@ async function renderYourData(){
    <button class="ghost" data-set="restore">Restore a backup</button>`;
 }
 
-loadPrefs();applyPrefs();renderSettings();restoreState();renderCollection();loadCovers().then(()=>{try{renderCollection()}catch(e){}});setInterval(saveState,2500);addEventListener('pagehide',saveState);
+loadPrefs();applyPrefs();renderSettings();fillLegalContact();restoreState();renderCollection();loadCovers().then(()=>{try{renderCollection()}catch(e){}});setInterval(saveState,2500);mirrorCheck();addEventListener('pagehide',saveState);
 {const b=$('#buildTag');if(b){b.textContent='Memory Wax '+(DEVTOOLS?BUILD:BUILD.split(' ')[0])+(DEMO?' · sample data on':'');let n=0,t0=0;b.addEventListener('click',()=>{const now=Date.now();n=now-t0<2500?n+1:1;t0=now;if(DEVTOOLS&&n>=7){n=0;closeSheets();openLab()}})}}
 renderCollection();updatePills();
 </script>
