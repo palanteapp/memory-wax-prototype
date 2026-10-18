@@ -259,6 +259,7 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .sample em{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-style:normal;font-weight:500;opacity:.65;margin-bottom:6px}
 .listen{background:var(--red);color:var(--cream)}
 .lbtn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lbtn.one{grid-template-columns:1fr}
 .lbtn button{padding:15px 10px;background:var(--cream);color:var(--ox);font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.03em;transition:transform 160ms ease-out}
 .lbtn button:active{transform:scale(.97)}
 .fine{font-size:12.5px!important;line-height:1.5;margin-top:12px;font-weight:600!important;opacity:.8}
@@ -1021,13 +1022,6 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
           <article class="blk story"><div class="q" aria-hidden="true">“</div><header><span class="num">04</span><h3 class="disp">The Story</h3></header>
             <p id="repStory">The gatefold carries Coltrane’s own devotional poem, written to be read alongside the four parts: Acknowledgement, Resolution, Pursuance, and Psalm.<sup><a href="#s1">1</a></sup></p>
           </article>
-          <article class="blk avail"><header><span class="num">05</span><h3 class="disp">Copies From Collectors</h3></header>
-            <div id="repAvail"></div>
-          </article>
-          <article class="blk liner"><header><span class="num">06</span><h3 class="disp">The Liner Notes</h3></header>
-            <p>Credits and release notes come from Discogs, with sources. The original liner notes are copyrighted, so we link to them instead of reproducing them.</p>
-            <div class="btnrow"><button class="chipbtn dark press" data-notes="1">Release notes</button><button class="chipbtn dark press" data-photo="1">Photograph my copy’s</button></div>
-          </article>
           <article class="blk mycopy"><header><span class="num">07</span><h3 class="disp">My Copy</h3></header>
             <p>The pressing is the record. This part is yours.</p>
             <div class="mcmemo" id="mcMemo" hidden></div>
@@ -1045,12 +1039,19 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
             <div class="mc-two"><div><span class="mc-lab">Paid</span><input class="mc-in" id="mcPaid" inputmode="decimal" placeholder="$" aria-label="Price paid"></div><div><span class="mc-lab">Where</span><input class="mc-in" id="mcWhere" placeholder="Shop, fair, gift…" aria-label="Where you got it"></div></div>
             <p class="mc-note">Saved automatically. Price and place are always private. They never show on a public shelf.</p>
           </article>
+          <article class="blk avail"><header><span class="num">05</span><h3 class="disp">Copies From Collectors</h3></header>
+            <div id="repAvail"></div>
+          </article>
+          <article class="blk liner"><header><span class="num">06</span><h3 class="disp">The Liner Notes</h3></header>
+            <p>Credits and release notes come from Discogs, with sources. The original liner notes are copyrighted, so we link to them instead of reproducing them.</p>
+            <div class="btnrow"><button class="chipbtn dark press" data-notes="1">Release notes</button><button class="chipbtn dark press" data-photo="1">Photograph my copy’s</button></div>
+          </article>
           <article class="blk voices"><header><span class="num">07</span><h3 class="disp">Voices</h3></header>
             <p>No stories on this pressing yet. Yours would be the first, with your name on it.</p>
             <div class="sample"><em>Sample voice · illustrative</em>“I found this in a crate in a shop I’d walked past for years…”</div>
           </article>
           <article class="blk listen"><header><span class="num">08</span><h3 class="disp">Listen or Explore</h3></header>
-            <div class="lbtn"><button data-listen="sp">Spotify</button><button data-listen="am">Apple Music</button></div>
+            <div class="lbtn one"><button data-listen="am">Apple Music</button></div>
             <p class="fine">If a record isn’t on streaming, you’ll see Explore here instead. The story is always available.</p>
           </article>
           <article class="blk src"><header><span class="num">09</span><h3 class="disp">Sources</h3></header>
@@ -1216,7 +1217,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
         <button class="pb" data-cr="coltrane">John Coltrane</button><button class="pb" data-cr="tyner">McCoy Tyner</button><button class="pb" data-cr="garrison">Jimmy Garrison</button><button class="pb" data-cr="jones">Elvin Jones</button>
       </div>
       <button class="go press" data-addwant="1">Find a copy · add to Dream Crate</button>
-      <button class="ghost" data-listen="sp">Listen</button>
+      <button class="ghost" data-listen="am">Listen</button>
     </div>
 
     <div class="sheet" id="sheet-cur" role="dialog" aria-label="Curator">
@@ -1236,9 +1237,8 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <div class="sheet" id="sheet-listen" role="dialog" aria-label="Listen">
       <h4 class="disp">Listen</h4>
       <p class="sub" id="listenSub">A Love Supreme plays in the service you already use.</p>
-      <div class="seg sheetseg" id="listenSeg" style="--i:0;--n:2" role="group" aria-label="Music service"><i class="thumb"></i><button aria-pressed="true" data-ls="sp">Spotify</button><button aria-pressed="false" data-ls="am">Apple Music</button></div>
       <div id="listenBody"></div>
-      <p class="fine2">These are Spotify’s and Apple Music’s own players, shown unmodified. Memory Wax never plays or stores audio.</p>
+      <p class="fine2">This is Apple Music’s own player, shown unmodified. Memory Wax never plays or stores audio.</p>
     </div>
 
     <div class="sheet" id="sheet-sure" role="alertdialog" aria-label="Are you sure?">
@@ -1352,7 +1352,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <div class="trow"><div><b>Larger text</b><span class="d">Bigger type across the app.</span></div><button class="sw" data-set="big" aria-pressed="false" aria-label="Larger text"></button></div>
       <div class="trow"><div><b>Reduce motion</b><span class="d">Calmer transitions. Follows your phone’s setting by default.</span></div><button class="sw" data-set="motion" aria-pressed="false" aria-label="Reduce motion"></button></div>
       <div class="sethead">Music</div>
-      <button class="opt-card" data-set="svc"><b>Connected music services</b><span>Connect your own Spotify or Apple Music so playlists can be saved for real.</span></button>
+      <button class="opt-card" data-set="svc"><b>Connected music services</b><span>Connect Apple Music so playlists can be saved for real.</span></button>
       <div class="sethead">Scanner</div>
       <div class="trow"><div><b>Read automatically</b><span class="d">Barcode and label scans start on their own and capture the moment they can read it. Turn off to use the shutter button.</span></div><button class="sw" data-set="auto" aria-pressed="true" aria-label="Read automatically"></button></div>
       <button class="opt-card" data-set="cam"><b>Live camera preview</b><span>Try your real camera in the viewfinder instead of the illustration.</span></button>
@@ -1412,7 +1412,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <p class="sub">Plain-language summaries. Draft for the prototype.</p>
       <div class="dsrc"><b>Memory Wax is a meeting place</b><span>We introduce collectors to each other. We are not a party to any trade or sale. We don’t handle payment or shipping, and we don’t guarantee a deal, a condition, or that a record is genuine.</span></div>
       <div class="dsrc"><b>Your content stays yours</b><span>You own your memories, notes and photos. You let us show them only as you choose. Only post what you have the right to share.</span></div>
-      <div class="dsrc"><b>Copyright and cover art</b><span>Album art, music, liner notes and photos belong to their owners. Cover art appears to identify a record, and music plays in Spotify’s and Apple Music’s own players. We never store or stream audio.</span></div>
+      <div class="dsrc"><b>Copyright and cover art</b><span>Album art, music, liner notes and photos belong to their owners. Cover art appears to identify a record, and music plays in Apple Music’s own player. We never store or stream audio.</span></div>
       <div class="dsrc"><b>Counterfeits and bootlegs</b><span>Not allowed. We remove listings and accounts that sell them.</span></div>
       <div class="dsrc"><b>Privacy</b><span>Everything starts as Just me. Prices, places and your location never show. Export your data or delete your account any time. You must be 13 or older.</span></div>
       <button class="go press" data-toast="Thanks. We review copyright notices, remove what’s infringing, and close accounts that repeatedly infringe. (Prototype: nothing is sent.)">Report a copyright problem</button>
@@ -1461,7 +1461,6 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 </div>
 
 <script>
-if(window.opener&&/[?&](code|error)=/.test(location.search)){document.documentElement.style.visibility='hidden';try{window.opener.postMessage({mwSpotify:true,search:location.search},location.origin)}catch(e){}window.close()}
 /* halftone generator: dot radius falls off with distance from an anchor point */
 function halftone(w,h,ox,oy,maxD,step=9,pow=1.1){
   let c='';const rows=Math.ceil(h/(step/2));
@@ -1605,10 +1604,10 @@ function initState(empty){
     filter:'All',confOnly:false,sort:'recent',view:'grid',colTab:0,target:null,vis:0,newV:0,addedToast:false,
     q:'',batch:false,queue:[],offline:false,pending:0,copy:{cond:null,paid:'',where:''},
     sessions:[],host:null,nextSess:1,inbox:[],sold:new Set(),deal:null,matchDismissed:false,matchDone:false,planFor:null,rec:1,cameFromScan:false,copies:{},photos:{},fpeople:new Set(),series:[],
-    battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
+    battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'am',conn:{am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.18.3 · tidy layout';
+const BUILD='0.18.4 · Apple Music only';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -2179,21 +2178,20 @@ function renderBattle(){
    ${done?`<div class="sethead">Why? Optional</div><div class="opts">${WHY.map(w=>`<button class="pb" data-bwhy="${w}" aria-pressed="${why.has(w)}">${w}</button>`).join('')}</div>
      <p class="fine2" style="margin:0 0 8px">${tot} sample votes. Yours is counted.</p>
      <button class="go press" data-bnext="1">Next battle</button>
-     <button class="ghost" data-listen="sp" data-lrec="${[1,7,2][B.i]}">Listen to this album</button>`
+     <button class="ghost" data-listen="am" data-lrec="${[1,7,2][B.i]}">Listen to this album</button>`
    :`<button class="go press" data-bvote="1">Cast my vote</button>`}
    <p class="fine2">Streaming can’t tell you which pressing sounds better. That’s what your ears and your copy are for. Votes show which one collectors prefer.</p>`;
 }
 function openBattle(i){st.battle.i=i;st.battle.pick=null;renderBattle();openSheet('battle')}
 
 /* ---------- listen mock-up ---------- */
-const SVC={sp:{n:'Spotify',ac:'#1ED760',need:'Signed out, Spotify plays short previews. Signed in with the right plan, you hear full tracks.',url:r=>'https://open.spotify.com/search/'+encodeURIComponent(r.t+' '+r.a)},
-           am:{n:'Apple Music',ac:'#FA5A6E',need:'Signed out, Apple Music plays short previews. With a subscription, you hear full tracks.',url:r=>'https://music.apple.com/us/search?term='+encodeURIComponent(r.t+' '+r.a)}};
+const SVC={
+  am:{n:'Apple Music',ac:'#FA5A6E',need:'Signed out, Apple Music plays short previews. With a subscription, you hear full tracks.',url:r=>'https://music.apple.com/us/search?term='+encodeURIComponent(r.t+' '+r.a)}};
 const recTracks=id=>{const r=RECS.find(x=>x.id===id);return (r&&r.tracks)||(REP[id]||{}).tracks||[]};
-/* real embeds: Spotify album ids and Apple Music album ids, checked against each service's own pages */
+/* real embeds: Apple Music album ids, checked against Apple's own pages */
 const STREAM={
-  sp:{1:'5cKg5nyFcq8ykeiFposAcy',2:'2Z11cXWEa2qqYQBGkJrCga',3:'10PZnE26qh6zStlWgwbCim',4:'5fmIolILp5NAtNYiRPjhzA',5:'2noRn2Aes5aoNVsU6iWThc',6:'1p12OAWwudgMqfMzjMvl2a',7:'1weenld61qoidwYuZ1GESA',8:'2v6ANhWhZBUKkg6pJJBs3B',9:'51kRDjKcrYrQfFmOktFh32',10:'5fMlysqhFE0itGn4KezMBW',11:'4PMwCdbTTBTgyMh8dbTVRb',12:'2WqW0iwOMcta42pZI2hLiJ',15:'0ekrCyUT01BzU89QbiKcaI',21:'7cZ6oBx0SEUPDAoxJtxNDh'},
   am:{1:'1440713018',2:'1468202477',3:'1579606107',4:'158571524',5:'697194953',7:'268443092',8:'1538081586',9:'559710299',10:'108233171',11:'1476739989',12:'1725411068',15:'1440788438',21:'1531037502'}};
-const embedSrc=(svc,id)=>{const x=STREAM[svc][id];if(!x)return null;return svc==='sp'?`https://open.spotify.com/embed/album/${x}?theme=0`:`https://embed.music.apple.com/us/album/album/${x}?theme=dark`};
+const embedSrc=(svc,id)=>{const x=STREAM[svc][id];if(!x)return null;return `https://embed.music.apple.com/us/album/album/${x}?theme=dark`};
 const ICO={next:'<path d="M6 5l9 7-9 7zM17 5h2v14h-2z"/>',prev:'<path d="M18 5l-9 7 9 7zM5 5h2v14H5z"/>'};
 const lCur=()=>{const L=st.listen;return L.q[L.qi]||{rec:L.rec||1}};
 function lGo(i){const L=st.listen;if(i<0||i>=L.q.length)return;L.qi=i;L.rec=L.q[i].rec;L.track=L.q[i].track==null?0:L.q[i].track;renderListen()}
@@ -2205,17 +2203,16 @@ function startQueue(items,src,opt){
   const L=st.listen;L.q=q;L.src=src;L.shuffle=!!opt.shuffle;lGo(0);openSheet('listen');
 }
 function renderListen(){
+  st.listen.svc='am';
   const L=st.listen,v=SVC[L.svc],e=lCur(),r=recOf(e.rec),cv=cov(r),multi=L.q.length>1,src=embedSrc(L.svc,r.id);
   $('#listenSub').textContent=L.src?`Playing ${L.src}.`:`${r.t} plays in the service you already use.`;
-  $('#listenSeg').style.setProperty('--i',L.svc==='sp'?0:1);
-  $$('#listenSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.ls===L.svc)));
   const up=L.q.map((x,i)=>[x,i]).filter(([x,i])=>i>L.qi).slice(0,4);
   const pick=e.track!=null?recTracks(r.id)[e.track]:null;
   $('#listenBody').innerHTML=`<div class="lcard" style="--ac:${v.ac}"><div class="lsvc"><i></i>${v.n} · plays in their own player</div>
     ${multi?`<div class="lsrc">${L.qi+1} of ${L.q.length}${L.shuffle?' · shuffled':''}</div>`:''}
     ${src?'':`<div class="lh"><div class="tile m${r.m}${cv?' has-img':''}"${cv?` style="background-image:url('${cv}')"`:''}></div><div><b>${r.t}</b><span>${r.a} · ${r.y}</span></div></div>`}
     ${pick?`<p class="fine2" style="margin:10px 0 0;color:var(--cream)">Their pick: <b>${esc(pick)}</b>. Tap it in the player to start there.</p>`:''}
-    ${src?`<iframe class="emb" title="${v.n} player for ${esc(r.t)}" src="${src}" height="${L.svc==='sp'?352:450}" loading="lazy" allow="autoplay *; encrypted-media *; clipboard-write; fullscreen; picture-in-picture" ${L.svc==='am'?'sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"':''}></iframe>`
+    ${src?`<iframe class="emb" title="${v.n} player for ${esc(r.t)}" src="${src}" height="450" loading="lazy" allow="autoplay *; encrypted-media *; clipboard-write; fullscreen; picture-in-picture" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"></iframe>`
      :`<p style="font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.15;margin:14px 0 4px">${esc(r.t)} isn’t wired to ${v.n} in this prototype yet.</p>`}
     ${multi?`<div class="lctl" style="margin-top:12px;justify-content:space-between"><button class="sm" data-lprev="1" aria-label="Previous record"${L.qi===0?' disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true">${ICO.prev}</svg></button><span class="fine2" style="margin:0;color:var(--cream)">Record ${L.qi+1} of ${L.q.length}</span><button data-lnext="1" aria-label="Next record"${L.qi===L.q.length-1?' disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true">${ICO.next}</svg></button></div>`:''}
     ${up.length?`<div class="lup"><div class="k">Up next</div>${up.map(([x,i])=>{const q=recOf(x.rec),c=cov(q);return `<button data-lq="${i}"><div class="tile m${q.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div>${q.t}<br><span>${q.a}</span></div></button>`}).join('')}</div>`:''}</div>
@@ -2223,67 +2220,17 @@ function renderListen(){
    <button class="ghost" data-qsave="${L.svc}">Save ${L.q.length>1?'this queue':'this album'} to ${v.n}</button>
    <a class="ghost" href="${v.url(r)}" target="_blank" rel="noopener">Open in the ${v.n} app instead</a>`;
 }
-function openListen(svc,rec){const L=st.listen;L.svc=svc;L.q=[{rec:rec||L.rec||1}];L.qi=0;L.src=null;L.shuffle=false;L.rec=L.q[0].rec;L.track=0;renderListen();openSheet('listen')}
+function openListen(svc,rec){const L=st.listen;L.svc='am';L.q=[{rec:rec||L.rec||1}];L.qi=0;L.src=null;L.shuffle=false;L.rec=L.q[0].rec;L.track=0;renderListen();openSheet('listen')}
 
-/* ---------- real Spotify and Apple Music connections (prototype: bring your own keys) ---------- */
+/* ---------- real Apple Music connection (prototype: bring your own token) ---------- */
 const SPSCOPE='playlist-modify-private playlist-modify-public';
 const spRedir=()=>location.origin+location.pathname;
 const spOK=()=>location.hostname==='127.0.0.1'||location.protocol==='https:';
-const b64u=buf=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const tnorm=t=>(t||'').toLowerCase().replace(/\(.*?\)|\[.*?\]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 let spWait=null;
-const spToken=()=>{try{const t=JSON.parse(sessionStorage.getItem('mw_sp')||'null');return t&&t.exp>Date.now()?t.at:null}catch(e){return null}};
-async function spConnect(clientId){
-  const win=window.open('','mw_spotify','width=480,height=740');
-  if(!win){throw new Error('Your browser blocked the Spotify window. Allow pop-ups for this page and try again.')}
-  const ver=b64u(crypto.getRandomValues(new Uint8Array(48)));
-  const chal=b64u(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ver)));
-  const state=b64u(crypto.getRandomValues(new Uint8Array(12)));
-  win.location.href='https://accounts.spotify.com/authorize?'+new URLSearchParams({client_id:clientId,response_type:'code',redirect_uri:spRedir(),scope:SPSCOPE,code_challenge_method:'S256',code_challenge:chal,state});
-  return new Promise((res,rej)=>{
-    spWait={res,rej,ver,state,clientId};
-    const iv=setInterval(()=>{if(win.closed){clearInterval(iv);if(spWait){spWait.rej(new Error('Spotify sign-in was closed.'));spWait=null}}},600);
-  });
-}
-window.addEventListener('message',async e=>{
-  if(e.origin!==location.origin||!e.data||!e.data.mwSpotify||!spWait)return;
-  const w=spWait;spWait=null;const q=new URLSearchParams(e.data.search);
-  if(q.get('error')||q.get('state')!==w.state){w.rej(new Error(q.get('error')||'Sign-in could not be verified.'));return}
-  try{
-    const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'authorization_code',code:q.get('code'),redirect_uri:spRedir(),client_id:w.clientId,code_verifier:w.ver})});
-    const j=await r.json();if(!j.access_token)throw new Error(j.error_description||j.error||'Spotify did not return a token.');
-    sessionStorage.setItem('mw_sp',JSON.stringify({at:j.access_token,exp:Date.now()+(j.expires_in-60)*1000}));w.res(j.access_token);
-  }catch(err){w.rej(err)}
-});
-async function spApi(path,opt){
-  const t=spToken();if(!t)throw new Error('auth');
-  const r=await fetch('https://api.spotify.com/v1'+path,{...(opt||{}),headers:{Authorization:'Bearer '+t,'Content-Type':'application/json'}});
-  if(r.status===401){sessionStorage.removeItem('mw_sp');throw new Error('auth')}
-  if(r.status===429)throw new Error('Spotify asked us to slow down. Try again in a minute.');
-  if(!r.ok){let m='';try{m=(await r.json()).error.message}catch(e){}throw new Error('Spotify said: '+(m||r.status))}
-  return r.status===204?null:r.json();
-}
 function pickTrack(list,it,nameOf){
   const want=tnorm((recTracks(it.rec)[it.track]||'').split(' · ').pop());
   return list.find(t=>tnorm(nameOf(t))===want)||list.find(t=>want&&(tnorm(nameOf(t)).includes(want)||want.includes(tnorm(nameOf(t)))))||list[it.track]||list[0];
-}
-async function spUris(items){
-  const uris=[],miss=[],cache={};
-  for(const it of items){
-    const id=STREAM.sp[it.rec],r=recOf(it.rec);
-    if(!id){miss.push(r.t);continue}
-    if(!cache[id])cache[id]=(await spApi(`/albums/${id}/tracks?limit=50`)).items;
-    const tr=cache[id];
-    if(it.track==null)tr.forEach(t=>uris.push(t.uri));else uris.push(pickTrack(tr,it,t=>t.name).uri);
-  }
-  return {uris:[...new Set(uris)],miss};
-}
-async function spSave(name,note,items){
-  const {uris,miss}=await spUris(items);
-  if(!uris.length)throw new Error('None of these records are wired to Spotify yet.');
-  const pl=await spApi('/me/playlists',{method:'POST',body:JSON.stringify({name,description:(note?note+' · ':'')+'Made with Memory Wax',public:false})});
-  for(let i=0;i<uris.length;i+=100)await spApi(`/playlists/${pl.id}/items`,{method:'POST',body:JSON.stringify({uris:uris.slice(i,i+100)})});
-  return {url:pl.external_urls&&pl.external_urls.spotify,n:uris.length,miss};
 }
 /* Apple Music through MusicKit JS. Needs a developer token from an Apple Developer Program account. */
 let amMusic=null;
@@ -2309,26 +2256,18 @@ async function amSave(name,note,items){
   return {url:'https://music.apple.com/library/playlists',n:uniq.length,miss};
 }
 function renderSvc(){
-  const cid=localStorage.getItem('mw_sp_cid')||'',on=!!spToken(),ok=spOK(),redir=spRedir();
-  const host127=location.href.replace('//localhost','//127.0.0.1'),configured=!!cid||on||!!amMusic;
-  const dev=`<p class="sub">Testing only: bring your own keys to make Save to Spotify and Apple Music real. Nothing is kept on a server.</p>
-   ${st.pendSave?`<div class="dsrc"><b>Waiting to save “${esc(st.pendSave.name)}”</b><span>Connect ${SVC[st.pendSave.svc].n} below and it saves right away.</span></div>`:''}
-   <div class="sethead">Spotify</div>
-   ${on?`<div class="dsrc"><b>Connected</b><span>Playlists are created privately in your account. The sign-in lasts about an hour.</span></div><button class="ghost" data-svcdis="sp">Disconnect Spotify</button>`:`
-   <ol class="tips"><li>Open developer.spotify.com/dashboard and create a free app. Spotify may ask for a Premium account for apps in development mode.</li>
-   <li>${ok?`Add this Redirect URI to the app, exactly: <b style="word-break:break-all">${esc(redir)}</b>`:`Spotify doesn’t allow “localhost.” <a href="${esc(host127)}" style="text-decoration:underline">Open this page at 127.0.0.1</a> first, then come back here.`}</li>
-   <li>Paste the app’s Client ID:</li></ol>
-   <input class="txt sm" id="spCid" placeholder="Client ID" value="${esc(cid)}" aria-label="Spotify Client ID" autocomplete="off">
-   <div class="hbtns"><button class="go press" data-svcgo="sp"${ok?'':' disabled'}>Connect Spotify</button></div>`}
+  const configured=!!amMusic;
+  const dev=`<p class="sub">Testing only: bring your own token to make Save to Apple Music real in a web browser. Nothing is kept on a server.</p>
+   ${st.pendSave?`<div class="dsrc"><b>Waiting to save “${esc(st.pendSave.name)}”</b><span>Connect Apple Music below and it saves right away.</span></div>`:''}
    <div class="sethead">Apple Music</div>
    ${amMusic?`<div class="dsrc"><b>Connected</b><span>Playlists are added to your Apple Music library.</span></div><button class="ghost" data-svcdis="am">Disconnect Apple Music</button>`:`
    <ol class="tips"><li>Apple requires a paid Apple Developer Program membership to make the developer token.</li><li>Paste the MusicKit developer token (it starts with “eyJ”):</li></ol>
    <input class="txt sm" id="amTok" placeholder="Developer token" aria-label="Apple Music developer token" autocomplete="off">
    <div class="hbtns"><button class="go press" data-svcgo="am">Connect Apple Music</button></div>`}
-   <p class="fine2">This is how the prototype tests real playlists. A shipping app uses Memory Wax’s own approved keys, and you would just tap Connect. Never share a token you didn’t make.</p>`;
-  $('#svcBody').innerHTML=configured?`<h4 class="disp">Connect your music</h4>${dev}`:`<h4 class="disp">Save to Spotify or Apple Music</h4>
-   <p class="sub">${amNativeOK()?'Apple Music saving is on. Tap Save to Apple Music on any playlist and allow access once. Spotify is coming soon. Nothing to set up for either.':'Coming soon, and there is nothing for you to set up. You will tap Connect, sign in to your own account, and the playlist appears there.'}</p>
-   <div class="dsrc"><b>Today</b><span>Play any record or playlist inside Memory Wax with Spotify’s and Apple Music’s own players, or share the playlist link with a friend.</span></div>
+   <p class="fine2">This is how the web prototype tests real playlists. In the iPhone app there is nothing to set up. Never share a token you didn’t make.</p>`;
+  $('#svcBody').innerHTML=configured?`<h4 class="disp">Connect Apple Music</h4>${dev}`:`<h4 class="disp">Save to Apple Music</h4>
+   <p class="sub">${amNativeOK()?'Apple Music saving is on. Tap Save to Apple Music on any playlist and allow access once. Nothing to set up.':'In the iPhone app you tap Save to Apple Music, allow access once, and the playlist appears in your library. There is nothing to set up.'}</p>
+   <div class="dsrc"><b>Today</b><span>Play any record or playlist inside Memory Wax with Apple Music’s own player, or share the playlist link with a friend.</span></div>
    <details class="devset"><summary>Developer setup, for testing only</summary>${dev}</details>`;
 }
 function showSaved(){
@@ -2356,15 +2295,10 @@ async function amNative(name,note,items){
 }
 async function saveTo(svc,name,note,items,pid){
   try{
-    if(svc==='sp'){
-      if(!spToken()){
-        const cid=localStorage.getItem('mw_sp_cid');
-        if(!cid||!spOK()){st.pendSave={svc,name,note,items,pid};renderSvc();openSheet('svc');toast('Connect Spotify first.');return}
-        toast('Opening Spotify to sign in…');await spConnect(cid);
-      }
-    }else if(!amMusic&&!amNativeOK()){st.pendSave={svc,name,note,items,pid};renderSvc();openSheet('svc');toast('Connect Apple Music first.');return}
+    svc='am';
+    if(!amMusic&&!amNativeOK()){st.pendSave={svc,name,note,items,pid};renderSvc();openSheet('svc');toast('Connect Apple Music first.');return}
     toast(`Saving to ${SVC[svc].n}…`);
-    const r=svc==='sp'?await spSave(name,note,items):amNativeOK()?await amNative(name,note,items):await amSave(name,note,items);
+    const r=amNativeOK()?await amNative(name,note,items):await amSave(name,note,items);
     st.pendSave=null;
     if(pid){const p=st.playlists.find(x=>x.id===pid);if(p){p.saved[svc]=true;renderPlView(pid)}}
     st.lastSave={svc,name,...r};showSaved();
@@ -2397,7 +2331,7 @@ function savePlaylist(){
   if(!n){toast('Give it a name first.');$('#plName').focus();return}
   let p;
   if(D.id){p=st.playlists.find(x=>x.id===D.id);p.n=n;p.note=$('#plNote').value.trim();p.items=D.items}
-  else{p={id:st.nextPl++,n,note:$('#plNote').value.trim(),vis:0,items:D.items,saved:{sp:false,am:false}};st.playlists.push(p)}renderCollection();closeSheets();renderPlView(p.id);openSheet('plview');toast(D.id?'Playlist updated.':'Playlist saved. It’s private until you share it.');
+  else{p={id:st.nextPl++,n,note:$('#plNote').value.trim(),vis:0,items:D.items,saved:{am:false}};st.playlists.push(p)}renderCollection();closeSheets();renderPlView(p.id);openSheet('plview');toast(D.id?'Playlist updated.':'Playlist saved. It’s private until you share it.');
 }
 function renderPlView(id){
   const p=st.playlists.find(x=>x.id===id);if(!p)return;st.plv=id;
@@ -2410,7 +2344,7 @@ function renderPlView(id){
    <div class="opts"><button class="pb" data-plvis="${p.id}" aria-pressed="${!!p.vis}">${p.vis?'Anyone with the link':'Just me'}</button></div>
    ${p.vis?`<div class="shbtns"><button class="sharebtn" data-copy="pl">Copy link</button><button class="sharebtn" data-nshare="pl">Share</button></div><p class="vnote" style="margin:8px 0 0">Shows the playlist name, your note and the tracks. Never your username unless you add it, your prices, or your location.</p>`:'<p class="vnote" style="margin:0">Private. Turn on the link to share it with a friend, even if they aren’t on Memory Wax yet.</p>'}
    <div class="sethead">Keep it in your own app</div>
-   <div class="plsave">${['sp','am'].map(k=>`<button class="pb${p.saved[k]?' o done':''}" data-plto="${k}" data-pid="${p.id}">${p.saved[k]?`Saved to ${SVC[k].n} ✓ · again`:`Save to ${SVC[k].n}`}</button>`).join('')}</div>
+   <div class="plsave">${['am'].map(k=>`<button class="pb${p.saved[k]?' o done':''}" data-plto="${k}" data-pid="${p.id}">${p.saved[k]?`Saved to ${SVC[k].n} ✓ · again`:`Save to ${SVC[k].n}`}</button>`).join('')}</div>
    <p class="fine2" style="margin:0 0 8px">Creates the playlist in your own account, so you and your friends play it in the service you each already use. Memory Wax never stores or streams audio. In this prototype, connect your own account first under Settings, Connected music services.</p>
    <button class="ghost" data-pledit="${p.id}">Edit tracks</button><button class="ghost" data-pldel2="${p.id}">Delete playlist</button>`;
 }
@@ -2860,7 +2794,7 @@ function nightDef(key){
 }
 function openRoom(key){
   const D=nightDef(key);if(!D)return;
-  if(!st.nt||st.nt.def.key!==key)st.nt={def:D,phase:'before',at:D.at,mode:'own',svc:'sp',asHost:D.asHost,ti:0,sec:0,msgs:[{sys:true,t:'Chat is open. Say hello while you wait.'}],hidden:new Set(),slow:5,locked:false,lastSend:0,count:D.going||1,remind:false,gather:false,pi:0,welcomed:false,lastState:0,bc:null,nick:'Collector '+(1000+Math.floor(Math.random()*9000))};
+  if(!st.nt||st.nt.def.key!==key)st.nt={def:D,phase:'before',at:D.at,mode:'own',svc:'am',asHost:D.asHost,ti:0,sec:0,msgs:[{sys:true,t:'Chat is open. Say hello while you wait.'}],hidden:new Set(),slow:5,locked:false,lastSend:0,count:D.going||1,remind:false,gather:false,pi:0,welcomed:false,lastState:0,bc:null,nick:'Collector '+(1000+Math.floor(Math.random()*9000))};
   st.shareUrl='https://memorywax.app/night/'+D.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   renderNight();openSheet('night');nightStart();
 }
@@ -3020,8 +2954,8 @@ function nChat(){
 function nEmbed(){
   const N=st.nt,el=$('#nEmbed');if(!el)return;
   if(N.mode!=='stream'||N.phase!=='live'){el.innerHTML='';return}
-  const rid=nCur().rec,src=embedSrc(N.svc,rid);
-  el.innerHTML=src?`<iframe class="nframe" src="${src}" title="${N.svc==='sp'?'Spotify':'Apple Music'} player" height="${N.svc==='sp'?152:175}" allow="autoplay *; clipboard-write; encrypted-media *; fullscreen *; picture-in-picture" loading="lazy"></iframe>
+  const rid=nCur().rec,src=embedSrc('am',rid);
+  el.innerHTML=src?`<iframe class="nframe" src="${src}" title="Apple Music player" height="175" allow="autoplay *; clipboard-write; encrypted-media *; fullscreen *; picture-in-picture" loading="lazy"></iframe>
    <p class="fine2" style="margin:6px 0 0">Press play when the host says go. Streams can drift a few seconds from the room, so the chat keeps everyone together.${N.def.tracks.some(t=>t.rec!==rid)?' The player follows the current record.':''}</p>`:`<p class="fine2">No streaming version found for this record. Play your own copy.</p>`;
 }
 function renderNight(){
@@ -3046,7 +2980,7 @@ function renderNight(){
     h+=`<div class="sethead">How are you listening?</div>
      <div class="opts">${pb(N.mode==='own','data-nmode="own"','On my turntable')}${pb(N.mode==='stream','data-nmode="stream"','Streaming')}</div>`;
     if(N.mode==='own')h+=`<p class="fine2" style="margin:-4px 0 12px">Play your own copy and follow the track list below. When the host flips a side, you flip yours.</p>`;
-    else h+=`<div class="opts">${pb(N.svc==='sp','data-nsvc="sp"','Spotify')}${pb(N.svc==='am','data-nsvc="am"','Apple Music')}</div><div id="nEmbed">${N.phase==='before'?'<p class="fine2" style="margin:-4px 0 12px">Your player appears here when the needle drops.</p>':''}</div>`;
+    else h+=`<div id="nEmbed">${N.phase==='before'?'<p class="fine2" style="margin:-4px 0 12px">Your player appears here when the needle drops.</p>':''}</div>`;
   }
   if(N.asHost&&N.phase!=='after')h+=`<div class="nhost"><div class="nkick">Host tools</div>
     <div class="opts" style="margin:8px 0 0">${N.phase==='live'?`<button class="pb" data-nnext="1">Next track</button>`:''}${[[0,'Slow mode off'],[5,'Slow 5s'],[30,'Slow 30s']].map(([s,l])=>pb(N.slow===s,`data-nslow="${s}"`,l)).join('')}${pb(N.locked,'data-nlock="1"','Pause chat')}${N.phase==='live'?`<button class="pb o" data-nend="1">End session</button>`:''}</div></div>`;
@@ -3973,7 +3907,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr);return}
@@ -3985,7 +3919,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.notes){openNotes();return}
   if(t.dataset.photo){openPhoto();return}
   if(t.dataset.pdel!==undefined){(st.photos[st.rec||1]||[]).splice(+t.dataset.pdel,1);photoDrop(st.rec||1,+t.dataset.pdel);renderPhotos();return}
-  if(t.dataset.copy){copyText(st.shareUrl||'https://memorywax.app',t.dataset.copy==='recap'?'Link copied. Anyone can open this recap, even without the app.':t.dataset.copy==='pl'?'Link copied. Friends can play it in their own Spotify or Apple Music.':t.dataset.copy==='sess'?'Link copied. Anyone can open the session page, even without the app.':undefined);return}
+  if(t.dataset.copy){copyText(st.shareUrl||'https://memorywax.app',t.dataset.copy==='recap'?'Link copied. Anyone can open this recap, even without the app.':t.dataset.copy==='pl'?'Link copied. Friends can play it in their own Apple Music.':t.dataset.copy==='sess'?'Link copied. Anyone can open the session page, even without the app.':undefined);return}
   if(t.dataset.nshare){nativeShare(t.dataset.nshare);return}
   if(t.dataset.cardsave){cardBlob().then(saveBlob);return}
   if(t.dataset.tablecode){toast('Reading the table code…');setTimeout(()=>openSheet('np'),900);return}
@@ -4006,18 +3940,15 @@ document.addEventListener('click',e=>{
   if(t.dataset.bwhy){const B=st.battle;(B.why[B.i]=B.why[B.i]||new Set());const w=B.why[B.i];w.has(t.dataset.bwhy)?w.delete(t.dataset.bwhy):w.add(t.dataset.bwhy);renderBattle();return}
   if(t.dataset.bnext){st.battle.i=(st.battle.i+1)%BATTLES.length;st.battle.pick=null;renderBattle();return}
   if(t.dataset.listen){openListen(t.dataset.listen,t.dataset.lrec?+t.dataset.lrec:(st.rec||1));return}
-  if(t.dataset.ls){st.listen.svc=t.dataset.ls;renderListen();return}
   if(t.dataset.lnext!==undefined){lGo(st.listen.qi+1);return}
   if(t.dataset.lprev!==undefined){lGo(st.listen.qi-1);return}
   if(t.dataset.lq!==undefined){lGo(+t.dataset.lq);return}
   if(t.dataset.close){closeSheets();return}
   if(t.dataset.qsave){const L=st.listen,svc=t.dataset.qsave;saveTo(svc,L.src?L.src.replace(/^your |[“”]/g,''):recOf(L.q[0].rec).t,'',L.q.map(x=>({rec:x.rec,track:x.track})),null);return}
-  if(t.dataset.svcdis){if(t.dataset.svcdis==='sp')sessionStorage.removeItem('mw_sp');else{try{amMusic&&amMusic.unauthorize()}catch(e){}amMusic=null}renderSvc();return}
+  if(t.dataset.svcdis){try{amMusic&&amMusic.unauthorize()}catch(e){}amMusic=null;renderSvc();return}
   if(t.dataset.svcgo){
     const k=t.dataset.svcgo;
-    if(k==='sp'){const cid=$('#spCid').value.trim();if(!cid){toast('Paste your Spotify Client ID first.');return}localStorage.setItem('mw_sp_cid',cid);
-      spConnect(cid).then(()=>{renderSvc();toast('Spotify connected.');if(st.pendSave){const q=st.pendSave;closeSheets();saveTo(q.svc,q.name,q.note,q.items,q.pid)}}).catch(e=>toast(e.message))}
-    else{const tok=$('#amTok').value.trim();if(!tok){toast('Paste your Apple Music developer token first.');return}
+    {const tok=$('#amTok').value.trim();if(!tok){toast('Paste your Apple Music developer token first.');return}
       amConnect(tok).then(()=>{renderSvc();toast('Apple Music connected.');if(st.pendSave){const q=st.pendSave;closeSheets();saveTo(q.svc,q.name,q.note,q.items,q.pid)}}).catch(e=>toast('Apple Music: '+(e.message||'could not connect.')))}
     return}
   if(t.dataset.nroom){openRoom(t.dataset.nroom);return}
@@ -4048,7 +3979,6 @@ document.addEventListener('click',e=>{
   if(t.dataset.ncal){nCal();return}
   if(t.dataset.nphase){nPhase(t.dataset.nphase);return}
   if(t.dataset.nmode){st.nt.mode=t.dataset.nmode;renderNight();return}
-  if(t.dataset.nsvc){st.nt.svc=t.dataset.nsvc;renderNight();return}
   if(t.dataset.nhost){st.nt.asHost=!st.nt.asHost;renderNight();return}
   if(t.dataset.nsend){nSend();return}
   if(t.dataset.nrep){const rm=st.nt.msgs.find(m=>m.mid===t.dataset.nrep);nPost({k:'report',mid:t.dataset.nrep,text:rm?rm.t:''});st.nt.hidden.add(t.dataset.nrep);nChat();toast('Reported. A moderator will look at it. The message is hidden for you.');return}
@@ -4091,7 +4021,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.plrm!==undefined){st.plDraft.items.splice(+t.dataset.plrm,1);renderPlBuilder();return}
   if(t.dataset.plsave){savePlaylist();return}
   if(t.dataset.plplay){playPlaylist(+t.dataset.plplay,!!t.dataset.shuf);return}
-  if(t.dataset.plvis){const p=st.playlists.find(x=>x.id===+t.dataset.plvis);if(!p.vis)gate(()=>{p.vis=1;renderPlView(p.id);renderCollection();toast('Anyone with the link can play it from their own Spotify or Apple Music.')});else{p.vis=0;renderPlView(p.id);renderCollection();toast('Private again. The old link stops working.')}return}
+  if(t.dataset.plvis){const p=st.playlists.find(x=>x.id===+t.dataset.plvis);if(!p.vis)gate(()=>{p.vis=1;renderPlView(p.id);renderCollection();toast('Anyone with the link can play it from their own Apple Music.')});else{p.vis=0;renderPlView(p.id);renderCollection();toast('Private again. The old link stops working.')}return}
   if(t.dataset.plto){const p=st.playlists.find(x=>x.id===+t.dataset.pid),k=t.dataset.plto;saveTo(k,p.n,p.note,p.items,p.id);return}
   if(t.dataset.pledit){const p=st.playlists.find(x=>x.id===+t.dataset.pledit);st.plDraft={id:p.id,items:p.items.map(x=>({...x}))};$('#plHead').textContent='Edit playlist';$('#plName').value=p.n;$('#plNote').value=p.note||'';renderPlBuilder();openSheet('plist');return}
   if(t.dataset.pldel2){const pl=st.playlists.find(x=>x.id===+t.dataset.pldel2);if(!pl)return;askSure({title:'Delete this playlist?',body:`“${pl.n}” and its ${pl.items.length} track${pl.items.length===1?'':'s'}. The records stay in your collection.`,yes:'Delete playlist',go:()=>{const i=st.playlists.findIndex(x=>x.id===pl.id);if(i>-1)st.playlists.splice(i,1);renderCollection();saveState();toast(`Deleted “${pl.n}”.`)}});return}
@@ -4368,7 +4298,7 @@ async function renderYourData(){
     <li><b>MusicBrainz</b> and the <b>Cover Art Archive</b>: the barcode or catalog number you scan, to find the release and its cover.</li>
     <li><b>Discogs</b>${dgTok()?' (token set)':' (no token)'}: catalog numbers and your collection list, with your token.</li>
     <li><b>Supabase</b>${rt?' (connected)':' (not set up)'}: live chat messages in a listening room, with the keys you pasted.</li>
-    <li><b>Spotify or Apple Music</b>: only if you connect them, to play or save playlists.</li>
+    <li><b>Apple Music</b>: only if you connect it, to play or save playlists.</li>
    </ul>
    <p class="fine2">No account exists yet, so nothing syncs by itself. Your backup is a file you keep. Prices and places you paid never leave the phone.</p>
    <button class="go press" data-set="backup">Download a backup</button>
