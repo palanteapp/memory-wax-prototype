@@ -318,11 +318,12 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .rgrid .tile:not(.has-img) .tile-main{padding-top:36px}
 .rgrid .tile:not(.has-img)::before{display:none}
 .rgrid .tile:not(.has-img) .tt{font-size:14.5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.rgrid .tile:not(.has-img) .ta{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding-right:4px}
+.rgrid .tile:not(.has-img) .ta{position:absolute;left:28px;right:8px;bottom:7px;margin:0;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .rgrid .tile:not(.has-img) .tile-main{padding-bottom:26px}
 .rgrid .tile:not(.has-img) .ta{display:block;margin-top:7px;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;line-height:1.25;opacity:.85}
 .plus{position:absolute;right:6px;top:6px;height:24px;padding:0 9px;border-radius:999px;background:var(--ox);color:var(--cream);font-family:var(--mono);font-weight:800;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;line-height:24px;text-align:center;z-index:3;box-shadow:0 0 0 1.5px rgba(255,243,176,.45);transition:transform 160ms ease-out}
 .plus:active{transform:scale(.9)}
+.plus.sm{width:24px;padding:0;font-size:17px;letter-spacing:0;line-height:23px}
 .tile.has-img .plus{box-shadow:0 0 0 2px var(--cream)}
 .st{position:absolute;left:8px;bottom:8px;width:12px;height:12px;border-radius:50%;z-index:3;border:2px solid var(--ox);background:transparent;box-shadow:0 0 0 1.5px var(--cream)}
 .st.confirmed{background:var(--cream)}
@@ -884,6 +885,8 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .ghost.rmrec{margin:18px auto 110px;width:auto;color:var(--cream);opacity:.75}
 .want .wrm{align-self:center;flex:none;width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.4);color:var(--cream);font-size:16px;line-height:28px;text-align:center}
 .devset{margin-top:16px;border-top:1.5px solid rgba(84,11,14,.25);padding-top:10px}.devset summary{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:8px 0;opacity:.8}
+.plmini{display:flex;gap:14px;margin-top:6px}.plmini button{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;padding:4px 0}
+.pb[aria-pressed=true]{background:var(--ox);color:var(--cream)}
 </style>
 </head>
 <body>
@@ -1243,7 +1246,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 
     <div class="sheet" id="sheet-plist" role="dialog" aria-label="Playlist builder">
       <h4 class="disp" id="plHead">New playlist</h4>
-      <p class="sub">Pick records from your collection and one track from each.</p>
+      <p class="sub">Pick records from your collection, and as many tracks from each as you like.</p>
       <input class="txt" id="plName" placeholder="Playlist name" maxlength="40" aria-label="Playlist name">
       <input class="txt" id="plNote" placeholder="A line about it (optional)" maxlength="90" aria-label="A line about this playlist" style="margin-top:8px;font-size:17px">
       <div class="sethead">Tracks</div><div id="plItems"></div>
@@ -1592,7 +1595,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.15 · hands-free scan, covers, shelf';
+const BUILD='0.16 · multi-track playlists';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -2024,7 +2027,7 @@ const cov=r=>{const u=r.cover?r.cover:r.hero?coverURL:((r.id>=2&&r.id<=12)||r.id
 function tileHTML(r){
   const c=cov(r),img=c?` has-img" style="background-image:url('${c}')`:'';
   const on=st.sel&&st.sel.has(r.id);
-  return `<div class="tile m${r.m}${img}${on?' sel':''}"><button class="tile-main" data-open="${r.id}" aria-label="${on?'Selected: ':''}${r.t}, ${r.a}"><span class="tt">${r.t}</span><span class="ta">${r.a}</span></button><i class="st ${r.c}" title="${stLabel[r.c]}"></i><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">Shelf</button></div>`;
+  return `<div class="tile m${r.m}${img}${on?' sel':''}"><button class="tile-main" data-open="${r.id}" aria-label="${on?'Selected: ':''}${r.t}, ${r.a}"><span class="tt">${r.t}</span><span class="ta">${r.a}</span></button><i class="st ${r.c}" title="${stLabel[r.c]}"></i><i class="ck" aria-hidden="true"></i><button class="plus${st.shelves.some(sh=>sh.recs.includes(r.id))?' sm':''}" data-plus="${r.id}" aria-label="Add ${r.t} to ${st.shelves.some(sh=>sh.recs.includes(r.id))?'another':'a'} shelf">${st.shelves.some(sh=>sh.recs.includes(r.id))?'+':'Shelf'}</button></div>`;
 }
 /* search across credits, labels, matrix, year and your own memories. returns null (no match), '' (title/artist) or a reason */
 function match(r,q){
@@ -2071,7 +2074,7 @@ function renderCollection(){
   $('#selBar').hidden=!(st.sel&&st.screen==='collection');$('#selN').textContent=st.sel?`${st.sel.size} selected`:'';
   const asList=st.view==='list'||!!q,g=$('#rgrid');g.className=(asList?'rlist':'rgrid')+(st.sel?' selmode':'');
   g.innerHTML=!items.length?'<p class="empty">Nothing matches. Try another word or filter.</p>':!asList?items.map(x=>tileHTML(x.r)).join(''):
-    items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">Shelf</button></div>`).join('');
+    items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus${st.shelves.some(sh=>sh.recs.includes(r.id))?' sm':''}" data-plus="${r.id}" aria-label="Add ${r.t} to ${st.shelves.some(sh=>sh.recs.includes(r.id))?'another':'a'} shelf">${st.shelves.some(sh=>sh.recs.includes(r.id))?'+':'Shelf'}</button></div>`).join('');
   const loose=all.filter(r=>r.c!=='confirmed').length;
   $('#nudge').innerHTML=(!st.account&&all.length?`<button class="nudge n2" data-acctopen="1"><div><b>Saved on this phone only</b><span>${DEMO?'Back it up with a free account.':'Download a backup file.'}</span></div><i>Back up</i></button>`:'')+(loose?`<button class="nudge" data-nudge="1"><div><b>${loose} could be confirmed</b><span>Scan their deadwax to name the exact pressing.</span></div><i>Scan</i></button>`:'');
   renderShelves();renderWants();
@@ -2341,12 +2344,14 @@ function openPlBuilder(items,name){
   $('#plHead').textContent='New playlist';$('#plName').value=name||'';$('#plNote').value='';
   renderPlBuilder();openSheet('plist');
 }
+/* the next track of this record not yet in the draft */
+function nextTrack(id){const used=new Set(st.plDraft.items.filter(x=>x.rec===id).map(x=>x.track)),n=recTracks(id).length;for(let k=0;k<n;k++)if(!used.has(k))return k;return 0}
 function renderPlBuilder(){
   const D=st.plDraft;
-  $('#plItems').innerHTML=D.items.length?D.items.map((it,i)=>{const r=recOf(it.rec),c=cov(r);return `<div class="plrow"><div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div><b>${r.t}</b><select data-pltr="${i}" aria-label="Track from ${r.t}">${recTracks(r.id).map((t,k)=>`<option value="${k}"${k===it.track?' selected':''}>${k+1}. ${t}</option>`).join('')}</select></div><button class="x" data-plrm="${i}" aria-label="Remove ${r.t}">×</button></div>`}).join(''):'<p class="fine2" style="margin:0">Nothing here yet. Add a record below.</p>';
+  $('#plItems').innerHTML=D.items.length?D.items.map((it,i)=>{const r=recOf(it.rec),c=cov(r);return `<div class="plrow"><div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div><b>${r.t}</b><select data-pltr="${i}" aria-label="Track from ${r.t}">${recTracks(r.id).map((t,k)=>`<option value="${k}"${k===it.track?' selected':''}>${k+1}. ${t}</option>`).join('')}</select><div class="plmini"><button data-pldup="${i}">+ Another track</button><button data-plall="${i}">Whole album</button></div></div><button class="x" data-plrm="${i}" aria-label="Remove this track of ${r.t}">×</button></div>`}).join(''):'<p class="fine2" style="margin:0">Nothing here yet. Add a record below.</p>';
   const have=new Set(D.items.map(x=>x.rec));
-  const pool=own().filter(r=>recTracks(r.id).length&&!have.has(r.id));
-  $('#plAdd').innerHTML=pool.length?pool.map(r=>`<button class="pb" aria-pressed="false" data-pladd="${r.id}">+ ${r.t}</button>`).join(''):'<span class="fine2" style="margin:0">Every record with a tracklist is already in.</span>';
+  const pool=own().filter(r=>recTracks(r.id).length);
+  $('#plAdd').innerHTML=pool.length?pool.map(r=>`<button class="pb" aria-pressed="${have.has(r.id)}" data-pladd="${r.id}" aria-label="${have.has(r.id)?'Add another track from ':'Add '}${esc(r.t)}">${have.has(r.id)?'✓ ':'+ '}${r.t}</button>`).join(''):'<span class="fine2" style="margin:0">Records with a tracklist show up here.</span>';
 }
 function savePlaylist(){
   const D=st.plDraft,n=$('#plName').value.trim();
@@ -3918,7 +3923,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr);return}
@@ -4030,7 +4035,9 @@ document.addEventListener('click',e=>{
   if(t.dataset.shpl){const sid=+t.dataset.shpl,sh=st.shelves.find(x=>x.id===sid);openPlBuilder(shelfRecs(sid).filter(i=>recTracks(i).length).map(rec=>({rec,track:0})),sh.n);return}
   if(t.dataset.plnew){openPlBuilder([],'');return}
   if(t.dataset.plview){renderPlView(+t.dataset.plview);openSheet('plview');return}
-  if(t.dataset.pladd){st.plDraft.items.push({rec:+t.dataset.pladd,track:0});renderPlBuilder();return}
+  if(t.dataset.pladd){const id=+t.dataset.pladd;st.plDraft.items.push({rec:id,track:nextTrack(id)});renderPlBuilder();return}
+  if(t.dataset.pldup!==undefined){const i=+t.dataset.pldup,it=st.plDraft.items[i];if(it){st.plDraft.items.splice(i+1,0,{rec:it.rec,track:nextTrack(it.rec)});renderPlBuilder()}return}
+  if(t.dataset.plall!==undefined){const D=st.plDraft,i=+t.dataset.plall,it=D.items[i];if(it){const before=D.items.slice(0,i).filter(x=>x.rec!==it.rec),after=D.items.slice(i+1).filter(x=>x.rec!==it.rec);D.items=[...before,...recTracks(it.rec).map((_,k)=>({rec:it.rec,track:k})),...after];renderPlBuilder()}return}
   if(t.dataset.plrm!==undefined){st.plDraft.items.splice(+t.dataset.plrm,1);renderPlBuilder();return}
   if(t.dataset.plsave){savePlaylist();return}
   if(t.dataset.plplay){playPlaylist(+t.dataset.plplay,!!t.dataset.shuf);return}
