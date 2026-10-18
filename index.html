@@ -143,11 +143,13 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 @keyframes tilt{0%,100%{transform:rotate(-16deg)}50%{transform:rotate(16deg)}}
 .help{width:24px;height:24px;border-radius:50%;background:var(--cream);color:var(--ox);font-family:var(--disp);font-weight:900;font-size:15px;line-height:24px;text-align:center;flex:none;transition:transform 160ms ease-out}
 .help:active{transform:scale(.92)}
-.readout{position:absolute;left:22px;right:22px;top:558px;padding:14px 20px 16px;border-radius:0 40px 0 0;background:var(--cream);color:var(--ox);box-shadow:6px 6px 0 var(--gold)}
-.readout .top{display:flex;justify-content:space-between;align-items:flex-end}
-.readout .lab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;opacity:.7}
-.readout .mx{font-family:var(--mono);font-weight:500;font-size:19px;letter-spacing:.08em;margin-top:2px;min-height:30px;white-space:pre}
-.readout .cf{font-size:46px;line-height:.9;text-align:right}
+.readout{position:absolute;left:22px;right:22px;top:558px;padding:12px 16px 14px;border-radius:20px;background:rgba(42,5,8,.94);border:1.5px solid rgba(255,243,176,.18);color:var(--cream);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.readout .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.readout .lab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--gold)}
+.readout .mx{font-family:var(--mono);font-weight:500;font-size:20px;letter-spacing:.06em;margin-top:8px;min-height:28px;line-height:28px;white-space:pre;overflow:hidden;text-overflow:ellipsis}
+.readout .cf{font-family:var(--mono);font-weight:500;font-size:13px;letter-spacing:.08em;color:var(--gold);font-variant-numeric:tabular-nums}
+.readout .bar{height:4px;border-radius:2px;background:rgba(255,243,176,.16);margin-top:10px}
+.readout .bar i{background:var(--gold);border-radius:2px}
 .bar{height:6px;background:rgba(84,11,14,.16);overflow:hidden;margin-top:10px}
 .bar i{display:block;height:100%;width:0;background:var(--ox);transition:width .12s linear}
 .shutter{position:absolute;left:50%;bottom:104px;transform:translateX(-50%);width:76px;height:76px;border-radius:50%;background:var(--red);box-shadow:0 0 0 5px var(--ox),0 0 0 8px var(--cream);transition:transform 160ms ease-out}
@@ -987,7 +989,8 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       </div>
       <div class="guide"><span class="tilt"></span><span id="guide">Find the smooth band near the label</span><button class="help" id="helpBtn" aria-label="How to shoot the deadwax">?</button></div>
       <div class="readout">
-        <div class="top"><div><div class="lab" id="lab1">Matrix</div><div class="mx" id="mx">· · ·</div></div><div><div class="lab" style="text-align:right">Confidence</div><div class="cf disp" id="conf">0%</div></div></div>
+        <div class="top"><div class="lab" id="lab1">Matrix</div><div class="cf" aria-label="Confidence"><span id="conf">0%</span> sure</div></div>
+        <div class="mx" id="mx">· · ·</div>
         <div class="bar"><i id="confBar"></i></div>
       </div>
       <button class="npill" id="netPill" hidden></button><button class="dpill" id="doneBtn" hidden></button>
@@ -1616,7 +1619,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.23.1 · learn';
+const BUILD='0.23.2 · learn';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
