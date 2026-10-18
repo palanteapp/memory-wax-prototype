@@ -948,7 +948,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <div class="a-meta l" aria-hidden="true">MW—001<br>SIDE A</div>
       <div class="a-meta r" aria-hidden="true">33⅓<br>RPM</div>
       <img class="logo" src="assets/memory-wax-logo.png" alt="Memory Wax. Dig, deeper.">
-      <p class="a-sub">The database and community for vinyl collectors, and lovers of music.</p>
+      <p class="a-sub">The database and community for people who love music, and the records they keep.</p>
       <button class="cta press" id="startBtn" type="button">Start digging <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       <div class="sun" aria-hidden="true">
         <div class="sun-grooves"></div><div class="sun-sheen"></div>
@@ -1631,7 +1631,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.23.4 · learn';
+const BUILD='0.23.5 · learn';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
