@@ -358,6 +358,8 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .vhead{padding:8px 20px 2px;font-family:var(--serif);font-style:italic;font-size:20px;line-height:1.1;opacity:.95}
 .newshelf{display:block;width:calc(100% - 32px);margin:14px 16px 0;padding:20px;border:2.5px dashed rgba(255,243,176,.5);font-family:var(--disp);font-weight:900;font-stretch:62%;text-transform:uppercase;font-size:28px;color:var(--cream);text-align:center;transition:transform 160ms ease-out}
 .newshelf:active{transform:scale(.98)}
+#shelves .sethead{margin:22px 16px 8px}
+#shelves .plcard{width:calc(100% - 32px);margin:0 16px 10px}
 .pill{display:inline-block;margin:10px 20px 0;padding:10px 16px;border-radius:999px;background:var(--cream);color:var(--ox);font-weight:800;font-size:12px;letter-spacing:.03em;text-transform:uppercase}
 .want{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1.5px solid rgba(255,243,176,.18)}
 .want .tile{width:58px;flex:none}
@@ -1595,7 +1597,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.17 · Apple Music saving';
+const BUILD='0.17.1 · Apple Music saving';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
