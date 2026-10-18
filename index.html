@@ -437,6 +437,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 #modes button[hidden]{display:none}
 .cands{display:grid;gap:8px;margin:12px 0 4px}
 .candrow{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:center;text-align:left;padding:10px;background:rgba(84,11,14,.07);border-left:6px solid var(--ox);color:inherit}
+.candrow mark{background:rgba(224,168,58,.45);color:inherit;border-radius:4px;padding:0 3px}
 .candrow img{width:56px;height:56px;object-fit:cover;background:rgba(84,11,14,.12)}
 .candrow span{display:grid;gap:2px;min-width:0}.candrow b{font-weight:800;font-size:16px;line-height:1.1}.candrow em{font-family:var(--serif);font-style:italic;font-size:15px}.candrow small{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
 .mxbig{font-family:var(--mono);font-size:22px;letter-spacing:.12em;line-height:1.3;padding:12px 14px;margin:10px 0 12px;background:var(--gold);color:var(--ox);word-break:break-word}
@@ -1015,10 +1016,6 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
             <div class="ih" id="repIh"><small>Invisible History</small>
               <p id="repIhP">Archie Shepp and Art Davis joined for a second session the next day. The sextet take of “Acknowledgement” wasn’t released until the 2002 deluxe edition.<sup><a href="#s2">2</a></sup></p></div>
           </article>
-          <article class="blk sound"><header><span class="num">03</span><h3 class="disp">The Sound</h3></header>
-            <p id="repSound">“RVG” in the runout indicates a cut by Rudy Van Gelder.<sup><a href="#s2">2</a></sup> It is one of the details collectors use to tell an original from a later reissue.</p>
-            <button class="chipbtn press" id="repBattle" data-battle="0">Join the Pressing Battle</button>
-          </article>
           <article class="blk story"><div class="q" aria-hidden="true">“</div><header><span class="num">04</span><h3 class="disp">The Story</h3></header>
             <p id="repStory">The gatefold carries Coltrane’s own devotional poem, written to be read alongside the four parts: Acknowledgement, Resolution, Pursuance, and Psalm.<sup><a href="#s1">1</a></sup></p>
           </article>
@@ -1050,14 +1047,14 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
             <p>No stories on this pressing yet. Yours would be the first, with your name on it.</p>
             <div class="sample"><em>Sample voice · illustrative</em>“I found this in a crate in a shop I’d walked past for years…”</div>
           </article>
-          <article class="blk listen"><header><span class="num">08</span><h3 class="disp">Listen or Explore</h3></header>
+          <article class="blk listen"><header><span class="num">08</span><h3 class="disp">Listen</h3></header>
             <div class="lbtn one"><button data-listen="am">Apple Music</button></div>
-            <p class="fine">If a record isn’t on streaming, you’ll see Explore here instead. The story is always available.</p>
+            <p class="fine">Plays in Apple Music’s own player. If it isn’t on Apple Music, we’ll say so, and you can still play your own copy.</p>
           </article>
           <article class="blk src"><header><span class="num">09</span><h3 class="disp">Sources</h3></header>
             <ol><li id="s1">Original liner notes</li><li id="s2">Discogs release credits</li><li id="s3">Wikipedia, CC BY-SA</li></ol>
             <p class="fine">Sample citations. In the real product every claim carries one, and anything unverified is labeled.</p>
-            <div class="btnrow"><button class="chipbtn dark press" data-set="about">About our data</button><button class="chipbtn dark press" data-toast="Sent to the unidentified queue. If someone fixes it, we’ll tell you and credit them.">This looks wrong</button></div>
+            <div class="btnrow"><button class="chipbtn dark press" data-set="about">About our data</button></div>
           </article>
           <button class="ghost rmrec" id="repRemove" data-rmrec="1" hidden>Remove from my collection</button>
           <p class="disc-note">Prototype · sample content for design only</p>
@@ -1065,7 +1062,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       </div>
       <div class="actions">
         <button class="plusbtn tip-l" data-sheet="shelf" aria-label="Add to a shelf" data-tip="Add this record to one or more of your shelves.">Add to shelf</button>
-        <button class="hot" id="findCopy" data-tip="See where copies are listed, and get an alert when one appears.">Find a Copy</button>
+        <button class="hot" id="findCopy" data-tip="Save it to your Dream Crate.">Dream Crate</button>
         <button class="tip-r" data-sheet="memory" data-tip="Save a private note: where you found it, or who gave it to you.">Memory</button>
       </div>
     </section>
@@ -1079,7 +1076,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
           <i class="thumb"></i><button aria-pressed="true" data-t="0">All records</button><button aria-pressed="false" data-t="1">Shelves</button><button aria-pressed="false" data-t="2">Dream Crate</button></div></div>
 
         <div id="v-all">
-          <div id="firstRun" class="firstrun" hidden><span class="kick">Scan. Learn. Connect.</span><h3 class="disp">Your collection starts with one scan</h3><p>Point at the deadwax of any record you own. We’ll do the rest.</p><button class="pill press" id="goScan">Scan your first record</button><button class="pill press" data-set="import" style="background:transparent;color:var(--cream);box-shadow:inset 0 0 0 1.5px var(--cream)">Import from Discogs</button></div>
+          <div id="firstRun" class="firstrun" hidden><span class="kick">Start here</span><h3 class="disp">Add your first album</h3><p>Scan it, type it in, or bring a list you already keep. We’ll do the rest.</p><button class="pill press" id="goScan">Scan an album</button><button class="pill press" id="goType" style="background:transparent;color:var(--cream);box-shadow:inset 0 0 0 1.5px var(--cream)">Type it in</button><button class="pill press" data-set="import" style="background:transparent;color:var(--cream);box-shadow:inset 0 0 0 1.5px var(--cream)">Import from Discogs</button></div>
           <div id="allBody">
           <div id="nudge"></div>
           <input class="search" id="search" type="search" placeholder="Search credits, labels, matrix, memories" aria-label="Search your collection" autocomplete="off">
@@ -1097,7 +1094,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
           <button class="newshelf press" id="newShelfBtn">+ New shelf</button>
         </div>
         <div id="v-wants" hidden>
-          <p class="vhead">Records you’d love to have. We’ll tell you when a copy shows up.</p>
+          <p class="vhead">Records you’d love to have, kept in one place.</p>
           <div id="wants" style="padding:4px 20px 0"></div>
         </div>
       </div>
@@ -1114,7 +1111,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <div class="selbar" id="selBar" hidden><span id="selN">0 selected</span><button class="selrm" data-selrm="1">Remove</button><button class="selx" data-selcancel="1">Cancel</button></div>
     <nav class="dock hidden" id="dock" style="--i:0" aria-label="Main">
       <i class="ind"></i>
-      <button class="tab" data-go="scan" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.6"/></svg>Scan</button>
+      <button class="tab" data-go="scan" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.6"/></svg>Add</button>
       <button class="tab" data-go="collection" aria-current="false"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="3"/><path d="M4 10.5h16"/></svg>Collection</button>
       <button class="tab" data-go="scene" aria-current="false"><svg viewBox="0 0 24 24"><circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="9.5" r="2.5"/><path d="M3.5 19c.9-3 2.8-4.3 5-4.3s4.1 1.3 5 4.3M14 15.2c2.3-.5 4.8.5 6.5 3.8"/></svg>Community</button>
     </nav>
@@ -1130,7 +1127,6 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
         <button class="cand" data-pick="B"><em>Also close</em><b>AS-77 · stereo</b><span class="mx"><u>AS</u>-77-A ▲ RVG</span><span>Impulse! · US 1965. Catalog starts with <u style="text-decoration:none;font-weight:700">AS-</u>. Matrix matches 9 of 12.</span></button>
       </div>
       <button class="ghost" id="candSkip">I can’t tell. Save it as Likely.</button>
-      <button class="ghost" data-act="community">None of these. Ask the community.</button>
     </div>
 
     <div class="sheet" id="sheet-unsure" role="dialog" aria-label="Could not read it">
@@ -1138,7 +1134,6 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <p class="sub">The light was flat. We’d rather say so than guess.</p>
       <button class="opt-card" data-act="retry"><b>Try again</b><span>Tilt the record toward a window or lamp</span></button>
       <button class="opt-card" data-act="cover"><b>Scan the cover instead</b><span>We’ll name the album. The exact pressing stays unconfirmed.</span></button>
-      <button class="opt-card" data-act="community"><b>Ask the community</b><span>Post it to the unidentified queue and we’ll tell you when someone answers</span></button>
     </div>
 
     <div class="sheet" id="sheet-tips" role="dialog" aria-label="How to shoot the deadwax">
@@ -1230,7 +1225,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 
     <div class="sheet" id="sheet-spin" role="dialog" aria-label="What are you spinning">
       <h4 class="disp">What are you spinning?</h4>
-      <p class="sub">Pick the record on your turntable. Only you see it until you choose otherwise.</p>
+      <p class="sub">Pick the album you’re playing. Only you see it until you choose otherwise.</p>
       <div id="spinList"></div>
     </div>
 
@@ -1355,12 +1350,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <button class="opt-card" data-set="svc"><b>Connected music services</b><span>Connect Apple Music so playlists can be saved for real.</span></button>
       <div class="sethead">Scanner</div>
       <div class="trow"><div><b>Read automatically</b><span class="d">Barcode and label scans start on their own and capture the moment they can read it. Turn off to use the shutter button.</span></div><button class="sw" data-set="auto" aria-pressed="true" aria-label="Read automatically"></button></div>
-      <button class="opt-card" data-set="cam"><b>Live camera preview</b><span>Try your real camera in the viewfinder instead of the illustration.</span></button>
       <button class="opt-card" data-dgtoken="1"><b>Discogs token</b><span>Optional. Needed for the Discogs import and for matching deadwax to known pressings. Stored on this phone only.</span></button>
-      <button class="opt-card" data-lab="open"><b>Phase 0 test lab</b><span>Build the answer key, scan real deadwax, and score it against the bars.</span></button>
-      <div class="sethead">Samples</div>
-      <button class="opt-card" data-dmo="sample"><b>Load the sample collection</b><span>Fills the app with example records, shelves and friends so you can see it full. Your own scans stay.</span></button>
-      <button class="opt-card" data-dmo="fresh" data-demo-only><b>Back to the real app</b><span>Puts the samples away and shows your own records again.</span></button>
       <div class="sethead">Legal and safety</div>
       <button class="opt-card" data-set="legal"><b>Terms, privacy and takedowns</b><span>What Memory Wax is, what it is not, and how to report a problem.</span></button>
       <button class="ghost" data-set="about">About our data</button>
@@ -1391,7 +1381,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <div class="sheet" id="sheet-conf" role="dialog" aria-label="How sure are we?">
       <h4 class="disp">How sure are we?</h4>
       <p class="sub">The same album can have dozens of pressings, and they differ in sound and value. Each record shows how certain Memory Wax is about yours.</p>
-      <div class="dsrc"><b>● Confirmed</b><span>We read the etched matrix in the deadwax and matched it. We know the exact pressing.</span></div>
+      <div class="dsrc"><b>● Confirmed</b><span>We read the etched matrix in the deadwax and it matches the runout listed for one pressing. A strong match, not a guarantee.</span></div>
       <div class="dsrc"><b>◐ Likely</b><span>The cover or barcode points to one pressing, and it’s probably right, but nothing we saw rules out another. Check the deadwax to be sure.</span></div>
       <div class="dsrc"><b>○ Album only</b><span>We know the album, not which pressing. Scan the deadwax whenever you want to pin it down.</span></div>
       <p class="fine2">Tap a record, then scan its deadwax, to move it up. These labels describe how sure the match is. They are not a promise about condition or authenticity.</p>
@@ -1607,7 +1597,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'am',conn:{am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.18.5 · deadwax flatten';
+const BUILD='0.19.0 · cleaner and clearer';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -1944,16 +1934,14 @@ function fillReport(r,mode){
   $('#repSent').textContent=R.sent||(r.real?[r.y?'Released '+r.y:'',r.lab?'on '+r.lab:''].filter(Boolean).join(' ')+(r.y||r.lab?'. ':'')+((r.ev&&r.ev.dw&&r.ev.dw.mx)?'Pressing read from the deadwax. ':(r.ev&&r.ev.label)?'Found from the center label. ':(r.ev&&r.ev.bc)?'Found by barcode. ':(r.ev&&r.ev.dg)?'Imported from your Discogs collection. ':(r.ev&&r.ev.csv)?'Imported from your CSV. ':'Added by hand. ')+'Credits and story aren’t filled in yet.':'');
   $('#repPeople').innerHTML=(R.crew||[]).map(([n,role,mbid])=>`<li>${nameBtn(n,role,mbid)}<span>${esc(role)}</span></li>`).join('');
   $('#repIh').hidden=!R.ih;$('#repIhP').innerHTML=(R.ih||'')+'<sup><a href="#s2">2</a></sup>';
-  $('#repSound').innerHTML=(R.sound||'')+'<sup><a href="#s2">2</a></sup>';
   $('#repStory').innerHTML=(R.story||'')+'<sup><a href="#s1">1</a></sup>';
-  $('#repBattle').hidden=true;
   fillCopy(r.id);fillPlan(r.id);fillAvail(r.id);
   tidyReport(r,R);if(r.real)realReport(r,mode);creditsNote(r);{const rb=$('#repRemove');if(rb)rb.hidden=!st.owned.has(r.id)}
 }
 /* A real (scanned) record has only what the lookup returned. Hide the sections that would otherwise show sample text, and renumber the rest. */
 function tidyReport(r,R){
   const real=!!r.real,has=(k)=>!!R[k]&&(!Array.isArray(R[k])||R[k].length);
-  const show={session:has('crew'),sound:has('sound'),story:has('story'),liner:!real,listen:!real,src:!real};
+  const show={session:has('crew'),story:has('story'),liner:!real,listen:true,src:!real};
   $$('.rep .blk').forEach(b=>{const k=[...b.classList].find(c=>c in show);if(k)b.hidden=real&&!show[k]});
   $('.disc-note').hidden=real;
   $('#repSent').hidden=!$('#repSent').textContent;
@@ -1991,7 +1979,7 @@ $('#evidBtn').addEventListener('click',()=>{
 $('#findCopy').addEventListener('click',()=>{
   const r=recOf(st.rec||1);
   if(!st.wants.some(w=>w.t===r.t)){st.wants.unshift({t:r.t,a:r.a,note:'A better pressing',list:'None listed yet',alert:true,m:r.m});renderCollection()}
-  toast('Added to your Dream Crate. We’ll tell you when a copy appears.');
+  toast('Added to your Dream Crate.');
 });
 $('#addOwn').addEventListener('click',()=>{st.owned.add(st.rec);$('#notown').hidden=true;renderCollection();toast('Added to your collection.')});
 
@@ -2116,7 +2104,7 @@ function renderShelves(){
     <p class="vnote">${VNOTE[s.v]}</p><div class="shbtns"><button class="sharebtn" data-share="${s.id}">Share</button><button class="sharebtn" data-segtog="${s.id}" aria-expanded="${st.segOpen.has(s.id)}">Who can see</button><button class="sharebtn" data-shedit="${s.id}">Edit</button><button class="sharebtn" data-shl="${s.id}">Listen</button><button class="sharebtn" data-shpl="${s.id}">Playlist</button></div></div>`}).join('')+`<div class="sethead">Playlists</div>${st.playlists.map(p=>`<button class="plcard press" data-plview="${p.id}"><div class="minis">${p.items.slice(0,3).map(it=>{const r=recOf(it.rec),c=cov(r);return `<i class="m${r.m}"${c?` style="background-image:url('${c}')"`:''}></i>`}).join('')}</div><div><b>${esc(p.n)}</b><span>${p.items.length} tracks · ${p.vis?'Anyone with the link':'Just me'}</span></div></button>`).join('')}<button class="ghost" data-plnew="1">New playlist</button>`;
 }
 function renderWants(){
-  $('#wants').innerHTML=!st.wants.length?'<p class="empty" style="padding-left:0">Nothing here yet. Tap Find a Copy on any record.</p>':st.wants.map((w,i)=>`<div class="want"><div class="tile m${w.m}"><span class="tt">${w.t}</span></div><div class="lt"><b>${w.t}</b><span>${w.a}</span><span style="opacity:.9">${w.note}</span><i class="tag2" style="font-style:normal">${w.list}</i></div><button class="sw" data-alert="${i}" aria-pressed="${w.alert}" aria-label="Alert me when a copy of ${w.t} is listed"></button><button class="wrm" data-wrm="${i}" aria-label="Remove ${esc(w.t)} from your Dream Crate">×</button></div>`).join('');
+  $('#wants').innerHTML=!st.wants.length?'<p class="empty" style="padding-left:0">Nothing here yet. Tap Dream Crate on any record.</p>':st.wants.map((w,i)=>`<div class="want"><div class="tile m${w.m}"><span class="tt">${w.t}</span></div><div class="lt"><b>${w.t}</b><span>${w.a}</span><span style="opacity:.9">${w.note}</span><i class="tag2" style="font-style:normal">${w.list}</i></div><button class="wrm" data-wrm="${i}" aria-label="Remove ${esc(w.t)} from your Dream Crate">×</button></div>`).join('');
 }
 function renderSettings(){$$('#sheet-settings .sw').forEach(b=>b.setAttribute('aria-pressed',String(!!prefs[b.dataset.set])))}
 function renderBatch(){
@@ -2191,7 +2179,32 @@ const recTracks=id=>{const r=RECS.find(x=>x.id===id);return (r&&r.tracks)||(REP[
 /* real embeds: Apple Music album ids, checked against Apple's own pages */
 const STREAM={
   am:{1:'1440713018',2:'1468202477',3:'1579606107',4:'158571524',5:'697194953',7:'268443092',8:'1538081586',9:'559710299',10:'108233171',11:'1476739989',12:'1725411068',15:'1440788438',21:'1531037502'}};
-const embedSrc=(svc,id)=>{const x=STREAM[svc][id];if(!x)return null;return `https://embed.music.apple.com/us/album/album/${x}?theme=dark`};
+const amKnown=rid=>STREAM.am[rid]||((RECS.find(r=>r.id===rid)||{}).am)||null;
+const embedSrc=(svc,rid)=>{const x=amKnown(rid);if(!x)return null;return `https://embed.music.apple.com/us/album/album/${x}?theme=dark`};
+/* Find the album in Apple Music so any record can be played, not only the samples. Apple's public catalog search needs no key. */
+const AMC=new Map();
+const amClean=t=>tnorm(String(t||'').replace(/\.{3}|…/g,' ').replace(/\b(remaster(ed)?|deluxe|expanded|edition|anniversary|bonus|mono|stereo|version|reissue)\b/gi,' '));
+function amScore(r,x){
+  const a=amClean(r.t),b=amClean(x.collectionName),aa=tnorm(r.a),ab=tnorm(x.artistName);let t=0;
+  if(a===b)t=4;else if(a&&b&&(a.startsWith(b)||b.startsWith(a)))t=3;else{const wa=new Set(a.split(' ')),wb=b.split(' ');t=2*wb.filter(w=>wa.has(w)).length/Math.max(wa.size,wb.length,1)}
+  let sc=t;if(aa&&ab&&(aa===ab||aa.includes(ab)||ab.includes(aa)))sc+=1.5;
+  const bad=/karaoke|tribute|made famous|originally performed|instrumental|lullaby|piano version/i;if(bad.test(x.collectionName+' '+x.artistName)&&!bad.test(r.t+' '+r.a))sc-=5;
+  const ed=/remaster|deluxe|expanded|anniversary|bonus|collector/i;if(ed.test(x.collectionName)&&!ed.test(r.t))sc-=.3;
+  const ry=+String(x.releaseDate||'').slice(0,4);if(r.y&&ry)sc-=Math.min(1,Math.abs(ry-r.y)/40)*.5;
+  return {sc,t};
+}
+async function amFindAlbum(r){
+  const k=r.id;if(amKnown(k))return amKnown(k);if(AMC.has(k))return AMC.get(k);
+  let id=null;
+  try{
+    const term=(r.a&&!/^unknown/i.test(r.a)?r.a+' ':'')+String(r.t||'').replace(/\(.*?\)|\[.*?\]/g,' ');
+    const j=await (await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(term.trim())+'&entity=album&media=music&limit=12&country=us')).json();
+    let best=null;(j.results||[]).forEach(x=>{const m=amScore(r,x);if(m.t>=2.5&&(!best||m.sc>best.sc))best={sc:m.sc,id:String(x.collectionId)}});
+    id=best?best.id:null;
+  }catch(e){AMC.set(k,null);setTimeout(()=>AMC.delete(k),60000);return null}   /* offline or blocked: ask again in a minute */
+  AMC.set(k,id);if(id&&r.real){r.am=id;try{saveReal()}catch(e){}}
+  return id;
+}
 const ICO={next:'<path d="M6 5l9 7-9 7zM17 5h2v14h-2z"/>',prev:'<path d="M18 5l-9 7 9 7zM5 5h2v14H5z"/>'};
 const lCur=()=>{const L=st.listen;return L.q[L.qi]||{rec:L.rec||1}};
 function lGo(i){const L=st.listen;if(i<0||i>=L.q.length)return;L.qi=i;L.rec=L.q[i].rec;L.track=L.q[i].track==null?0:L.q[i].track;renderListen()}
@@ -2204,7 +2217,8 @@ function startQueue(items,src,opt){
 }
 function renderListen(){
   st.listen.svc='am';
-  const L=st.listen,v=SVC[L.svc],e=lCur(),r=recOf(e.rec),cv=cov(r),multi=L.q.length>1,src=embedSrc(L.svc,r.id);
+  const L=st.listen,v=SVC[L.svc],e=lCur(),r=recOf(e.rec),cv=cov(r),multi=L.q.length>1,src=embedSrc(L.svc,r.id),finding=!src&&!AMC.has(r.id);
+  if(finding)amFindAlbum(r).then(()=>{if(st.listen===L&&lCur()===e&&$('#sheet-listen').classList.contains('on'))renderListen()});
   $('#listenSub').textContent=L.src?`Playing ${L.src}.`:`${r.t} plays in the service you already use.`;
   const up=L.q.map((x,i)=>[x,i]).filter(([x,i])=>i>L.qi).slice(0,4);
   const pick=e.track!=null?recTracks(r.id)[e.track]:null;
@@ -2213,7 +2227,7 @@ function renderListen(){
     ${src?'':`<div class="lh"><div class="tile m${r.m}${cv?' has-img':''}"${cv?` style="background-image:url('${cv}')"`:''}></div><div><b>${r.t}</b><span>${r.a} · ${r.y}</span></div></div>`}
     ${pick?`<p class="fine2" style="margin:10px 0 0;color:var(--cream)">Their pick: <b>${esc(pick)}</b>. Tap it in the player to start there.</p>`:''}
     ${src?`<iframe class="emb" title="${v.n} player for ${esc(r.t)}" src="${src}" height="450" loading="lazy" allow="autoplay *; encrypted-media *; clipboard-write; fullscreen; picture-in-picture" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"></iframe>`
-     :`<p style="font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.15;margin:14px 0 4px">${esc(r.t)} isn’t wired to ${v.n} in this prototype yet.</p>`}
+     :`<p style="font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.15;margin:14px 0 4px">${finding?`Finding ${esc(r.t)} in ${v.n}…`:`We couldn’t find ${esc(r.t)} in ${v.n}.`}</p>`}
     ${multi?`<div class="lctl" style="margin-top:12px;justify-content:space-between"><button class="sm" data-lprev="1" aria-label="Previous record"${L.qi===0?' disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true">${ICO.prev}</svg></button><span class="fine2" style="margin:0;color:var(--cream)">Record ${L.qi+1} of ${L.q.length}</span><button data-lnext="1" aria-label="Next record"${L.qi===L.q.length-1?' disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true">${ICO.next}</svg></button></div>`:''}
     ${up.length?`<div class="lup"><div class="k">Up next</div>${up.map(([x,i])=>{const q=recOf(x.rec),c=cov(q);return `<button data-lq="${i}"><div class="tile m${q.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div>${q.t}<br><span>${q.a}</span></div></button>`}).join('')}</div>`:''}</div>
    <p class="fine2" style="margin:10px 0 6px">${v.need} Plays the album’s streaming release, which may not be the exact pressing on your shelf.</p>
@@ -2256,19 +2270,9 @@ async function amSave(name,note,items){
   return {url:'https://music.apple.com/library/playlists',n:uniq.length,miss};
 }
 function renderSvc(){
-  const configured=!!amMusic;
-  const dev=`<p class="sub">Testing only: bring your own token to make Save to Apple Music real in a web browser. Nothing is kept on a server.</p>
-   ${st.pendSave?`<div class="dsrc"><b>Waiting to save “${esc(st.pendSave.name)}”</b><span>Connect Apple Music below and it saves right away.</span></div>`:''}
-   <div class="sethead">Apple Music</div>
-   ${amMusic?`<div class="dsrc"><b>Connected</b><span>Playlists are added to your Apple Music library.</span></div><button class="ghost" data-svcdis="am">Disconnect Apple Music</button>`:`
-   <ol class="tips"><li>Apple requires a paid Apple Developer Program membership to make the developer token.</li><li>Paste the MusicKit developer token (it starts with “eyJ”):</li></ol>
-   <input class="txt sm" id="amTok" placeholder="Developer token" aria-label="Apple Music developer token" autocomplete="off">
-   <div class="hbtns"><button class="go press" data-svcgo="am">Connect Apple Music</button></div>`}
-   <p class="fine2">This is how the web prototype tests real playlists. In the iPhone app there is nothing to set up. Never share a token you didn’t make.</p>`;
-  $('#svcBody').innerHTML=configured?`<h4 class="disp">Connect Apple Music</h4>${dev}`:`<h4 class="disp">Save to Apple Music</h4>
-   <p class="sub">${amNativeOK()?'Apple Music saving is on. Tap Save to Apple Music on any playlist and allow access once. Nothing to set up.':'In the iPhone app you tap Save to Apple Music, allow access once, and the playlist appears in your library. There is nothing to set up.'}</p>
-   <div class="dsrc"><b>Today</b><span>Play any record or playlist inside Memory Wax with Apple Music’s own player, or share the playlist link with a friend.</span></div>
-   <details class="devset"><summary>Developer setup, for testing only</summary>${dev}</details>`;
+  $('#svcBody').innerHTML=`<h4 class="disp">Save to Apple Music</h4>
+   <p class="sub">${amNativeOK()?'Apple Music saving is on. Tap Save to Apple Music on any playlist and allow access once. Nothing to set up.':'Saving a playlist to your Apple Music library works in the iPhone app. You tap Save, allow access once, and it appears in your library. There is nothing to set up.'}</p>
+   <div class="dsrc"><b>Today</b><span>Play any album or playlist inside Memory Wax with Apple Music’s own player, or share the playlist link with a friend.</span></div>`;
 }
 function showSaved(){
   const x=st.lastSave;if(!x)return;
@@ -2529,10 +2533,10 @@ function wantNote(id,plan){
 const LISTINGS={1:[{who:'A collector · 88 records',cond:'VG+',plan:'sale',ask:'$65'},{who:'A collector · 31 records',cond:'VG',plan:'trade'}],4:[{who:'A collector · 140 records',cond:'NM',plan:'sale',ask:'$48'}],7:[{who:'A collector · 62 records',cond:'VG+',plan:'trade'}],21:[{who:MATCH_WHO,cond:'VG+',plan:'trade'}]};
 function fillAvail(id){
   const r=recOf(id),cp=copyOf(id),mine=st.owned.has(id)&&cp.plan&&cp.plan!=='keep'&&cp.pub!==false;
-  const rows=(LISTINGS[id]||[]).map((l,i)=>`<div class="avrow"><div><b>${l.who}</b><span><i class="tag" style="font-style:normal">${l.cond}</i>${l.plan==='sale'?'For sale'+(l.ask?' · '+l.ask:''):'Open to trade'}</span></div><button class="pb" data-listing="${id}.${i}">I’m interested</button></div>`);
+  const rows=(LISTINGS[id]||[]).map((l,i)=>`<div class="avrow"><div><b>${l.who}</b><span><i class="tag" style="font-style:normal">${l.cond}</i>${l.plan==='sale'?'For sale'+(l.ask?' · '+l.ask:''):'Open to trade'}</span></div></div>`);
   if(st.sold.has(id)&&!st.owned.has(id)){}
   const own=mine?`<div class="avrow me"><div><b>Your copy</b><span><i class="tag" style="font-style:normal">${cp.cond||'No grade'}</i>${cp.plan==='sale'?'For sale'+(cp.ask?' · '+esc(cp.ask):''):'Open to trade'}</span></div><button class="pb o" data-listing="edit">Change</button></div>`:'';
-  $('#repAvail').innerHTML=(own+rows.join(''))||`<p class="fine2" style="margin:0 0 8px">No one has listed this pressing yet. Add it to your Dream Crate and we’ll tell you when a copy shows up.</p><button class="chipbtn dark press" data-addwant="1">Add to Dream Crate</button>`;
+  $('#repAvail').innerHTML=(own+rows.join(''))||`<p class="fine2" style="margin:0 0 8px">No one has listed this pressing yet. Save it to your Dream Crate to keep track of it.</p><button class="chipbtn dark press" data-addwant="1">Add to Dream Crate</button>`;
   if(own||rows.length)$('#repAvail').insertAdjacentHTML('beforeend','<p class="fine2" style="margin:8px 0 0">Names and locations stay private until an owner accepts. Prices appear only on listings. Memory Wax is a meeting place: it doesn’t handle payment or shipping, or guarantee a deal, a condition or authenticity.</p><button class="ghost" data-toast="Report received. We review reports and remove listings that break the rules. (Prototype: nothing is sent.)">Report a listing</button>');
 }
 function fillPlan(id){
@@ -2659,7 +2663,7 @@ function renderHost(){
      <div class="hf"><label for="hName">Name of the night</label><input class="txt sm" id="hName" data-hf="name" maxlength="50" placeholder="Spiritual Jazz Sunday" value="${esc(H.name)}"></div>
      <div class="hf2"><div class="hf"><label for="hDate">Date</label><input class="txt sm" id="hDate" type="date" data-hf="date" value="${esc(H.date)}"></div><div class="hf"><label for="hTime">Start time</label><input class="txt sm" id="hTime" type="time" data-hf="time" value="${esc(H.time)}"></div></div>
      <div class="hf"><label>Where will people be?</label><div class="opts" style="margin:0"><button class="pb" aria-pressed="${H.mode==='person'}" data-hmode="person">In person</button><button class="pb" aria-pressed="${H.mode==='online'}" data-hmode="online">Online with live chat</button></div></div>
-     ${H.mode==='online'?`<p class="fine2" style="margin:-4px 0 12px">Everyone listens wherever they are, on their own turntable or their own streaming account, with a live chat open. Each guest sees the time in their own time zone. Memory Wax doesn’t play the music.</p>`:`<div class="hf"><label for="hWhere">Where</label><input class="txt sm" id="hWhere" data-hf="where" maxlength="60" placeholder="Venue name or neighborhood" value="${esc(H.where)}"></div>
+     ${H.mode==='online'?`<p class="fine2" style="margin:-4px 0 12px">Everyone listens wherever they are, on their own copy, their own system or their own streaming account, with a live chat open. Each guest sees the time in their own time zone. Memory Wax doesn’t play the music.</p>`:`<div class="hf"><label for="hWhere">Where</label><input class="txt sm" id="hWhere" data-hf="where" maxlength="60" placeholder="Venue name or neighborhood" value="${esc(H.where)}"></div>
      <p class="fine2" style="margin:-4px 0 12px">Never post a home address. Share the exact spot privately with the people you invite. If the night is in a bar or shop, the venue handles its own music licensing.</p>`}
      <div class="hf"><label for="hLine">One line about it</label><input class="txt sm" id="hLine" data-hf="line" maxlength="90" placeholder="Four records, no phones, good speakers." value="${esc(H.line)}"></div>
      <div class="hbtns"><button class="go press" data-hnext="1">Next: the records</button></div>`;
@@ -2716,8 +2720,6 @@ function renderScene(){
   const el=$('#sceneBody');if(!el)return;
   const sp=st.spin?RECS.find(r=>r.id===st.spin.id):null,fr=st.fr;
   el.innerHTML=`
-  ${st.wants.some(w=>w.t===recOf(MATCH.recId).t)&&!st.matchDismissed&&!st.matchDone?`<div class="mine" style="background:var(--gold);color:var(--ox);box-shadow:none"><div><b>A copy of ${recOf(MATCH.recId).t} just became available</b><span style="opacity:1">On your Dream Crate list · ${MATCH.cond} · Open to trade</span></div><button class="pb" style="background:var(--ox);color:var(--cream)" data-deal="match">See it</button></div>`:''}
-  ${st.inbox.map((q,i)=>`<div class="mine" style="background:var(--red);box-shadow:none"><div><b>A collector wants your ${recOf(q.recId).t}</b><span>${q.who}</span></div><button class="pb" style="background:var(--cream);color:var(--ox)" data-deal="req" data-ri="${i}">Review</button></div>`).join('')}
   <div class="sh"><span>Curators</span><em>${DEMO?st.follow.size+' following':'None yet'}</em></div>
   ${DEMO?`<p class="shnote">People and places whose shelves you can follow. They aren’t your friends, and they never see who follows them. These three are samples.</p>
   <div class="curs">${[...CURS].sort((a,b)=>st.follow.has(b.id)-st.follow.has(a.id)).map(c=>`<div class="cur"><button class="open" data-cur="${c.id}"><div class="av m${c.m}" aria-hidden="true">${c.n[0]}</div><div class="nm">${c.n}</div><div class="tg">${c.tag}</div><div class="kd">${c.kind} · sample · ${c.shelves.length} ${c.shelves.length>1?'shelves':'shelf'} shared</div></button><button class="follow" data-follow="${c.id}" aria-pressed="${st.follow.has(c.id)}">${st.follow.has(c.id)?'Following':'Follow'}</button></div>`).join('')}</div>`
@@ -2836,7 +2838,7 @@ function rtCheck(url,key){
 function nLink(){
   const N=st.nt,el=$('#nLink');if(!el||!N)return;
   const t={tab:'Chat is on this browser only.',connecting:'Connecting to the chat service…',live:`Live chat is connected${N.here?` · ${N.here} here now`:''}.`,error:'The chat service didn’t connect, so chat is on this browser only.'}[N.link]||'';
-  el.innerHTML=`<span>${t}</span><button class="ghost" data-rtcfg="1" style="width:auto;padding:0;font-size:10.5px">${rtOn()?'Chat service':'Connect a chat service'}</button>`;
+  el.innerHTML=`<span>${t}</span>`;
   const lb=$('#nLbl');if(lb)lb.textContent=N.link==='live'?'· real people':'· sample voices';
   const g=$('#nGoing');if(g)g.textContent=nGoingText();
 }
@@ -2955,6 +2957,7 @@ function nEmbed(){
   const N=st.nt,el=$('#nEmbed');if(!el)return;
   if(N.mode!=='stream'||N.phase!=='live'){el.innerHTML='';return}
   const rid=nCur().rec,src=embedSrc('am',rid);
+  if(!src&&!AMC.has(rid)){const r0=recOf(rid);amFindAlbum(r0).then(()=>{if(st.nt===N)nEmbed()})}
   el.innerHTML=src?`<iframe class="nframe" src="${src}" title="Apple Music player" height="175" allow="autoplay *; clipboard-write; encrypted-media *; fullscreen *; picture-in-picture" loading="lazy"></iframe>
    <p class="fine2" style="margin:6px 0 0">Press play when the host says go. Streams can drift a few seconds from the room, so the chat keeps everyone together.${N.def.tracks.some(t=>t.rec!==rid)?' The player follows the current record.':''}</p>`:`<p class="fine2">No streaming version found for this record. Play your own copy.</p>`;
 }
@@ -2978,7 +2981,7 @@ function renderNight(){
   }
   if(N.phase!=='after'){
     h+=`<div class="sethead">How are you listening?</div>
-     <div class="opts">${pb(N.mode==='own','data-nmode="own"','On my turntable')}${pb(N.mode==='stream','data-nmode="stream"','Streaming')}</div>`;
+     <div class="opts">${pb(N.mode==='own','data-nmode="own"','On my own copy or system')}${pb(N.mode==='stream','data-nmode="stream"','Streaming')}</div>`;
     if(N.mode==='own')h+=`<p class="fine2" style="margin:-4px 0 12px">Play your own copy and follow the track list below. When the host flips a side, you flip yours.</p>`;
     else h+=`<div id="nEmbed">${N.phase==='before'?'<p class="fine2" style="margin:-4px 0 12px">Your player appears here when the needle drops.</p>':''}</div>`;
   }
@@ -3054,7 +3057,7 @@ async function mbLookup(code){
   if(!rels.length){const alt=code.length===13&&code[0]==='0'?code.slice(1):code.length===12?'0'+code:'';if(alt)rels=await mbSearch(alt)}
   if(!rels.length)return null;
   const isV=x=>(x.media||[]).some(m=>/vinyl|lp/i.test(m.format||'')),x=rels.find(isV)||rels[0],li=(x['label-info']||[])[0]||{};
-  return {mbid:x.id,rg:(x['release-group']||{}).id||'',t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),vinyl:isV(x),n:rels.length};
+  return {mbid:x.id,rg:(x['release-group']||{}).id||'',t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),vinyl:isV(x),n:rels.length,all:[...rels].sort((p,q)=>isV(q)-isV(p)).map(mbRel)};
 }
 function stopReal(){st.scanGen=(st.scanGen||0)+1;resetScan()}
 async function startBarcodeScan(){
@@ -3089,6 +3092,14 @@ function renderFound(){
      <p class="sub">${err?esc(err.message):'The barcode <span class="fcode">'+esc(code)+'</span> isn’t in the public database.'}</p>
      <p class="fine2">${err?'Check your signal and try again.':'Many older pressings have no barcode, and some newer ones aren’t listed. Try the label or the cover, or type the artist and title.'}</p>
      <button class="go press" data-foundno="1">Scan again</button><button class="ghost" data-catmanual="1">No barcode? Search by artist and title</button>`;return;
+  }
+  if(hit.all&&hit.all.length>1){
+    $('#foundBody').innerHTML=`<p class="fine2" style="margin:0 0 6px">Barcode <span class="fcode">${esc(code)}</span></p>
+     <h4 class="disp" style="font-size:36px">${hit.all.length} releases share this barcode</h4>
+     <p class="sub">We won’t guess which one you have. ${candHint(hit.all)}</p>
+     ${candList(hit.all,'data-bcpick')}
+     <button class="ghost" data-foundno="1">None of these. Scan again</button><button class="ghost" data-catmanual="1">Search by artist and title</button>
+     <p class="fine2" style="margin-top:8px">Data from MusicBrainz and the Cover Art Archive. Whichever you pick stays at “Release found” until the label or deadwax narrows it.</p>`;return;
   }
   const meta=[hit.y||'',[hit.lab,hit.cat].filter(Boolean).join(' · '),hit.ctry,hit.fmt].filter(Boolean).join('  ·  ');
   $('#foundBody').innerHTML=`<img class="fcov" alt="" src="https://coverartarchive.org/release/${hit.mbid}/front-250" onerror="this.style.display='none'">
@@ -3461,10 +3472,16 @@ async function startDeadwaxScan(){
 function dwAttach(){
   const F=st.found;if(!F||F.kind!=='deadwax'||!F.ctx)return;const r=recOf(F.ctx);if(!r)return;
   r.ev={...(r.ev||{}),dw:F.dw};r.mx=F.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely';saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;
-  st.rec=r.id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(r.c==='confirmed'?'Pressing confirmed from the deadwax.':'Matrix saved. Not matched to a database runout yet.');
+  st.rec=r.id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(r.c==='confirmed'?'Matches a listed pressing.':'Matrix saved. Not matched to a database runout yet.');
 }
 const DG_NOTE='<p class="fine2" style="margin-top:10px">Runout data provided by Discogs. This app uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs.</p>';
-function candRow(c,i){const meta=[c.y||'',[c.lab,c.cat].filter(Boolean).join(' '),c.ctry,c.fmt,c.pack&&c.pack!=='None'?c.pack:'',c.dis].filter(Boolean).join(' · ');return `<button class="candrow press" data-foundpick="${i}"><img alt="" src="https://coverartarchive.org/release/${c.mbid}/front-250" onerror="this.style.visibility='hidden'"><span><b>${esc(c.t)}</b><em>${esc(c.a)}</em><small>${esc(meta)}</small></span></button>`}
+/* where several pressings fit, show what actually separates them instead of picking one for the person */
+const DIFFKEYS=[['cat','catalog number','the catalog number on the label or spine'],['ctry','country','the country in the small print'],['y','year','the year in the small print'],['fmt','format','whether it is vinyl, CD or cassette'],['lab','label','the label name'],['pack','packaging','the packaging'],['dis','edition note','the edition note']];
+function candDiff(cs){const d=new Set();if(!cs||cs.length<2)return d;DIFFKEYS.forEach(([k])=>{const v=new Set(cs.map(c=>String(c[k]||'').toLowerCase().trim()));if(v.size>1)d.add(k)});return d}
+function candHint(cs){const d=candDiff(cs);if(!d.size)return 'They look the same on the details we have. Pick the one that matches the print on your copy.';const names=DIFFKEYS.filter(([k])=>d.has(k)).map(([,n])=>n);return 'Where they differ: <b>'+names.slice(0,4).join('</b>, <b>')+'</b>. Check those on your copy, then pick.'}
+function candList(cs,fn){const d=candDiff(cs);return '<div class="cands">'+cs.map((c,i)=>candRow(c,i,d,fn)).join('')+'</div>'}
+function candRow(c,i,d,fn){d=d||new Set();const mk=(k,t)=>t?(d.has(k)?'<mark>'+esc(t)+'</mark>':esc(t)):'';
+  const meta=[mk('y',c.y||''),[mk('lab',c.lab),mk('cat',c.cat)].filter(Boolean).join(' '),mk('ctry',c.ctry),mk('fmt',c.fmt),mk('pack',c.pack&&c.pack!=='None'?c.pack:''),mk('dis',c.dis)].filter(Boolean).join(' · ');return `<button class="candrow press" data-foundpick="${i}"><img alt="" src="https://coverartarchive.org/release/${c.mbid}/front-250" onerror="this.style.visibility='hidden'"><span><b>${esc(c.t)}</b><em>${esc(c.a)}</em><small>${meta}</small></span></button>`.replace('data-foundpick',fn||'data-foundpick')}
 function renderFoundX(){
   const F=st.found,B=$('#foundBody');
   if(F.kind==='label'){
@@ -3474,9 +3491,9 @@ function renderFoundX(){
       ${P.raw.length?`<p class="fine2">Seen on the label: ${esc(P.raw.slice(0,6).join(' · ')).slice(0,180)}</p>`:''}
       <button class="go press" data-foundno="1">Try again</button><button class="ghost" data-catmanual="1">Type the catalog number</button>`;return}
     B.innerHTML=`<p class="fine2" style="margin:0 0 6px">${F.typed?'You searched':F.src==='cover'?'Cover read':'Label read'}: <span class="fcode">${esc(readLine)}</span>${P.side?' · side '+esc(P.side):''}</p>
-     <h4 class="disp" style="font-size:36px">${F.cands.length===1?'Is this it?':'Which one is yours?'}</h4>
+     <h4 class="disp" style="font-size:36px">${F.cands.length===1?'Is this it?':'Which one is yours?'}</h4>${F.cands.length>1?`<p class="sub" style="margin-top:0">${candHint(F.cands)}</p>`:''}
      <p class="sub">${F.via==='name'?(F.typed?'Matched on the artist and title you typed. Check the label and year before you pick.':F.src==='cover'?'Matched on the artist and title read from the cover. Check the label and year before you pick.':'No catalog number came through, so this is matched on the artist and title printed on the label. Check the label and year before you pick.'):F.cands.length===1?'One release carries that catalog number.':F.cands.length+' releases share that catalog number. Pick yours; the deadwax can confirm the pressing after.'}</p>
-     <div class="cands">${F.cands.map(candRow).join('')}</div>
+     ${candList(F.cands)}
      <button class="ghost" data-foundno="1">None of these. Scan again</button><button class="ghost" data-catmanual="1">Type the catalog number</button>
      <p class="fine2" style="margin-top:8px">Data from MusicBrainz and the Cover Art Archive.</p>`;return;
   }
@@ -3485,7 +3502,7 @@ function renderFoundX(){
     if(!D.mx){B.innerHTML=`<h4 class="disp" style="font-size:36px">Nothing readable yet</h4><p class="sub">Etchings only show when light rakes across them. Turn the record so the runout faces a lamp, hold the phone low on the other side, and try again.</p>
       <button class="go press" data-dwagain="1">Read again</button><button class="ghost" data-dwreset="1">Start over</button>${F.dgErr?`<p class="fine2">${esc(F.dgErr.message)}</p>`:''}`;return}
     const pct=Math.round(D.conf*100),m=D.match;
-    const tier=m&&m.sc>=.8?'Pressing confirmed':m&&m.sc>=.5?'Close to a known pressing':'Matrix read';
+    const tier=m&&m.sc>=.8?'Matches a listed pressing':m&&m.sc>=.5?'Close to a known pressing':'Matrix read';
     const passes=st.dwAcc?st.dwAcc.passes:1,webq='https://www.google.com/search?q='+encodeURIComponent('"'+D.mx+'" '+(ctx?ctx.a:''));
     B.innerHTML=`<p class="fine2" style="margin:0 0 6px">Deadwax · ${passes>1?passes+' passes · ':''}${D.frames} frame${D.frames===1?'':'s'} · read confidence ${pct}%</p>
      <h4 class="disp" style="font-size:36px">${tier}</h4>
@@ -3494,8 +3511,8 @@ function renderFoundX(){
         :ctx?`<p class="sub">${dgTok()?(D.cands.length?'None of the '+D.cands.length+' listed pressings carry this runout. That often means an unlisted variant, not a wrong read. Save it as Likely.':'No pressings with that catalog number came back from Discogs.'):'Add your Discogs token in Settings to match this against known runouts for the exact pressing.'}</p>`
         :`<p class="sub">Read without a record to compare against. ${F.albums.length?'The number looks like one of these:':'Scan the label or barcode first, then confirm with the deadwax.'}</p>`}
      ${D.gloss.length?`<div class="gloss"><small>What the marks mean · a reading, not a fact</small>${D.gloss.map(g=>`<p>${esc(g)}</p>`).join('')}</div>`:''}
-     ${ctx?`<button class="go press" data-dwattach="1">${m&&m.sc>=.8?'Confirm this pressing':'Save to '+esc(ctx.t)}</button>`:''}
-     ${!ctx&&F.albums.length?`<div class="cands">${F.albums.map(candRow).join('')}</div>`:''}
+     ${ctx?`<button class="go press" data-dwattach="1">${m&&m.sc>=.8?'Save as this pressing':'Save to '+esc(ctx.t)}</button>`:''}
+     ${!ctx&&F.albums.length?candList(F.albums):''}
      <button class="ghost" data-dwagain="1">Turn the record a quarter and read more</button>
      <a class="ghost" style="display:block;text-align:center" href="${webq}" target="_blank" rel="noopener">Search the web for this runout</a>
      ${D.parts.length>1?`<p class="fine2" style="margin-top:8px">Parts: ${D.parts.map(p=>esc(p.s)+' ('+Math.round(p.cov*100)+'%)').join(' · ')}</p>`:''}
@@ -3946,7 +3963,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr);return}
@@ -3997,6 +4014,7 @@ document.addEventListener('click',e=>{
     closeSheets();location.reload();return}
   if(t.dataset.lab){labDo(t.dataset.lab);return}
   if(t.dataset.foundadd){addFound();return}
+  if(t.dataset.bcpick!==undefined){const F=st.found,c=F.hit&&F.hit.all&&F.hit.all[+t.dataset.bcpick];if(c)addRel(c,{bc:{code:F.code,n:F.hit.n||1}});return}
   if(t.dataset.foundpick!==undefined){const F=st.found,c=(F.kind==='label'?F.cands:F.albums)[+t.dataset.foundpick];if(c)addRel(c,F.kind==='label'?{label:{lab:F.parse.lab,cat:c.cat||F.parse.cats[0],side:F.parse.side}}:{dw:F.dw});return}
   if(t.dataset.dwattach){dwAttach();return}
   if(t.dataset.dwagain){closeSheets();resetScan();setTimeout(startDeadwaxScan,300);return}
@@ -4118,6 +4136,7 @@ document.addEventListener('click',e=>{
   if(t.id==='dupSecond'){$('#dup').hidden=true;toast('Added as a second copy. Both show in your collection.');return}
   if(t.id==='dupSame'){$('#dup').hidden=true;toast('Okay. Nothing was added.');return}
   if(t.id==='goScan'){go('scan');return}
+  if(t.id==='goType'){go('scan');setTimeout(()=>openCatEntry(),250);return}
   if(t.dataset.set){
     const k=t.dataset.set;
     if(k==='settings'){renderSettings();openSheet('settings')}
@@ -4345,7 +4364,7 @@ async function renderYourData(){
 }
 
 loadPrefs();applyPrefs();renderSettings();restoreState();renderCollection();loadCovers().then(()=>{try{renderCollection()}catch(e){}});setInterval(saveState,2500);addEventListener('pagehide',saveState);
-{const b=$('#buildTag');if(b)b.textContent='Memory Wax prototype '+BUILD+(DEMO?' · sample data on':'');}
+{const b=$('#buildTag');if(b){b.textContent='Memory Wax '+BUILD+(DEMO?' · sample data on':'');let n=0,t0=0;b.addEventListener('click',()=>{const now=Date.now();n=now-t0<2500?n+1:1;t0=now;if(n>=7){n=0;closeSheets();openLab()}})}}
 renderCollection();updatePills();
 </script>
 </body>
