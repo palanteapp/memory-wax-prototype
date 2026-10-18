@@ -269,7 +269,8 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .actions button{padding:13px 16px;white-space:nowrap;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;background:var(--cream);color:var(--ox);box-shadow:inset 0 0 0 2.5px var(--ox);transition:transform 160ms ease-out}
 .actions button:active{transform:scale(.97)}
 .actions .hot{background:var(--red);color:var(--cream);box-shadow:none}
-.actions .plusbtn{width:52px;height:52px;padding:0;border-radius:50%;background:var(--ox);color:var(--gold);box-shadow:none;display:grid;place-items:center}
+.actions .plusbtn{padding:13px 14px;border-radius:999px;background:var(--ox);color:var(--gold);box-shadow:none}
+.actions button{padding:13px 14px}
 .actions .plusbtn svg{width:24px;height:24px;display:block}
 
 /* collection */
@@ -314,7 +315,13 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .tile-main:active{transform:scale(.97)}
 .tt{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;text-transform:uppercase;font-size:17px;line-height:.9;letter-spacing:-.005em}
 .ta{display:none}
-.plus{position:absolute;right:6px;top:6px;width:24px;height:24px;border-radius:50%;background:var(--ox);color:var(--cream);font-weight:800;font-size:17px;line-height:23px;text-align:center;z-index:3;box-shadow:0 0 0 1.5px rgba(255,243,176,.45);transition:transform 160ms ease-out}
+.rgrid .tile:not(.has-img) .tile-main{padding-top:36px}
+.rgrid .tile:not(.has-img)::before{display:none}
+.rgrid .tile:not(.has-img) .tt{font-size:14.5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.rgrid .tile:not(.has-img) .ta{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding-right:4px}
+.rgrid .tile:not(.has-img) .tile-main{padding-bottom:26px}
+.rgrid .tile:not(.has-img) .ta{display:block;margin-top:7px;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;line-height:1.25;opacity:.85}
+.plus{position:absolute;right:6px;top:6px;height:24px;padding:0 9px;border-radius:999px;background:var(--ox);color:var(--cream);font-family:var(--mono);font-weight:800;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;line-height:24px;text-align:center;z-index:3;box-shadow:0 0 0 1.5px rgba(255,243,176,.45);transition:transform 160ms ease-out}
 .plus:active{transform:scale(.9)}
 .tile.has-img .plus{box-shadow:0 0 0 2px var(--cream)}
 .st{position:absolute;left:8px;bottom:8px;width:12px;height:12px;border-radius:50%;z-index:3;border:2px solid var(--ox);background:transparent;box-shadow:0 0 0 1.5px var(--cream)}
@@ -367,6 +374,8 @@ sup a{color:inherit;font-family:var(--mono);font-size:10px;font-weight:500;text-
 .gcard small{display:inline-block;margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;background:var(--ox);color:var(--cream);padding:5px 10px;position:relative}
 
 /* scene (v0.7) */
+.blk.voices .sample{display:block;margin:12px 0 0;padding:14px;border-radius:0;box-shadow:none;background:rgba(84,11,14,.08);color:var(--ox);opacity:1;text-transform:none;letter-spacing:normal;font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.2}
+.blk.voices .sample em{color:var(--ox);opacity:.85}
 .sample{margin:10px 22px 0;display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream);opacity:.7;box-shadow:inset 0 0 0 1px rgba(255,243,176,.4);padding:4px 9px;border-radius:999px}
 .np{position:relative;margin:16px 16px 0;padding:22px 20px 20px;background:var(--gold);color:var(--ox);border-radius:var(--cut) 0 0 0;overflow:hidden}
 .live{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;background:var(--ox);color:var(--cream);padding:5px 10px}
@@ -874,6 +883,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .sheet .go.danger{background:var(--red)}
 .ghost.rmrec{margin:18px auto 110px;width:auto;color:var(--cream);opacity:.75}
 .want .wrm{align-self:center;flex:none;width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.4);color:var(--cream);font-size:16px;line-height:28px;text-align:center}
+.devset{margin-top:16px;border-top:1.5px solid rgba(84,11,14,.25);padding-top:10px}.devset summary{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:8px 0;opacity:.8}
 </style>
 </head>
 <body>
@@ -1037,7 +1047,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
         </div>
       </div>
       <div class="actions">
-        <button class="plusbtn tip-l" data-sheet="shelf" aria-label="Add to a shelf" data-tip="Add this record to one or more of your shelves."><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5v15M4.5 12h15" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none"/></svg></button>
+        <button class="plusbtn tip-l" data-sheet="shelf" aria-label="Add to a shelf" data-tip="Add this record to one or more of your shelves.">Add to shelf</button>
         <button class="hot" id="findCopy" data-tip="See where copies are listed, and get an alert when one appears.">Find a Copy</button>
         <button class="tip-r" data-sheet="memory" data-tip="Save a private note: where you found it, or who gave it to you.">Memory</button>
       </div>
@@ -1328,6 +1338,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <div class="sethead">Music</div>
       <button class="opt-card" data-set="svc"><b>Connected music services</b><span>Connect your own Spotify or Apple Music so playlists can be saved for real.</span></button>
       <div class="sethead">Scanner</div>
+      <div class="trow"><div><b>Read automatically</b><span class="d">Barcode and label scans start on their own and capture the moment they can read it. Turn off to use the shutter button.</span></div><button class="sw" data-set="auto" aria-pressed="true" aria-label="Read automatically"></button></div>
       <button class="opt-card" data-set="cam"><b>Live camera preview</b><span>Try your real camera in the viewfinder instead of the illustration.</span></button>
       <button class="opt-card" data-dgtoken="1"><b>Discogs token</b><span>Optional. Needed for the Discogs import and for matching deadwax to known pressings. Stored on this phone only.</span></button>
       <button class="opt-card" data-lab="open"><b>Phase 0 test lab</b><span>Build the answer key, scan real deadwax, and score it against the bars.</span></button>
@@ -1457,7 +1468,7 @@ function halftone(w,h,ox,oy,maxD,step=9,pow=1.1){
 })();
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const prefs={big:false,motion:false,sync:true,loc:false};
+const prefs={big:false,motion:false,sync:true,loc:false,auto:true};
 let reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function applyPrefs(){phone.classList.toggle('big',prefs.big);document.documentElement.classList.toggle('rm',prefs.motion);reduce=matchMedia('(prefers-reduced-motion: reduce)').matches||prefs.motion}
 const phone=$('#phone');
@@ -1581,7 +1592,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.14 · steady MusicBrainz';
+const BUILD='0.15 · hands-free scan, covers, shelf';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -1608,7 +1619,14 @@ $$('[data-toast]').forEach(b=>b.addEventListener('click',()=>toast(b.dataset.toa
 
 const openSheetsLocked=()=>$('#sheet-cands').classList.contains('on')||$('#sheet-unsure').classList.contains('on');
 function openSheet(id){$$('.sheet.on').forEach(x=>{if(x.id!=='sheet-'+id)x.classList.remove('on')});$('#backdrop').classList.add('on');$('#sheet-'+id).classList.add('on')}
-function closeSheets(){phone.scrollTop=0;if(typeof nightStop==='function')nightStop();const lb=$('#listenBody');if(lb)lb.innerHTML='';$('#backdrop').classList.remove('on');$$('.sheet').forEach(s=>s.classList.remove('on'))}
+function maybeAuto(delay=700){
+  clearTimeout(maybeAuto.t);
+  maybeAuto.t=setTimeout(()=>{
+    if(DEMO||prefs.auto===false||!camStream||st.screen!=='scan'||st.scanning||st.autoOff||document.querySelector('.sheet.on'))return;
+    if(st.scanMode==='barcode')startBarcodeScan();else if(st.scanMode==='label')startLabelAuto();
+  },delay);
+}
+function closeSheets(){maybeAuto(900);phone.scrollTop=0;if(typeof nightStop==='function')nightStop();const lb=$('#listenBody');if(lb)lb.innerHTML='';$('#backdrop').classList.remove('on');$$('.sheet').forEach(s=>s.classList.remove('on'))}
 $('#backdrop').addEventListener('click',()=>{if(!openSheetsLocked())closeSheets()});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!openSheetsLocked())closeSheets()});
 
@@ -1620,7 +1638,7 @@ async function camOn(){
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('none');
     camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});camIsHi=false;
     const v=$('#liveVid');v.srcObject=camStream;try{await v.play()}catch(e){}
-    $('#vf').classList.add('live');st.camPref=true;return true;
+    $('#vf').classList.add('live');st.camPref=true;maybeAuto(900);return true;
   }catch(e){camOff();toast('The camera isn’t available here, so the illustration stays.');return false}
 }
 let camIsHi=false;
@@ -1633,6 +1651,8 @@ function go(name){
   if(name!=='scan'&&name!=='reveal')camOff();
   if(name==='scan'&&st.camPref&&!camStream)camOn();
   if(name==='reveal'){st.cameFromScan=(from==='scan');if(from==='scan'&&!st.keepRec)st.rec=1;st.keepRec=false}
+  if(name==='scan')st.autoOff=false;
+  if(name!=='scan'&&st.scanning){st.scanGen=(st.scanGen||0)+1;st.scanning=false}
   if(name!=='collection'){st.sel=null;const sb=$('#selBar');if(sb)sb.hidden=true}
   closeSheets();clearTimeout(leaveTimer);
   const el=$('[data-screen="'+name+'"]');
@@ -1667,18 +1687,18 @@ function renderText(n){
   if(st.scanMode==='deadwax')$('#ringtxt').textContent=shown;
 }
 function setScanMode(m){
-  st.scanMode=m;$('#vf').dataset.m=m;$('#barType').hidden=(m!=='barcode');
+  st.scanMode=m;st.autoOff=false;$('#vf').dataset.m=m;$('#barType').hidden=(m!=='barcode');
   if((DEMO?(m==='deadwax'||m==='cover'):m==='cover')&&!st.simNote){st.simNote=true;setTimeout(()=>toast(DEMO?'Deadwax and cover reading are simulated here. Barcode and label are real.':'Cover reading isn’t live yet. Barcode, label and deadwax are.'),250)}
   const vis=$$('#modes button').filter(b=>!b.hidden),idx=Math.max(0,vis.findIndex(b=>b.dataset.mode===m));
   $('#modes').style.setProperty('--i',idx);$('#modes').style.setProperty('--n',vis.length);
   $$('#modes button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
   resetScan();
 }
-$$('#modes button').forEach(b=>b.addEventListener('click',()=>{if(!st.scanning)setScanMode(b.dataset.mode)}));
+$$('#modes button').forEach(b=>b.addEventListener('click',()=>{if(st.scanning)stopReal();setScanMode(b.dataset.mode)}));
 if(!DEMO){$('#modes [data-mode=cover]').hidden=true;setScanMode('barcode');$$('.v-rec svg text:not(.ring-text)').forEach(t=>t.textContent='')}
 function resetScan(){
   const S=SCAN[st.scanMode];
-  camHi(false);st.scanning=false;$('#shutter').disabled=false;$('#shutter').setAttribute('aria-label',S.aria);
+  camHi(false);maybeAuto();st.scanning=false;$('#shutter').disabled=false;$('#shutter').setAttribute('aria-label',S.aria);
   $('#vf').classList.remove('reading','locked');
   setPrompt(S.prompt);$('#guide').textContent=S.guide;$('#lab1').textContent=S.lab;
   $('#mx').textContent='· · ·';$('#ringtxt').textContent='· · · · · · · · · · · · · ·';setConf(0);updatePills();
@@ -1992,11 +2012,19 @@ function openCreditName(name,role){
 const own=()=>RECS.filter(r=>st.owned.has(r.id));
 const SORTS={recent:'Recent',az:'A to Z',year:'Year'};
 const stLabel={confirmed:'Confirmed',likely:'Likely',album:'Album only'};
-const cov=r=>r.cover?r.cover:r.hero?coverURL:((r.id>=2&&r.id<=12)||r.id===21||r.id===15?`assets/covers/${r.id}.jpg`:null);
+/* a cover that doesn't load is dropped, so the tile shows the title instead of an empty square; if the album has art under another edition, that is tried first */
+const COV={ok:new Set(),bad:new Set(),busy:new Set(),t:0};
+function coverProbe(u){
+  if(COV.ok.has(u)||COV.bad.has(u)||COV.busy.has(u))return;COV.busy.add(u);const im=new Image();
+  im.onload=()=>{COV.ok.add(u);COV.busy.delete(u)};
+  im.onerror=()=>{COV.busy.delete(u);COV.bad.add(u);const r=RECS.find(x=>x.cover===u);if(r&&r.rg&&!/release-group/.test(u)){r.cover='https://coverartarchive.org/release-group/'+r.rg+'/front-250';saveReal()}clearTimeout(COV.t);COV.t=setTimeout(()=>{try{renderCollection()}catch(e){}},200)};
+  im.src=u;
+}
+const cov=r=>{const u=r.cover?r.cover:r.hero?coverURL:((r.id>=2&&r.id<=12)||r.id===21||r.id===15?`assets/covers/${r.id}.jpg`:null);if(u&&/^https?:/.test(u)){if(COV.bad.has(u))return null;coverProbe(u)}return u};
 function tileHTML(r){
   const c=cov(r),img=c?` has-img" style="background-image:url('${c}')`:'';
   const on=st.sel&&st.sel.has(r.id);
-  return `<div class="tile m${r.m}${img}${on?' sel':''}"><button class="tile-main" data-open="${r.id}" aria-label="${on?'Selected: ':''}${r.t}, ${r.a}"><span class="tt">${r.t}</span></button><i class="st ${r.c}" title="${stLabel[r.c]}"></i><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`;
+  return `<div class="tile m${r.m}${img}${on?' sel':''}"><button class="tile-main" data-open="${r.id}" aria-label="${on?'Selected: ':''}${r.t}, ${r.a}"><span class="tt">${r.t}</span><span class="ta">${r.a}</span></button><i class="st ${r.c}" title="${stLabel[r.c]}"></i><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">Shelf</button></div>`;
 }
 /* search across credits, labels, matrix, year and your own memories. returns null (no match), '' (title/artist) or a reason */
 function match(r,q){
@@ -2043,7 +2071,7 @@ function renderCollection(){
   $('#selBar').hidden=!(st.sel&&st.screen==='collection');$('#selN').textContent=st.sel?`${st.sel.size} selected`:'';
   const asList=st.view==='list'||!!q,g=$('#rgrid');g.className=(asList?'rlist':'rgrid')+(st.sel?' selmode':'');
   g.innerHTML=!items.length?'<p class="empty">Nothing matches. Try another word or filter.</p>':!asList?items.map(x=>tileHTML(x.r)).join(''):
-    items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`).join('');
+    items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">Shelf</button></div>`).join('');
   const loose=all.filter(r=>r.c!=='confirmed').length;
   $('#nudge').innerHTML=(!st.account&&all.length?`<button class="nudge n2" data-acctopen="1"><div><b>Saved on this phone only</b><span>${DEMO?'Back it up with a free account.':'Download a backup file.'}</span></div><i>Back up</i></button>`:'')+(loose?`<button class="nudge" data-nudge="1"><div><b>${loose} could be confirmed</b><span>Scan their deadwax to name the exact pressing.</span></div><i>Scan</i></button>`:'');
   renderShelves();renderWants();
@@ -2055,7 +2083,7 @@ function renderCollection(){
   renderScene();
 }
 function renderShelves(){
-  $('#shelves').innerHTML=!st.shelves.length?'<p class="empty">Shelves appear here. Make one anytime with the + on a record.</p>':st.shelves.map((s,i)=>{
+  $('#shelves').innerHTML=!st.shelves.length?'<p class="empty">Shelves appear here. Make one anytime with Shelf on a record.</p>':st.shelves.map((s,i)=>{
     const minis=[0,1,2,3].map(j=>{const r=RECS.find(x=>x.id===s.recs.filter(id=>st.owned.has(id))[j]);return r?`<i class="mm m${r.m}"${cov(r)?` style="background:url('${cov(r)}') center/cover"`:''}></i>`:'<i></i>'}).join('');
     const n=s.recs.filter(id=>st.owned.has(id)).length;
     return `<div class="shelf s${i%3}" data-sid="${s.id}"><div class="row"><div class="mos">${minis}</div><div><div class="nm disp">${esc(s.n)}<button class="ed" data-shedit="${s.id}" aria-label="Rename or delete ${esc(s.n)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19z"/></svg></button></div><div class="ct">${rc(n)} · ${VNAME[s.v]}</div></div></div>
@@ -2081,7 +2109,7 @@ function openShare(sid){
   openSheet('share');
 }
 
-/* shelf picker (the + button) */
+/* shelf picker (the Shelf button) */
 function openShelfSheet(id){
   st.target=id;
   const r=RECS.find(x=>x.id===id);
@@ -2256,9 +2284,8 @@ async function amSave(name,note,items){
 }
 function renderSvc(){
   const cid=localStorage.getItem('mw_sp_cid')||'',on=!!spToken(),ok=spOK(),redir=spRedir();
-  const host127=location.href.replace('//localhost','//127.0.0.1');
-  $('#svcBody').innerHTML=`<h4 class="disp">Connect your music</h4>
-   <p class="sub">Bring your own keys to make Save to Spotify and Apple Music real. Nothing is kept on a server.</p>
+  const host127=location.href.replace('//localhost','//127.0.0.1'),configured=!!cid||on||!!amMusic;
+  const dev=`<p class="sub">Testing only: bring your own keys to make Save to Spotify and Apple Music real. Nothing is kept on a server.</p>
    ${st.pendSave?`<div class="dsrc"><b>Waiting to save “${esc(st.pendSave.name)}”</b><span>Connect ${SVC[st.pendSave.svc].n} below and it saves right away.</span></div>`:''}
    <div class="sethead">Spotify</div>
    ${on?`<div class="dsrc"><b>Connected</b><span>Playlists are created privately in your account. The sign-in lasts about an hour.</span></div><button class="ghost" data-svcdis="sp">Disconnect Spotify</button>`:`
@@ -2273,6 +2300,10 @@ function renderSvc(){
    <input class="txt sm" id="amTok" placeholder="Developer token" aria-label="Apple Music developer token" autocomplete="off">
    <div class="hbtns"><button class="go press" data-svcgo="am">Connect Apple Music</button></div>`}
    <p class="fine2">This is how the prototype tests real playlists. A shipping app uses Memory Wax’s own approved keys, and you would just tap Connect. Never share a token you didn’t make.</p>`;
+  $('#svcBody').innerHTML=configured?`<h4 class="disp">Connect your music</h4>${dev}`:`<h4 class="disp">Save to Spotify or Apple Music</h4>
+   <p class="sub">Coming soon, and there is nothing for you to set up. You will tap Connect, sign in to your own account, and the playlist appears there.</p>
+   <div class="dsrc"><b>Today</b><span>Play any record or playlist inside Memory Wax with Spotify’s and Apple Music’s own players, or share the playlist link with a friend.</span></div>
+   <details class="devset"><summary>Developer setup, for testing only</summary>${dev}</details>`;
 }
 function showSaved(){
   const x=st.lastSave;if(!x)return;
@@ -3046,19 +3077,19 @@ async function mbLookup(code){
   if(!rels.length){const alt=code.length===13&&code[0]==='0'?code.slice(1):code.length===12?'0'+code:'';if(alt)rels=await mbSearch(alt)}
   if(!rels.length)return null;
   const isV=x=>(x.media||[]).some(m=>/vinyl|lp/i.test(m.format||'')),x=rels.find(isV)||rels[0],li=(x['label-info']||[])[0]||{};
-  return {mbid:x.id,t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),vinyl:isV(x),n:rels.length};
+  return {mbid:x.id,rg:(x['release-group']||{}).id||'',t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),vinyl:isV(x),n:rels.length};
 }
 function stopReal(){st.scanGen=(st.scanGen||0)+1;resetScan()}
 async function startBarcodeScan(){
   if(st.scanning)return;
   if(!camStream){toast('Turn the camera on to scan, or type the barcode.');return}
-  st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');setPrompt('Hold the barcode in the box.');$('#guide').textContent='Reading…';
+  st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');setPrompt('Hold the barcode in the box.');$('#guide').textContent=prefs.auto===false?'Reading…':'It reads on its own. Hold steady.';
   const gen=st.scanGen=(st.scanGen||0)+1;let det;
   try{det=await getBarDet()}catch(e){stopReal();toast(e.message+' You can type the barcode instead.');return}
   const v=$('#liveVid'),cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true}),t0=Date.now();
   const tick=async()=>{
     if(st.scanGen!==gen)return;
-    if(Date.now()-t0>25000){stopReal();setPrompt('No luck yet.');$('#guide').textContent='More light, or type the code';toast('Couldn’t read a barcode. Try more light, or type it in.');return}
+    if(Date.now()-t0>25000){st.autoOff=true;stopReal();setPrompt('No luck yet.');$('#guide').textContent='More light, or tap the shutter to try again';toast('Couldn’t read a barcode. Try more light, or type it in.');return}
     if(v.videoWidth){const w=Math.min(960,v.videoWidth);cv.width=w;cv.height=Math.round(w*v.videoHeight/v.videoWidth);cx.drawImage(v,0,0,cv.width,cv.height);
       let code=null;try{code=await det.detect(cv)}catch(e){}
       if(code&&st.scanGen===gen){realFound(code);return}}
@@ -3204,7 +3235,7 @@ function parseLabel(lines){
 
 /* MusicBrainz release search by catalog number (matched regardless of case, spaces or separators) */
 async function mbQ(q){const j=await mbGet('release/?query='+encodeURIComponent(q)+'&limit=25',{hi:true});return (j||{}).releases||[]}
-function mbRel(x){const li=(x['label-info']||[])[0]||{},vinyl=(x.media||[]).some(m=>/vinyl|lp|12"|7"|10"/i.test(m.format||''));return {mbid:x.id,t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),dis:x.disambiguation||'',pack:x.packaging||'',vinyl,score:x.score||0,n:1}}
+function mbRel(x){const li=(x['label-info']||[])[0]||{},rg=(x['release-group']||{}).id||'',vinyl=(x.media||[]).some(m=>/vinyl|lp|12"|7"|10"/i.test(m.format||''));return {mbid:x.id,rg,t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),dis:x.disambiguation||'',pack:x.packaging||'',vinyl,score:x.score||0,n:1}}
 async function mbByCat(cats,lab){
   const out=new Map();let i=0;
   for(const c of cats.slice(0,3)){
@@ -3309,7 +3340,7 @@ function addRel(hit,ev){
   const ex=RECS.find(r=>r.real&&r.mb===hit.mbid);let id;
   if(ex){id=ex.id;st.owned.add(id);ex.ev={...(ex.ev||{}),...ev};if(!ex.cat&&hit.cat)ex.cat=hit.cat;if(!ex.lab&&hit.lab)ex.lab=hit.lab;if(!ex.ctry&&hit.ctry)ex.ctry=hit.ctry}
   else{id=Math.max(100,...RECS.map(r=>r.id))+1;const ord=Math.max(...RECS.map(r=>r.ord||0))+1;
-    RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid,bc:ev.bc?ev.bc.code:undefined,cover:'https://coverartarchive.org/release/'+hit.mbid+'/front-250',ev});st.owned.add(id);st.justAdded=id}
+    RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid,rg:hit.rg||'',bc:ev.bc?ev.bc.code:undefined,cover:'https://coverartarchive.org/release/'+hit.mbid+'/front-250',ev});st.owned.add(id);st.justAdded=id}
   const r=recOf(id);if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
   saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
 }
@@ -3323,9 +3354,9 @@ async function labelCanvases(){
   return [make(.62,1600),make(1,1600)];
 }
 /* Apple's reader finds text at any angle; the browser's reader needs the label turned. Stop as soon as a convincing catalog number turns up. */
-async function readLabel(cvs,gen){
+async function readLabel(cvs,gen,quick){
   const native=ID_NATIVE();let lines=[],P=null,first=true;
-  for(const cv of cvs)for(const a of native?[0]:[0,90,270]){
+  for(const cv of cvs)for(const a of native||quick?[0]:[0,90,270]){
     let ls=[];try{ls=await ocrFrame(a?rotCanvas(cv,a):cv,{minHeight:.01})}catch(e){if(first)throw e}
     first=false;lines=lines.concat(ls.filter(l=>(l.conf||0)>=.25));
     if(st.scanGen!==gen)return parseLabel(lines);
@@ -3342,15 +3373,45 @@ async function startLabelScan(){
     const cvs=await labelCanvases();if(st.scanGen!==gen)return;if(!cvs.length){stopReal();return}
     const P=await readLabel(cvs,gen);if(st.scanGen!==gen)return;
     if(!P.cats.length&&!P.names.length){stopReal();setPrompt('Couldn’t read the label.');$('#guide').textContent='Fill the circle, less glare';st.found={kind:'label',parse:P,cands:[],err:null};renderFound();openSheet('found');return}
-    setPrompt('Looking it up…');$('#guide').textContent=[P.lab,P.cats[0]||P.names.slice(0,2).join(' · ')].filter(Boolean).join(' · ');
-    let cands=[],err=null,via='';
-    try{
-      if(P.cats.length){cands=await mbByCat(P.cats,P.lab);if(cands.length)via='cat'}
-      if(!cands.length&&P.names.length){cands=await mbByNames(P.names,P.lab);if(cands.length)via='name'}
-    }catch(e){err=e}
-    $('#vf').classList.remove('reading');if(cands.length){$('#vf').classList.add('locked');shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}}
-    st.found={kind:'label',parse:P,cands,err,via};renderFound();openSheet('found');setTimeout(resetScan,400);
+    await finishLabel(P,gen);
   }catch(e){stopReal();toast(e.message||'Something went wrong reading the label.')}
+}
+async function finishLabel(P,gen){
+  setPrompt('Looking it up…');$('#guide').textContent=[P.lab,P.cats[0]||P.names.slice(0,2).join(' · ')].filter(Boolean).join(' · ');
+  let cands=[],err=null,via='';
+  try{
+    if(P.cats.length){cands=await mbByCat(P.cats,P.lab);if(cands.length)via='cat'}
+    if(!cands.length&&P.names.length){cands=await mbByNames(P.names,P.lab);if(cands.length)via='name'}
+  }catch(e){err=e}
+  if(st.scanGen!==gen)return;
+  $('#vf').classList.remove('reading');if(cands.length){$('#vf').classList.add('locked');shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}}
+  st.found={kind:'label',parse:P,cands,err,via};renderFound();openSheet('found');setTimeout(resetScan,400);
+}
+/* hands-free: watch the circle, and when the picture has settled try to read it; fire as soon as a label is clearly there */
+const labelGood=P=>P.cats.some(k=>/[A-Z]/.test(k)&&/\d{3,}/.test(k)&&k.length>=6)||(P.lab&&P.names.length>0);
+async function startLabelAuto(){
+  if(st.scanning||!camStream)return;
+  st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');
+  setPrompt('Fill the circle with the label.');$('#guide').textContent='It reads on its own. Hold steady.';
+  const gen=st.scanGen=(st.scanGen||0)+1,t0=Date.now(),v=$('#liveVid'),sm=document.createElement('canvas'),sx=sm.getContext('2d',{willReadFrequently:true});sm.width=sm.height=40;
+  const sample=()=>{const d=Math.min(v.videoWidth,v.videoHeight);sx.drawImage(v,(v.videoWidth-d)/2,(v.videoHeight-d)/2,d,d,0,0,40,40);const px=sx.getImageData(0,0,40,40).data,g=new Uint8Array(1600);for(let i=0;i<1600;i++)g[i]=(px[i*4]*.3+px[i*4+1]*.59+px[i*4+2]*.11)|0;return g};
+  const diff=(a,b)=>{let t=0;for(let i=0;i<a.length;i++)t+=Math.abs(a[i]-b[i]);return t/a.length};
+  try{
+    await camHi(true);if(st.scanGen!==gen)return;
+    let prev=null,still=0,last=0;
+    while(st.scanGen===gen){
+      if(Date.now()-t0>45000){st.autoOff=true;stopReal();setPrompt('Tap the shutter to read the label.');$('#guide').textContent='Closer, flat, less glare';return}
+      if(!v.videoWidth){await sleepMs(300);continue}
+      const g=sample(),moved=prev?diff(g,prev):99;prev=g;still=moved<8?still+1:0;
+      if(still<2||Date.now()-last<(ID_NATIVE()?1200:2500)){await sleepMs(280);continue}
+      last=Date.now();still=0;$('#guide').textContent='Reading…';
+      const d=Math.min(v.videoWidth,v.videoHeight),side=d*.7,k=Math.min(2,1400/side),c=document.createElement('canvas');c.width=c.height=Math.round(side*k);
+      const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(v,(v.videoWidth-side)/2,(v.videoHeight-side)/2,side,side,0,0,c.width,c.height);
+      const P=await readLabel([c],gen,true);if(st.scanGen!==gen)return;
+      if(P&&labelGood(P)){await finishLabel(P,gen);return}
+      $('#guide').textContent='Fill the circle with the label';
+    }
+  }catch(e){st.autoOff=true;stopReal();toast('Couldn’t read the label automatically. Tap the shutter to try.')}
 }
 async function startDeadwaxScan(){
   if(st.scanning)return;st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');
@@ -3536,7 +3597,7 @@ async function ensureCredits(r,force){
   CRED_BUSY.add(r.id);
   try{
     const mb=await mbResolve(r);
-    if(mb){const j=await mbGet('release/'+mb+'?inc='+MB_INC);if(j){r.mbc=mbCredits(j);r.tracks=r.mbc.tracks.map(t=>t.t);r.cred=r.mbc.crew.map(c=>c[0]);if(!r.ctry&&r.mbc.ctry)r.ctry=r.mbc.ctry;if(!r.cat&&r.mbc.cat)r.cat=r.mbc.cat;if(!r.lab&&r.mbc.lab)r.lab=r.mbc.lab;if(!r.y&&r.mbc.date)r.y=+r.mbc.date.slice(0,4)||0;if(!r.cover&&r.mb)r.cover='https://coverartarchive.org/release/'+r.mb+'/front-250'}}
+    if(mb){const j=await mbGet('release/'+mb+'?inc='+MB_INC);if(j){r.mbc=mbCredits(j);r.tracks=r.mbc.tracks.map(t=>t.t);r.cred=r.mbc.crew.map(c=>c[0]);if(!r.ctry&&r.mbc.ctry)r.ctry=r.mbc.ctry;if(!r.cat&&r.mbc.cat)r.cat=r.mbc.cat;if(!r.lab&&r.mbc.lab)r.lab=r.mbc.lab;if(!r.y&&r.mbc.date)r.y=+r.mbc.date.slice(0,4)||0;if(!r.rg&&r.mbc.rg)r.rg=r.mbc.rg;if(!r.cover&&r.mb)r.cover='https://coverartarchive.org/release/'+r.mb+'/front-250';if(r.rg&&r.cover&&COV.bad.has(r.cover)&&!/release-group/.test(r.cover))r.cover='https://coverartarchive.org/release-group/'+r.rg+'/front-250'}}
     r.mbcTried=Date.now();saveReal();saveState();
     if(st.screen==='reveal'&&st.rec===r.id){fillReport(r,st.cameFromScan?st.mode:realModeOf(r));$$('.rep .blk:not([hidden])').forEach(b=>{if(!b.classList.contains('in'))ios&&ios.observe(b)})}
   }catch(e){r.mbcTried=Date.now()-864e5+6e4;r.mbcErr=e.message;creditsNote(r)}
@@ -4046,7 +4107,7 @@ document.addEventListener('click',e=>{
     else if(k==='export')exportCSV();
     else if(k==='batchview'){closeSheets();st.queue=[];updatePills();go('collection')}
     else if(k==='panic'){st.shelves.forEach(x=>x.v=0);if(st.spin)st.spin.v=0;closeSheets();renderCollection();toast('Sharing paused. Every shelf is Just me and share links are off. Turn sharing back on shelf by shelf.')}
-    else if(k==='sync'||k==='big'||k==='motion'||k==='loc'){prefs[k]=!prefs[k];applyPrefs();savePrefs();renderSettings();if(k==='sync')toast(prefs.sync?'Discogs sync on. Changes flow both ways.':'Discogs sync off.');if(k==='loc')toast(prefs.loc?'We’ll remember where and when you scan, for you only.':'We keep the date only.')}
+    else if(k==='sync'||k==='big'||k==='motion'||k==='loc'||k==='auto'){prefs[k]=!prefs[k];applyPrefs();savePrefs();renderSettings();if(k==='sync')toast(prefs.sync?'Discogs sync on. Changes flow both ways.':'Discogs sync off.');if(k==='loc')toast(prefs.loc?'We’ll remember where and when you scan, for you only.':'We keep the date only.')}
     return;
   }
   if(t.closest('.shelf')&&t.dataset.v!==undefined){const s=st.shelves.find(x=>x.id===+t.closest('.shelf').dataset.sid);s.v=+t.dataset.v;renderCollection();toast(`${s.n}: ${VNAME[s.v]}. ${VNOTE[s.v]}`);return}
@@ -4126,7 +4187,7 @@ async function loadPhotos(){try{for(const [id,ks] of Object.entries(st.photoKeys
 async function photoCount(){let n=0;Object.values(st.photoKeys||{}).forEach(a=>n+=a.length);return n}
 /* preferences */
 function loadPrefs(){try{Object.assign(prefs,JSON.parse(localStorage.getItem(PREF_KEY)||'{}'))}catch(e){}}
-function savePrefs(){try{localStorage.setItem(PREF_KEY,JSON.stringify({big:prefs.big,motion:prefs.motion,loc:prefs.loc}))}catch(e){}}
+function savePrefs(){try{localStorage.setItem(PREF_KEY,JSON.stringify({big:prefs.big,motion:prefs.motion,loc:prefs.loc,auto:prefs.auto}))}catch(e){}}
 
 /* ---- backup file ---- */
 const stamp=()=>new Date().toISOString().slice(0,10);
