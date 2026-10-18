@@ -790,7 +790,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .vf .live{position:absolute;display:none;object-fit:cover;background:#000;z-index:0}
 .vf.live .live{display:block}
 .vf.live .view{visibility:hidden}
-.vf[data-m=deadwax] .live{left:0;top:0;width:100%;height:100%;border-radius:50%}
+.vf[data-m=deadwax] .live,.vf[data-m=label] .live{left:0;top:0;width:100%;height:100%;border-radius:50%}
 .vf[data-m=cover] .live{left:50%;top:50%;width:210px;height:210px;margin:-105px 0 0 -105px}
 .vf[data-m=barcode] .live{left:50%;top:50%;width:250px;height:124px;margin:-62px 0 0 -125px}
 .vf.live.reading .live{animation:livepulse .9s ease-in-out infinite alternate}
@@ -859,6 +859,21 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .labrow{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-top:1.5px solid rgba(84,11,14,.2)}.labrow span{flex:1;font-size:14px}.labrow b{font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:24px}.labrow em{font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.04em;opacity:.7;max-width:46%;text-align:right}
 .labrow.ok b{color:#2c6b3c}.labrow.bad b{color:var(--red)}
 .labbusy{margin:14px 0;padding:18px;background:var(--ox);color:var(--cream);text-align:center}.labbusy b{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:22px}.labbusy span{font-family:var(--mono);font-size:11px;opacity:.75}
+
+/* select mode, remove, and the are-you-sure sheet */
+.ck{display:none;position:absolute;right:6px;top:6px;width:24px;height:24px;border-radius:50%;border:2px solid var(--cream);background:rgba(27,3,5,.55);z-index:4;color:var(--ox);font-size:14px;font-weight:900;line-height:20px;text-align:center;pointer-events:none}
+.selmode .ck{display:block}.selmode .plus{display:none}
+.sel>.ck{background:var(--gold);border-color:var(--gold)}.sel>.ck::after{content:"\2713"}
+.tile.sel{outline:3px solid var(--gold);outline-offset:-3px}
+.lrow{position:relative}.lrow .ck{position:static;flex:none}.lrow.sel{background:rgba(224,168,58,.12)}
+.selbar{position:absolute;left:30px;right:30px;bottom:20px;height:66px;z-index:45;display:flex;align-items:center;gap:8px;padding:8px 8px 8px 22px;border-radius:999px;background:rgba(42,5,8,.97);border:1.5px solid rgba(255,243,176,.3);color:var(--cream);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.selbar[hidden]{display:none}.selbar span{flex:1}
+.selbar button{height:48px;padding:0 18px;border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;transition:transform 160ms ease-out}
+.selbar button:active{transform:scale(.97)}
+.selrm{background:var(--red);color:var(--cream)}.selx{color:var(--cream);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.35)}
+.sheet .go.danger{background:var(--red)}
+.ghost.rmrec{margin:18px auto 110px;width:auto;color:var(--cream);opacity:.75}
+.want .wrm{align-self:center;flex:none;width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.4);color:var(--cream);font-size:16px;line-height:28px;text-align:center}
 </style>
 </head>
 <body>
@@ -1017,6 +1032,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
             <p class="fine">Sample citations. In the real product every claim carries one, and anything unverified is labeled.</p>
             <div class="btnrow"><button class="chipbtn dark press" data-set="about">About our data</button><button class="chipbtn dark press" data-toast="Sent to the unidentified queue. If someone fixes it, we’ll tell you and credit them.">This looks wrong</button></div>
           </article>
+          <button class="ghost rmrec" id="repRemove" data-rmrec="1" hidden>Remove from my collection</button>
           <p class="disc-note">Prototype · sample content for design only</p>
         </div>
       </div>
@@ -1041,7 +1057,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
           <div id="nudge"></div>
           <input class="search" id="search" type="search" placeholder="Search credits, labels, matrix, memories" aria-label="Search your collection" autocomplete="off">
           <div class="chips" id="chips"></div>
-          <div class="ctrl"><button class="sortb" id="sortBtn"></button>
+          <div class="ctrl"><button class="sortb" id="sortBtn"></button><button class="sortb" id="selBtn">Select</button>
             <div class="seg" id="viewSeg" style="--i:0;--n:2" role="group" aria-label="Layout"><i class="thumb"></i><button aria-pressed="true" data-v="grid">Grid</button><button aria-pressed="false" data-v="list">List</button></div></div>
           <div class="legend"><span><i class="c"></i>Confirmed</span><span><i class="l"></i>Likely</span><span><i></i>Album only</span><button class="legq" data-confhelp="1" aria-label="What do Confirmed, Likely and Album only mean?">?</button></div>
           <div class="rgrid" id="rgrid"></div>
@@ -1068,6 +1084,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       </div>
     </section>
 
+    <div class="selbar" id="selBar" hidden><span id="selN">0 selected</span><button class="selrm" data-selrm="1">Remove</button><button class="selx" data-selcancel="1">Cancel</button></div>
     <nav class="dock hidden" id="dock" style="--i:0" aria-label="Main">
       <i class="ind"></i>
       <button class="tab" data-go="scan" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.6"/></svg>Scan</button>
@@ -1196,6 +1213,13 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <div class="seg sheetseg" id="listenSeg" style="--i:0;--n:2" role="group" aria-label="Music service"><i class="thumb"></i><button aria-pressed="true" data-ls="sp">Spotify</button><button aria-pressed="false" data-ls="am">Apple Music</button></div>
       <div id="listenBody"></div>
       <p class="fine2">These are Spotify’s and Apple Music’s own players, shown unmodified. Memory Wax never plays or stores audio.</p>
+    </div>
+
+    <div class="sheet" id="sheet-sure" role="alertdialog" aria-label="Are you sure?">
+      <h4 class="disp" id="sureT">Are you sure?</h4>
+      <p class="sub" id="sureB"></p>
+      <button class="go press danger" id="sureY" data-sureyes="1">Delete</button>
+      <button class="ghost" data-sureno="1">Keep it</button>
     </div>
 
     <div class="sheet" id="sheet-shedit" role="dialog" aria-label="Edit shelf">
@@ -1557,7 +1581,7 @@ function initState(empty){
     battle:{i:0,pick:null,voted:{},why:{}},listen:{svc:'sp',conn:{sp:false,am:false},track:0,playing:false,q:[],qi:0,src:null,shuffle:false,pct:0},playlists:empty?[]:[{id:1,n:'Sunday Spiritual Jazz',note:'For slow coffee and no phone.',vis:1,items:[{rec:2,track:0},{rec:7,track:1},{rec:11,track:0}],saved:{sp:false,am:false}}],plDraft:null,nextPl:2,account:!empty,segOpen:new Set(),card:{i:0,q:0,t:0},follow:new Set(),spin:null,fr:empty?{req:[],list:[]}:{req:['Dre Okafor'],list:['Marisol Vega']}};
 }
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
-const BUILD='0.12 · real credits';
+const BUILD='0.13 · label reader, remove and select';
 const DEMO=(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
 initState(!DEMO);
 
@@ -1594,18 +1618,22 @@ let camStream=null;
 async function camOn(){
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('none');
-    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});camIsHi=false;
     const v=$('#liveVid');v.srcObject=camStream;try{await v.play()}catch(e){}
     $('#vf').classList.add('live');st.camPref=true;return true;
   }catch(e){camOff();toast('The camera isn’t available here, so the illustration stays.');return false}
 }
-function camOff(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}const v=$('#liveVid');if(v)v.srcObject=null;$('#vf')&&$('#vf').classList.remove('live')}
+let camIsHi=false;
+/* small print needs pixels: ask the camera for its largest size for the moment of capture, then go back to the light preview */
+async function camHi(on){const t=camStream&&camStream.getVideoTracks()[0];if(!t||!t.applyConstraints||camIsHi===on)return;try{await t.applyConstraints(on?{width:{ideal:3840},height:{ideal:2160}}:{width:{ideal:1920},height:{ideal:1080}});camIsHi=on}catch(e){return}if(on){try{await t.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}await sleepMs(450)}}
+function camOff(){camIsHi=false;if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}const v=$('#liveVid');if(v)v.srcObject=null;$('#vf')&&$('#vf').classList.remove('live')}
 window.addEventListener('pagehide',camOff);
 function go(name){
   const from=st.screen;st.screen=name;
   if(name!=='scan'&&name!=='reveal')camOff();
   if(name==='scan'&&st.camPref&&!camStream)camOn();
   if(name==='reveal'){st.cameFromScan=(from==='scan');if(from==='scan'&&!st.keepRec)st.rec=1;st.keepRec=false}
+  if(name!=='collection'){st.sel=null;const sb=$('#selBar');if(sb)sb.hidden=true}
   closeSheets();clearTimeout(leaveTimer);
   const el=$('[data-screen="'+name+'"]');
   $$('.screen').forEach(s=>{if(s!==el&&!(from==='scan'&&name==='reveal'&&s.dataset.screen==='scan'))s.classList.remove('active')});
@@ -1650,7 +1678,7 @@ $$('#modes button').forEach(b=>b.addEventListener('click',()=>{if(!st.scanning)s
 if(!DEMO){$('#modes [data-mode=cover]').hidden=true;setScanMode('barcode');$$('.v-rec svg text:not(.ring-text)').forEach(t=>t.textContent='')}
 function resetScan(){
   const S=SCAN[st.scanMode];
-  st.scanning=false;$('#shutter').disabled=false;$('#shutter').setAttribute('aria-label',S.aria);
+  camHi(false);st.scanning=false;$('#shutter').disabled=false;$('#shutter').setAttribute('aria-label',S.aria);
   $('#vf').classList.remove('reading','locked');
   setPrompt(S.prompt);$('#guide').textContent=S.guide;$('#lab1').textContent=S.lab;
   $('#mx').textContent='· · ·';$('#ringtxt').textContent='· · · · · · · · · · · · · ·';setConf(0);updatePills();
@@ -1884,7 +1912,7 @@ function fillReport(r,mode){
   $('#repStory').innerHTML=(R.story||'')+'<sup><a href="#s1">1</a></sup>';
   $('#repBattle').hidden=true;
   fillCopy(r.id);fillPlan(r.id);fillAvail(r.id);
-  tidyReport(r,R);if(r.real)realReport(r,mode);creditsNote(r);
+  tidyReport(r,R);if(r.real)realReport(r,mode);creditsNote(r);{const rb=$('#repRemove');if(rb)rb.hidden=!st.owned.has(r.id)}
 }
 /* A real (scanned) record has only what the lookup returned. Hide the sections that would otherwise show sample text, and renumber the rest. */
 function tidyReport(r,R){
@@ -1967,7 +1995,8 @@ const stLabel={confirmed:'Confirmed',likely:'Likely',album:'Album only'};
 const cov=r=>r.cover?r.cover:r.hero?coverURL:((r.id>=2&&r.id<=12)||r.id===21||r.id===15?`assets/covers/${r.id}.jpg`:null);
 function tileHTML(r){
   const c=cov(r),img=c?` has-img" style="background-image:url('${c}')`:'';
-  return `<div class="tile m${r.m}${img}"><button class="tile-main" data-open="${r.id}" aria-label="${r.t}, ${r.a}"><span class="tt">${r.t}</span></button><i class="st ${r.c}" title="${stLabel[r.c]}"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`;
+  const on=st.sel&&st.sel.has(r.id);
+  return `<div class="tile m${r.m}${img}${on?' sel':''}"><button class="tile-main" data-open="${r.id}" aria-label="${on?'Selected: ':''}${r.t}, ${r.a}"><span class="tt">${r.t}</span></button><i class="st ${r.c}" title="${stLabel[r.c]}"></i><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`;
 }
 /* search across credits, labels, matrix, year and your own memories. returns null (no match), '' (title/artist) or a reason */
 function match(r,q){
@@ -1976,6 +2005,28 @@ function match(r,q){
   for(const [k,v] of f)if(v&&v.toLowerCase().includes(q))return `matched ${k}: ${v}`;
   const c=(r.cred||[]).find(n=>n.toLowerCase().includes(q));
   return c?`matched credit: ${c}`:null;
+}
+/* "are you sure" before anything leaves a collection, a shelf, a playlist or the Dream Crate */
+function askSure(o){st.sure=o;$('#sureT').textContent=o.title;$('#sureB').textContent=o.body;$('#sureY').textContent=o.yes||'Delete';openSheet('sure')}
+const nameList=ns=>ns.length<=2?ns.map(n=>'“'+n+'”').join(' and '):'“'+ns[0]+'”, “'+ns[1]+'” and '+(ns.length-2)+' more';
+function removeRecords(ids){
+  ids.forEach(id=>{
+    st.owned.delete(id);
+    st.shelves.forEach(sh=>{sh.recs=sh.recs.filter(x=>x!==id)});
+    st.playlists=(st.playlists||[]).map(p=>({...p,items:(p.items||[]).filter(i=>i.rec!==id)}));
+    (st.sessions||[]).forEach(x=>{if(Array.isArray(x.recs))x.recs=x.recs.filter(r=>r!==id)});
+    delete st.copies[id];if(st.photos)delete st.photos[id];
+    const ks=((st.photoKeys||{})[id]||[]);while(ks.length)photoDrop(id,0);if(st.photoKeys)delete st.photoKeys[id];
+    if(st.spin&&st.spin.id===id)st.spin=null;if(st.dwCtx===id)st.dwCtx=null;if(st.justAdded===id)st.justAdded=null;
+    const i=RECS.findIndex(r=>r.id===id);if(i>=0&&RECS[i].real)RECS.splice(i,1);
+  });
+  saveReal();saveState();
+}
+const RM_BODY='It leaves your collection and every shelf it is on, along with your grade, notes, price and photos for it. A backup file you saved earlier still has it. This can’t be undone.';
+function askRemoveRecords(ids){
+  const rs=ids.map(id=>RECS.find(r=>r.id===id)).filter(Boolean),n=rs.length;if(!n)return;
+  askSure({title:n===1?'Remove this record?':`Remove ${n} records?`,body:(n===1?`“${rs[0].t}” by ${rs[0].a}. `:nameList(rs.map(r=>r.t))+'. ')+(n===1?RM_BODY:RM_BODY.replace('It leaves','They leave').replace('it is on','they are on').replace('for it','for them').replace('still has it','still has them')),yes:n===1?'Remove record':`Remove ${n} records`,
+    go:()=>{const wasReveal=st.screen==='reveal';removeRecords(rs.map(r=>r.id));st.sel=null;if(wasReveal)go('collection');else renderCollection();toast(n===1?`Removed “${rs[0].t}” from your collection.`:`Removed ${n} records from your collection.`)}});
 }
 function renderCollection(){
   const all=own(),conf=all.filter(r=>r.c==='confirmed').length,empty=!all.length;
@@ -1986,10 +2037,13 @@ function renderCollection(){
   const q=st.q.trim().toLowerCase();
   let items=all.map(r=>({r,why:q?match(r,q):''})).filter(x=>x.why!==null&&(st.filter==='All'||x.r.g===st.filter)&&(!st.confOnly||x.r.c==='confirmed'));
   items.sort(st.sort==='az'?(a,b)=>a.r.t.localeCompare(b.r.t):st.sort==='year'?(a,b)=>a.r.y-b.r.y:(a,b)=>b.r.ord-a.r.ord);
-  $('#sortBtn').textContent=`${items.length} shown · Sort: ${SORTS[st.sort]}`;
-  const asList=st.view==='list'||!!q,g=$('#rgrid');g.className=asList?'rlist':'rgrid';
+  $('#sortBtn').textContent=`${items.length} shown · ${SORTS[st.sort]}`;$('#sortBtn').setAttribute('aria-label','Change sort order. Now: '+SORTS[st.sort]);
+  if(st.colTab!==0||empty)st.sel=null;
+  $('#selBtn').textContent=st.sel?'Cancel':'Select';$('#selBtn').hidden=!all.length;
+  $('#selBar').hidden=!(st.sel&&st.screen==='collection');$('#selN').textContent=st.sel?`${st.sel.size} selected`:'';
+  const asList=st.view==='list'||!!q,g=$('#rgrid');g.className=(asList?'rlist':'rgrid')+(st.sel?' selmode':'');
   g.innerHTML=!items.length?'<p class="empty">Nothing matches. Try another word or filter.</p>':!asList?items.map(x=>tileHTML(x.r)).join(''):
-    items.map(({r,why})=>`<div class="lrow"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`).join('');
+    items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`).join('');
   const loose=all.filter(r=>r.c!=='confirmed').length;
   $('#nudge').innerHTML=(!st.account&&all.length?`<button class="nudge n2" data-acctopen="1"><div><b>Saved on this phone only</b><span>${DEMO?'Back it up with a free account.':'Download a backup file.'}</span></div><i>Back up</i></button>`:'')+(loose?`<button class="nudge" data-nudge="1"><div><b>${loose} could be confirmed</b><span>Scan their deadwax to name the exact pressing.</span></div><i>Scan</i></button>`:'');
   renderShelves();renderWants();
@@ -2009,7 +2063,7 @@ function renderShelves(){
     <p class="vnote">${VNOTE[s.v]}</p><div class="shbtns"><button class="sharebtn" data-share="${s.id}">Share</button><button class="sharebtn" data-segtog="${s.id}" aria-expanded="${st.segOpen.has(s.id)}">Who can see</button><button class="sharebtn" data-shedit="${s.id}">Edit</button><button class="sharebtn" data-shl="${s.id}">Listen</button><button class="sharebtn" data-shpl="${s.id}">Playlist</button></div></div>`}).join('')+`<div class="sethead">Playlists</div>${st.playlists.map(p=>`<button class="plcard press" data-plview="${p.id}"><div class="minis">${p.items.slice(0,3).map(it=>{const r=recOf(it.rec),c=cov(r);return `<i class="m${r.m}"${c?` style="background-image:url('${c}')"`:''}></i>`}).join('')}</div><div><b>${esc(p.n)}</b><span>${p.items.length} tracks · ${p.vis?'Anyone with the link':'Just me'}</span></div></button>`).join('')}<button class="ghost" data-plnew="1">New playlist</button>`;
 }
 function renderWants(){
-  $('#wants').innerHTML=!st.wants.length?'<p class="empty" style="padding-left:0">Nothing here yet. Tap Find a Copy on any record.</p>':st.wants.map((w,i)=>`<div class="want"><div class="tile m${w.m}"><span class="tt">${w.t}</span></div><div class="lt"><b>${w.t}</b><span>${w.a}</span><span style="opacity:.9">${w.note}</span><i class="tag2" style="font-style:normal">${w.list}</i></div><button class="sw" data-alert="${i}" aria-pressed="${w.alert}" aria-label="Alert me when a copy of ${w.t} is listed"></button></div>`).join('');
+  $('#wants').innerHTML=!st.wants.length?'<p class="empty" style="padding-left:0">Nothing here yet. Tap Find a Copy on any record.</p>':st.wants.map((w,i)=>`<div class="want"><div class="tile m${w.m}"><span class="tt">${w.t}</span></div><div class="lt"><b>${w.t}</b><span>${w.a}</span><span style="opacity:.9">${w.note}</span><i class="tag2" style="font-style:normal">${w.list}</i></div><button class="sw" data-alert="${i}" aria-pressed="${w.alert}" aria-label="Alert me when a copy of ${w.t} is listed"></button><button class="wrm" data-wrm="${i}" aria-label="Remove ${esc(w.t)} from your Dream Crate">×</button></div>`).join('');
 }
 function renderSettings(){$$('#sheet-settings .sw').forEach(b=>b.setAttribute('aria-pressed',String(!!prefs[b.dataset.set])))}
 function renderBatch(){
@@ -3105,41 +3159,75 @@ async function ocrFrame(cv,opt={}){
 }
 
 /* frames: from the live camera when it is on, otherwise one photo through the system camera / picker */
-function frameFromVideo(max=1280,square=false){const v=$('#liveVid');if(!v||!v.videoWidth)return null;let sx=0,sy=0,sw=v.videoWidth,sh=v.videoHeight;if(square){const d=Math.min(sw,sh);sx=(sw-d)/2;sy=(sh-d)/2;sw=sh=d}const s=Math.min(1,max/Math.max(sw,sh)),cv=document.createElement('canvas');cv.width=Math.round(sw*s);cv.height=Math.round(sh*s);cv.getContext('2d').drawImage(v,sx,sy,sw,sh,0,0,cv.width,cv.height);return cv}
+function frameFromVideo(max=1920,square=false){const v=$('#liveVid');if(!v||!v.videoWidth)return null;let sx=0,sy=0,sw=v.videoWidth,sh=v.videoHeight;if(square){const d=Math.min(sw,sh);sx=(sw-d)/2;sy=(sh-d)/2;sw=sh=d}const s=Math.min(1,max/Math.max(sw,sh)),cv=document.createElement('canvas');cv.width=Math.round(sw*s);cv.height=Math.round(sh*s);cv.getContext('2d').drawImage(v,sx,sy,sw,sh,0,0,cv.width,cv.height);return cv}
 function pickPhoto(){return new Promise(ok=>{let i=$('#idFile');if(!i){i=document.createElement('input');i.type='file';i.accept='image/*';i.setAttribute('capture','environment');i.id='idFile';i.style.display='none';document.body.appendChild(i)}i.value='';i.onchange=()=>ok(i.files&&i.files[0]||null);i.click()})}
 async function grabFrames(n,ms,onTick,square){
-  if(camStream){const out=[];for(let i=0;i<n;i++){const f=frameFromVideo(1280,square);if(f)out.push(f);onTick&&onTick(i+1,n);await sleepMs(ms/n)}return out}
+  if(camStream){const out=[];for(let i=0;i<n;i++){const f=frameFromVideo(1920,square);if(f)out.push(f);onTick&&onTick(i+1,n);await sleepMs(ms/n)}return out}
   const file=await pickPhoto();if(!file)return [];return [await fileToCanvas(file,1600)];
 }
 async function torch(on){try{const t=camStream&&camStream.getVideoTracks()[0];if(t&&t.getCapabilities&&t.getCapabilities().torch)await t.applyConstraints({advanced:[{torch:on}]})}catch(e){}}
 
 /* ---- center label: label name + catalog number → release family ---- */
-const LABELS=['Blue Note','Impulse','Columbia','Capitol','Atlantic','Atco','Prestige','Riverside','Verve','Motown','Tamla','Gordy','Stax','Volt','Fania','Tico','Alegre','Cotique','Vaya','Island','Factory','Warner Bros','Reprise','RCA Victor','Decca','Elektra','Asylum','A&M','Epic','Mercury','Philips','Polydor','Chess','Checker','Vee-Jay','King','Sun','Def Jam','Tommy Boy','Sugar Hill','Rawkus','Loud','Trax','Strictly Rhythm','Nervous','Salsoul','West End','Prelude','Casablanca','CTI','Kudu','Milestone','Contemporary','Pacific Jazz','Savoy','Roulette','ECM','Enja','Strata-East','Black Jazz','Flying Dutchman','ABC','Dunhill','Buddah','Parlophone','Apple','Harvest','EMI','Virgin','Rough Trade','4AD','Mute','Creation','Sub Pop','Matador','Merge','SST','Dischord','Alligator','Delmark','Folkways','Vanguard','Nonesuch','Deutsche Grammophon','London','Liberty','United Artists','Imperial','Specialty','Modern','Kent','Hi Records','Curtom','Brunswick','Philadelphia International','Bell','Scepter','Wand','Cameo','Parkway','Westbound','Invictus','Hot Wax','Rare Earth','Arista','Sire','Geffen','Interscope','Priority','Ruthless','Death Row','Jive','Cold Chillin','Wild Pitch','Profile','Stones Throw','Ninja Tune','Warp','Mo Wax','Talkin Loud','Acid Jazz','Dance Mania','Cajual','Relief','Nu Groove','Light in the Attic','Numero','Mobile Fidelity','Analogue Productions','Music On Vinyl','Rhino','Legacy','Craft','Verve By Request','Tone Poet','Classic Records','Speakers Corner','Pure Pleasure','Vinyl Me Please','Jazz Dispensary','Soul Jazz','Strut','BBE','Daptone','Colemine','Big Crown','Fat Possum','Drag City','Thrill Jockey','Kranky','Domino','XL Recordings','Ghostly','Hyperdub','Stones Throw','Fantasy','Pablo','Concord','Blue Thumb','Mainstream','Cadet','Argo','Chess','Bluesway','Impulse!','Motown','Seeco','Discos Fuentes','Sonodisc','Salsoul'];
+const LABELS=['RCA','MCA','CBS','Blue Note','Impulse','Columbia','Capitol','Atlantic','Atco','Prestige','Riverside','Verve','Motown','Tamla','Gordy','Stax','Volt','Fania','Tico','Alegre','Cotique','Vaya','Island','Factory','Warner Bros','Reprise','RCA Victor','Decca','Elektra','Asylum','A&M','Epic','Mercury','Philips','Polydor','Chess','Checker','Vee-Jay','King','Sun','Def Jam','Tommy Boy','Sugar Hill','Rawkus','Loud','Trax','Strictly Rhythm','Nervous','Salsoul','West End','Prelude','Casablanca','CTI','Kudu','Milestone','Contemporary','Pacific Jazz','Savoy','Roulette','ECM','Enja','Strata-East','Black Jazz','Flying Dutchman','ABC','Dunhill','Buddah','Parlophone','Apple','Harvest','EMI','Virgin','Rough Trade','4AD','Mute','Creation','Sub Pop','Matador','Merge','SST','Dischord','Alligator','Delmark','Folkways','Vanguard','Nonesuch','Deutsche Grammophon','London','Liberty','United Artists','Imperial','Specialty','Modern','Kent','Hi Records','Curtom','Brunswick','Philadelphia International','Bell','Scepter','Wand','Cameo','Parkway','Westbound','Invictus','Hot Wax','Rare Earth','Arista','Sire','Geffen','Interscope','Priority','Ruthless','Death Row','Jive','Cold Chillin','Wild Pitch','Profile','Stones Throw','Ninja Tune','Warp','Mo Wax','Talkin Loud','Acid Jazz','Dance Mania','Cajual','Relief','Nu Groove','Light in the Attic','Numero','Mobile Fidelity','Analogue Productions','Music On Vinyl','Rhino','Legacy','Craft','Verve By Request','Tone Poet','Classic Records','Speakers Corner','Pure Pleasure','Vinyl Me Please','Jazz Dispensary','Soul Jazz','Strut','BBE','Daptone','Colemine','Big Crown','Fat Possum','Drag City','Thrill Jockey','Kranky','Domino','XL Recordings','Ghostly','Hyperdub','Stones Throw','Fantasy','Pablo','Concord','Blue Thumb','Mainstream','Cadet','Argo','Chess','Bluesway','Impulse!','Motown','Seeco','Discos Fuentes','Sonodisc','Salsoul'];
 const LABKEY=[...new Set(LABELS)].map(n=>[n,fold(n)]).filter(([,k])=>k.length>=3);
-const CATRX=/^[A-Z]{1,5}[-\s]?\d{2,6}(?:[-\s]?[A-Z0-9]{1,3})?$/,NUMRX=/^\d{4,6}$/,NOISE=/^(STEREO|MONO|SIDE|LONG|PLAYING|RECORD|RECORDS|INC|LTD|RPM|MADE|IN|USA|U\.S\.A\.|ALL|RIGHTS|RESERVED|UNAUTHORIZED|HIGH|FIDELITY|PRINTED|MANUFACTURED|BY|THE|A|AN|OF|AND|LP|LPS)$/;
+const CATRX=/^[A-Z]{1,5}\d?[-\s]?\d{2,6}(?:[-\s]?[A-Z0-9]{1,3})?$/,NUMRX=/^\d{4,6}$/,NOISE=/^(STEREO|MONO|SIDE|LONG|PLAYING|RECORD|RECORDS|INC|LTD|RPM|MADE|IN|USA|U\.S\.A\.|ALL|RIGHTS|RESERVED|UNAUTHORIZED|HIGH|FIDELITY|PRINTED|MANUFACTURED|BY|THE|A|AN|OF|AND|LP|LPS)$/;
+/* a trailing side letter or number is not part of the catalog number: AQL1-3647-A is AQL1-3647 */
+const baseCat=k=>{const b=k.replace(/-([A-D]|[12])$/,'');return b!==k&&/\d/.test(b)&&(CATRX.test(b)||NUMRX.test(b))?b:k};
+/* digits that read as letters inside the number part (AQLI-36S7 is AQL1-3657) */
+const fixNum=k=>{const m=k.match(/^([A-Z]{1,5}\d?[-\s]?)([0-9OILSBZ]{3,7})(.*)$/);if(!m||(m[2].match(/\d/g)||[]).length<2)return k;return m[1]+m[2].replace(/[OIL]/g,c=>c==='O'?'0':'1').replace(/S/g,'5').replace(/B/g,'8').replace(/Z/g,'2')+m[3]};
+const JUNK=/\b(RECORDS?|MANUFACTURED|TRADEMARKS?|PRODUCED|PRODUCER|COPYRIGHT|WRITTEN|ARRANGED|DISTRIBUTED|CORP|CORPORATION|INC|LTD|STEREO|MONO|STEREOPHONIC|SIDE|RPM|LONG|PLAYING|UNAUTHORIZED|RESERVED|RIGHTS|MARCA|REGISTRADA|BMI|ASCAP|PRINTED|SOUNDTRACK|DIGITAL|ANALOG|FIDELITY|MADE|VICTOR|ORTHOPHONIC|HIGH|PUBLISHING|MUSIC|ENTERTAINMENT|ARTISTS)\b/;
+/* the biggest print on the label that is words, not codes: artist and title. Size is area per character, so line length doesn't matter and neither does the tilt. */
+function nameLines(lines,lab){
+  const seen=new Map();
+  lines.forEach(l=>{
+    const raw=(l.text||'').replace(/[^A-Za-z0-9&'’.,! \-]/g,' ').replace(/\s+/g,' ').trim();
+    if(raw.length<4||raw.split(' ').length>7||/\d{1,2}[:.]\d{2}/.test(l.text||''))return;
+    const letters=(raw.match(/[A-Za-z]/g)||[]).length;if(letters/raw.replace(/ /g,'').length<.85)return;
+    const c=canon(raw);if(JUNK.test(c)||/\d:\d\d/.test(raw)||CATRX.test(c.replace(/\s+/g,'-')))return;
+    const f=fold(raw);if(LABKEY.some(([,k])=>k===f)||(lab&&f===fold(lab)))return;
+    const a=l.box?(l.box.w*l.box.h)/raw.length:1e-6;
+    const p=seen.get(f);if(!p||p.a<a)seen.set(f,{t:raw,a})
+  });
+  return [...seen.values()].sort((x,y)=>y.a-x.a).slice(0,4).map(x=>x.t);
+}
 function parseLabel(lines){
   const toks=[],raw=[];
   lines.forEach(l=>{const c=canon(l.text);if(!c)return;raw.push(c);c.split(' ').forEach(t=>toks.push({t,conf:l.conf||0}))});
-  const cats=new Map(),add=(s,c)=>{s=s.replace(/\s+/g,' ').replace(/[\.]+$/,'');if(NOISE.test(s))return;if(CATRX.test(s)||NUMRX.test(s)){const k=s.replace(/\s/g,'-');cats.set(k,Math.max(cats.get(k)||0,c))}};
-  toks.forEach((x,i)=>{add(x.t,x.conf);if(i+1<toks.length&&/^[A-Z]{1,5}$/.test(x.t)&&/^\d{2,6}/.test(toks[i+1].t))add(x.t+' '+toks[i+1].t,(x.conf+toks[i+1].conf)/2)});
+  const cats=new Map(),put=(k,c)=>cats.set(k,Math.max(cats.get(k)||0,c));
+  const add=(s,c)=>{s=s.replace(/\s+/g,' ').replace(/[\.]+$/,'');if(NOISE.test(s))return;if(CATRX.test(s)||NUMRX.test(s)){const k=s.replace(/\s/g,'-'),b=baseCat(k);put(b,c+(b!==k?.3:0));if(b!==k)put(k,c-.2);const f=fixNum(b);if(f!==b)put(f,c-.15);const q=b.replace(/^([A-Z]{2,4})I(-|\d)/,'$11$2');if(q!==b)put(q,c-.25)}};
+  toks.forEach((x,i)=>{add(x.t,x.conf);if(i+1<toks.length&&/^[A-Z]{1,5}\d?$/.test(x.t)&&/^\d{2,6}/.test(toks[i+1].t))add(x.t+' '+toks[i+1].t,(x.conf+toks[i+1].conf)/2)});
   const joined=fold(raw.join(' '));let lab=null,ls=0;
   LABKEY.forEach(([n,k])=>{if(joined.includes(k)&&k.length>ls){lab=n;ls=k.length}});
   const side=(raw.join(' ').match(/\bSIDE\s*([AB12])\b/)||[])[1]||null;
   const list=[...cats.entries()].filter(([k])=>!/^(19|20)\d{2}$/.test(k)&&!/^33|^45$/.test(k)).map(([k,c])=>({k,sc:c+(/[A-Z]/.test(k)&&/\d/.test(k)?.5:0)+(k.length>=5?.2:0)})).sort((a,b)=>b.sc-a.sc);
-  return {lab,side,cats:list.map(x=>x.k).slice(0,4),raw};
+  return {lab,side,cats:list.map(x=>x.k).slice(0,4),raw,names:nameLines(lines,lab)};
 }
 
 /* MusicBrainz release search by catalog number (matched regardless of case, spaces or separators) */
-async function mbQ(q){const r=await fetch('https://musicbrainz.org/ws/2/release/?query='+encodeURIComponent(q)+'&fmt=json&limit=25');if(!r.ok)throw new Error(r.status===503?'MusicBrainz is busy. Try again in a few seconds.':'The lookup service returned an error ('+r.status+').');return (await r.json()).releases||[]}
+async function mbQ(q){const j=await mbGet('release/?query='+encodeURIComponent(q)+'&limit=25');return (j||{}).releases||[]}
 function mbRel(x){const li=(x['label-info']||[])[0]||{},vinyl=(x.media||[]).some(m=>/vinyl|lp|12"|7"|10"/i.test(m.format||''));return {mbid:x.id,t:x.title,a:(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join('')||'',y:+String(x.date||'').slice(0,4)||0,lab:(li.label||{}).name||'',cat:li['catalog-number']||'',ctry:x.country||'',fmt:[...new Set((x.media||[]).map(m=>m.format).filter(Boolean))].join(', '),dis:x.disambiguation||'',pack:x.packaging||'',vinyl,score:x.score||0,n:1}}
 async function mbByCat(cats,lab){
   const out=new Map();let i=0;
   for(const c of cats.slice(0,3)){
-    if(i++)await sleepMs(1100);
     const cq='catno:"'+c.replace(/"/g,'')+'"';let rels=await mbQ(lab?cq+' AND label:"'+lab.replace(/"/g,'')+'"':cq);
-    if(!rels.length&&lab){await sleepMs(1100);rels=await mbQ(cq)}
+    if(!rels.length&&lab)rels=await mbQ(cq)
     rels.forEach(x=>{const r=mbRel(x);r.q=c;r.rank=(r.vinyl?2:0)+(lab&&fold(r.lab).includes(fold(lab))?2:0)+(fold(r.cat)===fold(c)?2:.5)+r.score/100;const p=out.get(r.mbid);if(!p||p.rank<r.rank)out.set(r.mbid,r)});
     if(out.size>=6)break;
+  }
+  return [...out.values()].sort((a,b)=>b.rank-a.rank).slice(0,6);
+}
+
+/* artist and title read off the label: fuzzy words, either way round, then the biggest line alone */
+const fz=t=>'('+t.replace(/[^A-Za-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>=2).map(w=>w.length>=5?w+'~1':w).join(' AND ')+')';
+async function mbByNames(names,lab){
+  const n=names.slice(0,3),qs=[];
+  for(const [i,j] of [[0,1],[0,2],[1,2]])if(n[i]&&n[j])qs.push(`(artist:${fz(n[i])} AND release:${fz(n[j])}) OR (artist:${fz(n[j])} AND release:${fz(n[i])})`);
+  if(n[0])qs.push(`release:${fz(n[0])} OR artist:${fz(n[0])}`);
+  const out=new Map();
+  for(const q of qs.slice(0,3)){
+    const rels=await mbQ(q);
+    rels.forEach(x=>{const r=mbRel(x);r.via='name';r.rank=(r.vinyl?2:0)+(/12"|LP/i.test(r.fmt)?1:0)+(lab&&fold(r.lab).includes(fold(lab))?2:0)+r.score/100;const p=out.get(r.mbid);if(!p||p.rank<r.rank)out.set(r.mbid,r)});
+    if([...out.values()].filter(r=>r.score>=70).length>=3)break;
   }
   return [...out.values()].sort((a,b)=>b.rank-a.rank).slice(0,6);
 }
@@ -3226,19 +3314,43 @@ function addRel(hit,ev){
   const r=recOf(id);if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
   saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
 }
+/* the label, cut out of the middle of the frame and enlarged: a tight crop first (label fills it), then the whole circle */
+function rotCanvas(cv,deg){const q=Math.abs(deg)%180===90,c=document.createElement('canvas');c.width=q?cv.height:cv.width;c.height=q?cv.width:cv.height;const x=c.getContext('2d');x.translate(c.width/2,c.height/2);x.rotate(deg*Math.PI/180);x.drawImage(cv,-cv.width/2,-cv.height/2);return c}
+async function labelCanvases(){
+  let src,sw,sh;
+  if(camStream){const v=$('#liveVid');if(!v||!v.videoWidth)return [];src=v;sw=v.videoWidth;sh=v.videoHeight}
+  else{const file=await pickPhoto();if(!file)return [];src=await fileToCanvas(file,2400);sw=src.width;sh=src.height}
+  const d=Math.min(sw,sh),make=(frac,max)=>{const side=d*frac,k=Math.min(2,max/side),cv=document.createElement('canvas');cv.width=cv.height=Math.round(side*k);const x=cv.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(src,(sw-side)/2,(sh-side)/2,side,side,0,0,cv.width,cv.height);return cv};
+  return [make(.62,1600),make(1,1600)];
+}
+/* Apple's reader finds text at any angle; the browser's reader needs the label turned. Stop as soon as a convincing catalog number turns up. */
+async function readLabel(cvs,gen){
+  const native=ID_NATIVE();let lines=[],P=null,first=true;
+  for(const cv of cvs)for(const a of native?[0]:[0,90,270]){
+    let ls=[];try{ls=await ocrFrame(a?rotCanvas(cv,a):cv,{minHeight:.01})}catch(e){if(first)throw e}
+    first=false;lines=lines.concat(ls.filter(l=>(l.conf||0)>=.25));
+    if(st.scanGen!==gen)return parseLabel(lines);
+    P=parseLabel(lines);if(P.cats.some(k=>/[A-Z]/.test(k)&&/\d{3,}/.test(k)&&k.length>=6))return P;
+  }
+  return P||parseLabel(lines);
+}
 async function startLabelScan(){
   if(st.scanning)return;st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');
   setPrompt('Reading the label…');$('#guide').textContent=camStream?'Hold still, fill the circle':'Photograph the center label';
   const gen=st.scanGen=(st.scanGen||0)+1;
   try{
-    const frames=await grabFrames(camStream?2:1,700,null,true);if(st.scanGen!==gen)return;if(!frames.length){stopReal();return}
-    let lines=[];for(const f of frames)lines=lines.concat(await ocrFrame(f,{minHeight:.015}));
-    const P=parseLabel(lines);
-    if(!P.cats.length){stopReal();setPrompt('No catalog number yet.');$('#guide').textContent='Closer, less glare';st.found={kind:'label',parse:P,cands:[],err:null};renderFound();openSheet('found');return}
-    setPrompt('Looking it up…');$('#guide').textContent=[P.lab,P.cats[0]].filter(Boolean).join(' · ');
-    let cands=[],err=null;try{cands=await mbByCat(P.cats,P.lab)}catch(e){err=e}
+    await camHi(true);
+    const cvs=await labelCanvases();if(st.scanGen!==gen)return;if(!cvs.length){stopReal();return}
+    const P=await readLabel(cvs,gen);if(st.scanGen!==gen)return;
+    if(!P.cats.length&&!P.names.length){stopReal();setPrompt('Couldn’t read the label.');$('#guide').textContent='Fill the circle, less glare';st.found={kind:'label',parse:P,cands:[],err:null};renderFound();openSheet('found');return}
+    setPrompt('Looking it up…');$('#guide').textContent=[P.lab,P.cats[0]||P.names.slice(0,2).join(' · ')].filter(Boolean).join(' · ');
+    let cands=[],err=null,via='';
+    try{
+      if(P.cats.length){cands=await mbByCat(P.cats,P.lab);if(cands.length)via='cat'}
+      if(!cands.length&&P.names.length){cands=await mbByNames(P.names,P.lab);if(cands.length)via='name'}
+    }catch(e){err=e}
     $('#vf').classList.remove('reading');if(cands.length){$('#vf').classList.add('locked');shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}}
-    st.found={kind:'label',parse:P,cands,err};renderFound();openSheet('found');setTimeout(resetScan,400);
+    st.found={kind:'label',parse:P,cands,err,via};renderFound();openSheet('found');setTimeout(resetScan,400);
   }catch(e){stopReal();toast(e.message||'Something went wrong reading the label.')}
 }
 async function startDeadwaxScan(){
@@ -3247,7 +3359,7 @@ async function startDeadwaxScan(){
   setPrompt(live?'Cool light, low angle. Tilt slowly.':'Photograph the runout.');$('#guide').textContent=live?'Keep the label out of the box':'Lamp low and to the side, label out of frame';
   const gen=st.scanGen=(st.scanGen||0)+1;
   try{
-    await torch(true);
+    await camHi(true);await torch(true);
     const frames=await grabFrames(live?6:1,3600,(i,n)=>{$('#guide').textContent=`Capturing ${i} of ${n}…`},true);
     await torch(false);if(st.scanGen!==gen)return;if(!frames.length){stopReal();return}
     /* known runouts for the candidate pressings become word hints for the reader */
@@ -3276,14 +3388,14 @@ function candRow(c,i){const meta=[c.y||'',[c.lab,c.cat].filter(Boolean).join(' '
 function renderFoundX(){
   const F=st.found,B=$('#foundBody');
   if(F.kind==='label'){
-    const P=F.parse,readLine=[P.lab,P.cats[0]].filter(Boolean).join(' · ');
-    if(!F.cands.length){B.innerHTML=`<h4 class="disp" style="font-size:36px">${F.err?'Couldn’t look it up':P.cats.length?'No match yet':'Couldn’t read a number'}</h4>
-      <p class="sub">${F.err?esc(F.err.message):P.cats.length?'Read <span class="fcode">'+esc(readLine)+'</span>, but nothing in the public database has that catalog number.':'The center label usually carries the label name and a catalog number. Fill the circle, avoid glare.'}</p>
+    const P=F.parse,readLine=[P.lab,P.cats[0]||P.names.slice(0,2).join(' · ')].filter(Boolean).join(' · ');
+    if(!F.cands.length){B.innerHTML=`<h4 class="disp" style="font-size:36px">${F.err?'Couldn’t look it up':readLine?'No match yet':'Couldn’t read the label'}</h4>
+      <p class="sub">${F.err?esc(F.err.message):readLine?'Read <span class="fcode">'+esc(readLine)+'</span>, but nothing in the public database matched it. Check the spelling below, or type what the label says.':'The center label usually carries the label name and a catalog number. Fill the circle with the label, keep it flat, and angle away from glare.'}</p>
       ${P.raw.length?`<p class="fine2">Seen on the label: ${esc(P.raw.slice(0,6).join(' · ')).slice(0,180)}</p>`:''}
       <button class="go press" data-foundno="1">Try again</button><button class="ghost" data-catmanual="1">Type the catalog number</button>`;return}
     B.innerHTML=`<p class="fine2" style="margin:0 0 6px">Label read: <span class="fcode">${esc(readLine)}</span>${P.side?' · side '+esc(P.side):''}</p>
      <h4 class="disp" style="font-size:36px">${F.cands.length===1?'Is this it?':'Which one is yours?'}</h4>
-     <p class="sub">${F.cands.length===1?'One release carries that catalog number.':F.cands.length+' releases share that catalog number. Pick yours; the deadwax can confirm the pressing after.'}</p>
+     <p class="sub">${F.via==='name'?'No catalog number came through, so this is matched on the artist and title printed on the label. Check the label and year before you pick.':F.cands.length===1?'One release carries that catalog number.':F.cands.length+' releases share that catalog number. Pick yours; the deadwax can confirm the pressing after.'}</p>
      <div class="cands">${F.cands.map(candRow).join('')}</div>
      <button class="ghost" data-foundno="1">None of these. Scan again</button><button class="ghost" data-catmanual="1">Type the catalog number</button>
      <p class="fine2" style="margin-top:8px">Data from MusicBrainz and the Cover Art Archive.</p>`;return;
@@ -3721,7 +3833,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cr],[data-plus],[data-open],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-ls],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-pub],[data-listing],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-planpick],[data-deal],[data-dsend],[data-dchip],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-rtcfg],[data-rtsave],[data-rtoff],[data-ncal],[data-nphase],[data-nmode],[data-nsvc],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr);return}
@@ -3828,7 +3940,7 @@ document.addEventListener('click',e=>{
     st.deal={role:'buy',recId:id,stage:'offer',who:l.who,cond:l.cond,plan:l.plan,ask:l.ask||'',msgs:[],offerId:null};renderDeal();openSheet('deal');return}
   if(t.dataset.shedit){const sh=st.shelves.find(x=>x.id===+t.dataset.shedit);st.editShelf=sh.id;$('#sheName').value=sh.n;$('#sheSub').textContent=`${rc(shelfRecs(sh.id).length)} · ${VNAME[sh.v]}`;openSheet('shedit');return}
   if(t.dataset.shsave){const sh=st.shelves.find(x=>x.id===st.editShelf),n=$('#sheName').value.trim();if(!n){toast('A shelf needs a name.');return}sh.n=n;closeSheets();renderCollection();toast(`Renamed to “${n}”.`);return}
-  if(t.dataset.shdel){const i=st.shelves.findIndex(x=>x.id===st.editShelf),n=st.shelves[i].n;st.shelves.splice(i,1);closeSheets();renderCollection();toast(`Deleted the shelf “${n}”. Its records are still in your collection.`);return}
+  if(t.dataset.shdel){const sh=st.shelves.find(x=>x.id===st.editShelf);if(!sh)return;askSure({title:'Delete this shelf?',body:`“${sh.n}” goes away, and so does its sharing link. The records on it stay in your collection.`,yes:'Delete shelf',go:()=>{const i=st.shelves.findIndex(x=>x.id===sh.id);if(i>-1)st.shelves.splice(i,1);renderCollection();saveState();toast(`Deleted the shelf “${sh.n}”. Its records are still in your collection.`)}});return}
   if(t.dataset.shl){const sid=+t.dataset.shl;if(!shelfRecs(sid).length){toast('Add a record to this shelf first.');return}listenShelf(sid,false);return}
   if(t.dataset.shpl){const sid=+t.dataset.shpl,sh=st.shelves.find(x=>x.id===sid);openPlBuilder(shelfRecs(sid).filter(i=>recTracks(i).length).map(rec=>({rec,track:0})),sh.n);return}
   if(t.dataset.plnew){openPlBuilder([],'');return}
@@ -3840,7 +3952,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.plvis){const p=st.playlists.find(x=>x.id===+t.dataset.plvis);if(!p.vis)gate(()=>{p.vis=1;renderPlView(p.id);renderCollection();toast('Anyone with the link can play it from their own Spotify or Apple Music.')});else{p.vis=0;renderPlView(p.id);renderCollection();toast('Private again. The old link stops working.')}return}
   if(t.dataset.plto){const p=st.playlists.find(x=>x.id===+t.dataset.pid),k=t.dataset.plto;saveTo(k,p.n,p.note,p.items,p.id);return}
   if(t.dataset.pledit){const p=st.playlists.find(x=>x.id===+t.dataset.pledit);st.plDraft={id:p.id,items:p.items.map(x=>({...x}))};$('#plHead').textContent='Edit playlist';$('#plName').value=p.n;$('#plNote').value=p.note||'';renderPlBuilder();openSheet('plist');return}
-  if(t.dataset.pldel2){const i=st.playlists.findIndex(x=>x.id===+t.dataset.pldel2);const n=st.playlists[i].n;st.playlists.splice(i,1);closeSheets();renderCollection();toast(`Deleted “${n}”.`);return}
+  if(t.dataset.pldel2){const pl=st.playlists.find(x=>x.id===+t.dataset.pldel2);if(!pl)return;askSure({title:'Delete this playlist?',body:`“${pl.n}” and its ${pl.items.length} track${pl.items.length===1?'':'s'}. The records stay in your collection.`,yes:'Delete playlist',go:()=>{const i=st.playlists.findIndex(x=>x.id===pl.id);if(i>-1)st.playlists.splice(i,1);renderCollection();saveState();toast(`Deleted “${pl.n}”.`)}});return}
   if(t.dataset.clisten){const [cid,si]=t.dataset.clisten.split('.'),c=CURS.find(x=>x.id===cid),sh=c.shelves[+si];startQueue(sh[3].map(rec=>({rec})),`${c.n}’s ${sh[0]}`,{shuffle:!!t.dataset.shuf});return}
   if(t.dataset.acct){
     if(t.dataset.acct==='later'){pendAct=null;closeSheets();return}
@@ -3869,6 +3981,14 @@ document.addEventListener('click',e=>{
   if(t.dataset.frno!==undefined){st.fr.req.splice(+t.dataset.frno,1);renderScene();return}
   if(t.dataset.addwant){if(!st.wants.some(w=>w.t==='A Love Supreme')){st.wants.push({t:'A Love Supreme',a:'John Coltrane',note:'Impulse! A-77-A RVG pressing',list:'2 copies listed',alert:false,m:0});renderCollection();toast('Added to your Dream Crate.')}else toast('Already in Dream Crate.');closeSheets();return}
   if(t.dataset.plus){gate(()=>openShelfSheet(+t.dataset.plus));return}
+  if(t.dataset.open&&st.sel){const id=+t.dataset.open;if(st.sel.has(id))st.sel.delete(id);else st.sel.add(id);renderCollection();return}
+  if(t.id==='selBtn'){st.sel=st.sel?null:new Set();renderCollection();return}
+  if(t.dataset.selcancel){st.sel=null;renderCollection();return}
+  if(t.dataset.selrm){if(!st.sel||!st.sel.size){toast('Tap the records you want to remove.');return}askRemoveRecords([...st.sel]);return}
+  if(t.dataset.rmrec){askRemoveRecords([st.rec]);return}
+  if(t.dataset.sureno){st.sure=null;closeSheets();return}
+  if(t.dataset.sureyes){const o=st.sure;st.sure=null;closeSheets();if(o&&o.go)o.go();return}
+  if(t.dataset.wrm!==undefined){const w=st.wants[+t.dataset.wrm];if(!w)return;askSure({title:'Take it off your Dream Crate?',body:`“${w.t}” by ${w.a}. Its alert stops. You can add it again from any record.`,yes:'Remove from Dream Crate',go:()=>{const i=st.wants.indexOf(w);if(i>-1)st.wants.splice(i,1);renderCollection();saveState();toast(`Removed “${w.t}” from your Dream Crate.`)}});return}
   if(t.dataset.open){st.rec=+t.dataset.open;go('reveal');return}
   if(t.dataset.chip){st.filter=t.dataset.chip;renderCollection();return}
   if(t.hasAttribute('data-conf')){st.confOnly=!st.confOnly;renderCollection();return}
