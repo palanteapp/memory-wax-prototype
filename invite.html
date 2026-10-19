@@ -30,12 +30,12 @@
 html{background:var(--ox)}
 body{min-height:100vh;min-height:100dvh;background:radial-gradient(120% 70% at 50% 0%,#6a1014 0%,var(--ox) 55%,var(--night) 100%);color:var(--cream);font-family:var(--ui);display:flex;flex-direction:column;align-items:center;padding:max(28px,env(safe-area-inset-top)) 16px max(28px,env(safe-area-inset-bottom))}
 main{width:100%;max-width:420px;display:flex;flex-direction:column;flex:1}
-.logo{width:150px;margin:6px auto 26px;display:block}
+.logo{width:250px;margin:-14px auto -6px;display:block;mix-blend-mode:lighten}
 .kick{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.8;text-align:center}
 h1{font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:46px;line-height:.92;text-transform:uppercase;text-align:center;margin:10px 0 22px;color:var(--gold);overflow-wrap:anywhere}
 .card{background:var(--gold);color:var(--ox);border-radius:44px 24px 24px 24px;padding:16px 16px 18px;box-shadow:6px 6px 0 var(--red)}
 .head{display:flex;align-items:center;gap:14px}
-.av{width:56px;height:56px;flex:none;border-radius:50%;background:var(--ox);color:var(--gold);display:grid;place-items:center;font-family:var(--disp);font-weight:900;font-size:26px;box-shadow:0 0 0 3px var(--cream)}
+.av{width:56px;height:56px;flex:none;border-radius:50%;background:var(--ox) center/cover no-repeat;color:var(--gold);display:grid;place-items:center;font-family:var(--disp);font-weight:900;font-size:26px;box-shadow:0 0 0 3px var(--cream)}
 .head b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:26px;line-height:.95;text-transform:uppercase;overflow-wrap:anywhere}
 .head span{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;opacity:.75;margin-top:4px}
 dl{display:flex;margin-top:14px;padding-top:13px;border-top:1.5px solid rgba(84,11,14,.2)}
@@ -53,7 +53,7 @@ footer{margin-top:auto;padding-top:30px;text-align:center;font-family:var(--mono
 </head>
 <body>
 <main>
-  <img class="logo" src="assets/memory-wax-wordmark-cream.png" alt="Memory Wax">
+  <img class="logo" src="assets/memory-wax-logo.png" alt="Memory Wax. Dig, deeper.">
   <div id="out"></div>
   <footer>Memory Wax · for people who keep records</footer>
 </main>
@@ -62,20 +62,37 @@ footer{margin-top:auto;padding-top:30px;text-align:center;font-family:var(--mono
   var h=new URLSearchParams(location.hash.slice(1)),out=document.getElementById('out');
   var t=h.get('i')||'';
   function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
-  if(!/^[A-Za-z0-9_-]{20,64}$/.test(t)){var b=el('div','bad','This invite link is incomplete. Ask your friend to send it again.');out.appendChild(b);return}
-  var name=(h.get('n')||'').slice(0,40),handle=(h.get('h')||'').replace(/[^a-z0-9_.]/g,'').slice(0,20),who=name||(handle?'@'+handle:'A friend');
-  out.appendChild(el('div','kick','A friend request'));
-  out.appendChild(el('h1',null,'You’re invited'));
-  var card=el('div','card'),head=el('div','head'),av=el('div','av',(who.replace('@','').trim()[0]||'?').toUpperCase()),nm=el('div');
-  nm.appendChild(el('b',null,who));if(handle)nm.appendChild(el('span',null,'@'+handle));
-  head.appendChild(av);head.appendChild(nm);card.appendChild(head);
-  var qa=[['From',h.get('f')],['Spins',h.get('s')],['Favorite',h.get('a')]].filter(function(x){return x[1]});
-  if(qa.length){var dl=el('dl');qa.forEach(function(x){var d=el('div');d.appendChild(el('dt',null,x[0]));d.appendChild(el('dd',null,x[1].slice(0,60)));dl.appendChild(d)});card.appendChild(dl)}
-  out.appendChild(card);
-  out.appendChild(el('p','lede',who+' wants to be friends. You’ll see the shelves you share with each other and what you’re both spinning.'));
-  var q=new URLSearchParams();['i','n','h','c'].forEach(function(k){if(h.get(k))q.set(k,h.get(k))});
-  var a=el('a','open','Open in Memory Wax');a.href='memorywax://invite?'+q.toString();out.appendChild(a);
-  out.appendChild(el('p','fine','Opens the app on your iPhone or iPad, where you sign in and tap Accept. Memory Wax is in testing: if the button does nothing, ask '+who+' for a TestFlight invite first, then come back to this link. It works once and lasts 14 days.'));
+  function bad(msg){out.textContent='';out.appendChild(el('div','bad',msg))}
+  if(!/^[A-Za-z0-9_-]{20,64}$/.test(t)){bad('This invite link is incomplete. Ask your friend to send it again.');return}
+  var P={name:(h.get('n')||'').slice(0,40),handle:(h.get('h')||'').replace(/[^a-z0-9_.]/g,'').slice(0,20),hometown:h.get('f')||'',spins:h.get('s')||'',fav_album:h.get('a')||'',photo:''};
+  function draw(){
+    out.textContent='';
+    var who=P.name||(P.handle?'@'+P.handle:'A friend');
+    out.appendChild(el('div','kick','A friend request'));
+    out.appendChild(el('h1',null,'You’re invited'));
+    var card=el('div','card'),head=el('div','head'),av=el('div','av'),nm=el('div');
+    if(/^data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(P.photo||'')){av.style.backgroundImage='url("'+P.photo+'")'}else av.textContent=(who.replace('@','').trim()[0]||'?').toUpperCase();
+    nm.appendChild(el('b',null,who));if(P.handle)nm.appendChild(el('span',null,'@'+P.handle));
+    head.appendChild(av);head.appendChild(nm);card.appendChild(head);
+    var qa=[['From',P.hometown],['Spins',P.spins],['Favorite',P.fav_album]].filter(function(x){return x[1]});
+    if(qa.length){var dl=el('dl');qa.forEach(function(x){var d=el('div');d.appendChild(el('dt',null,x[0]));d.appendChild(el('dd',null,String(x[1]).slice(0,60)));dl.appendChild(d)});card.appendChild(dl)}
+    out.appendChild(card);
+    out.appendChild(el('p','lede',who+' wants to be friends. You’ll see the shelves you share with each other and what you’re both spinning.'));
+    var q=new URLSearchParams();['i','n','h','c'].forEach(function(k){if(h.get(k))q.set(k,h.get(k))});
+    var a=el('a','open','Open in Memory Wax');a.href='memorywax://invite?'+q.toString();out.appendChild(a);
+    out.appendChild(el('p','fine','Opens the app on your iPhone or iPad, where you sign in and tap Accept. Memory Wax is in testing: if the button does nothing, ask '+who+' for a TestFlight invite first, then come back to this link. It works once and lasts 14 days.'));
+  }
+  draw();
+  // The real card, photo included, from the Memory Wax server. Answers only while the invite is unused.
+  var c=null;try{var b=(h.get('c')||'').replace(/-/g,'+').replace(/_/g,'/');c=JSON.parse(decodeURIComponent(escape(atob(b))))}catch(e){}
+  if(!c||!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(c.u)||typeof c.k!=='string')return;
+  fetch(c.u+'/rest/v1/rpc/invite_card',{method:'POST',headers:{'Content-Type':'application/json',apikey:c.k,Authorization:'Bearer '+c.k},body:JSON.stringify({t:t})})
+    .then(function(r){return r.ok?r.json():null})
+    .then(function(rows){
+      if(!rows)return;
+      if(!rows.length){bad('This invite was already used or has expired. Ask your friend for a new one.');return}
+      var r=rows[0];P={name:r.name||'',handle:r.handle||P.handle,hometown:r.hometown||'',spins:r.spins||'',fav_album:r.fav_album||'',photo:r.photo||''};draw();
+    }).catch(function(){});
 })();
 </script>
 </body>

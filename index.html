@@ -1839,7 +1839,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.34.2 · invite card';
+const BUILD='0.34.3 · photo on invites';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3685,7 +3685,7 @@ function renderMe(){
 async function mePhoto(file){
   try{const cv=await fileToCanvas(file,640),d=Math.min(cv.width,cv.height),c=document.createElement('canvas');c.width=c.height=320;
     c.getContext('2d').drawImage(cv,(cv.width-d)/2,(cv.height-d)/2,d,d,0,0,320,320);
-    st.me={...(st.me||{}),photo:c.toDataURL('image/jpeg',.85)};saveState();renderMe();renderScene();toast('Photo saved.')}
+    st.me={...(st.me||{}),photo:c.toDataURL('image/jpeg',.85)};saveState();renderMe();renderScene();if(typeof acctPushProfile==='function')acctPushProfile();toast('Photo saved.')}
   catch(e){toast('That photo didn’t open. Try another.')}
 }
 /* ---------- Community account: Sign in with Apple, a username, friends ----------
@@ -3731,6 +3731,7 @@ async function acLoad(force){
   FR.busy=true;FR.err='';
   try{
     const uid=AC.s.uid,mine=await sb(`/rest/v1/profiles?id=eq.${uid}&select=${PCOLS}`);FR.me=mine&&mine[0]||null;
+    if(FR.me){const m=st.me||{};if((m.name||'')!==(FR.me.name||'')||(m.from||'')!==(FR.me.hometown||'')||(m.spin||'')!==(FR.me.spins||'')||(m.fav||'')!==(FR.me.fav_album||'')||!!m.photo!==!!FR.me.photo)acctPushProfile()}
     const rows=await sb('/rest/v1/friendships?select=requester,addressee,status,created_at')||[];
     const ids=[...new Set(rows.map(r=>r.requester===uid?r.addressee:r.requester))];
     const ps=ids.length?await sb(`/rest/v1/profiles?id=in.(${ids.join(',')})&select=${PCOLS}`):[];
@@ -5536,7 +5537,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.hearadd){hearAdd(t.dataset.hearadd);return}
   if(t.dataset.ac){acClick(t);return}
   if(t.dataset.fr){frClick(t);return}
-  if(t.dataset.me){const a=t.dataset.me;if(a==='savename'){meSaveName(true);return}if(a==='edit')openMe();else if(a==='photo')$('#meIn').click();else if(a==='nophoto'){if(st.me)delete st.me.photo;saveState();renderMe();renderScene()}return}
+  if(t.dataset.me){const a=t.dataset.me;if(a==='savename'){meSaveName(true);return}if(a==='edit')openMe();else if(a==='photo')$('#meIn').click();else if(a==='nophoto'){if(st.me)delete st.me.photo;saveState();renderMe();renderScene();if(typeof acctPushProfile==='function')acctPushProfile()}return}
   if(t.dataset.sitend){sitEnd();return}
   if(t.dataset.sitdel){const S=(st.sits||[])[st.sitI];if(!S)return;askSure({title:'Delete this session?',body:`“${sitTitle(S)}” and its ${S.items.length} song${S.items.length===1?'':'s'} come off your listening log. Spins counted on your records stay.`,yes:'Delete',go:()=>{st.sits.splice(st.sitI,1);saveState();closeSheets();toast('Session deleted.')}});return}
   if(t.dataset.sitpl){sitPlaylist(t.dataset.sitpl);return}
