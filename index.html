@@ -1839,7 +1839,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.34.1 · email link';
+const BUILD='0.34.2 · invite card';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3921,7 +3921,7 @@ function renderAc(){
 function frCardHTML(){
   if(!acReady()||!acIn())return `<button class="frcta press" data-ac="open">${acReady()?'Sign in to add friends':'Set up accounts'}</button>`;
   if(!FR.me)return `<button class="frcta press" data-ac="open">Pick your username</button>`;
-  return `<button class="frcta tealbtn press" data-ac="invite">Invite a friend by text</button><div class="frsearch"><label class="slab" for="frQ">Or add someone by username</label><input class="sin" id="frQ" placeholder="@username" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search"><div id="frFound"></div></div>
+  return `<button class="frcta tealbtn press" data-ac="invite">Invite a friend</button><div class="frsearch"><label class="slab" for="frQ">Or add someone by username</label><input class="sin" id="frQ" placeholder="@username" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search"><div id="frFound"></div></div>
    ${FR.inc.length?`<div class="frsec">Wants to be friends</div>${FR.inc.map(p=>frRow(p,`<div class="frbtns"><button class="pb" data-fr="ok" data-id="${p.id}">Accept</button><button class="pb o" data-fr="no" data-id="${p.id}">Not now</button></div>`,1)).join('')}`:''}
    ${FR.list.length?`<div class="frsec">Your friends · ${FR.list.length}</div>${FR.list.map(p=>frRow(p,'',1)).join('')}`:`<p class="frnone">${FR.busy?'Loading…':'No friends yet. Ask someone for their username.'}</p>`}
    ${FR.out.length?`<div class="frsec">Asked</div>${FR.out.map(p=>frRow(p,`<button class="pb o" data-fr="cancel" data-id="${p.id}">Take back</button>`,1)).join('')}`:''}
