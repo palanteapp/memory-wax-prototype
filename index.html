@@ -458,18 +458,29 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .emptyc b{font-family:var(--disp);font-size:19px}
 .emptyc span{font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.2}
 .shnote{margin:0;padding:0 20px 10px;font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.15;opacity:.9}
-.mestrip{display:flex;align-items:center;gap:14px;margin:18px 16px 0;width:calc(100% - 32px);padding:12px 14px;border-radius:999px 18px 18px 999px;background:rgba(255,243,176,.08);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.22);text-align:left;color:var(--cream);transition:transform 160ms ease-out}
+.mestrip{display:flex;align-items:center;gap:14px;margin:18px 16px 0;width:calc(100% - 32px);padding:12px 18px 12px 12px;border-radius:999px 24px 24px 999px;background:var(--gold);color:var(--ox);text-align:left;box-shadow:6px 6px 0 var(--red);transition:transform 160ms ease-out}
 .mestrip:active{transform:scale(.98)}
 .mestrip b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:24px;line-height:.95;text-transform:uppercase}
-.mestrip span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-top:4px}
-.meav{width:56px;height:56px;flex:none;border-radius:50%;background:var(--gold) center/cover no-repeat;color:var(--ox);display:grid;place-items:center;font-family:var(--disp);font-weight:900;font-size:26px;box-shadow:0 0 0 3px rgba(255,243,176,.25)}
+.mestrip div span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-top:4px}
+.meav{width:56px;height:56px;flex:none;border-radius:50%;background:var(--ox) center/cover no-repeat;color:var(--gold);display:grid;place-items:center;font-family:var(--disp);font-weight:900;font-size:26px;box-shadow:0 0 0 3px var(--cream)}
+#meBody .meav{box-shadow:0 0 0 4px var(--gold)}
 .meav.big{width:112px;height:112px;font-size:48px;margin:6px 0 14px}
-.ppl{margin:12px 16px 0;padding:18px;border-radius:0 var(--cut) 0 0;background:rgba(255,243,176,.08);color:var(--cream)}
+.ppl{margin:12px 16px 0;padding:18px;border-radius:0 var(--cut) 0 0;background:var(--red);color:var(--cream)}
+.ppl.cur2{background:var(--gold);color:var(--ox);border-radius:0 0 var(--cut) 0}
+.ppl.cur2 .frow{border-top-color:rgba(84,11,14,.22)}
+.ppl .cur{background:rgba(84,11,14,.08)}
 .ppl h5{margin:0;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:26px;line-height:.95;text-transform:uppercase}
 .ppl p{margin:6px 0 0;font-size:14.5px;line-height:1.4;opacity:.9}
 .ppl+.ppl{margin-top:10px}
 .ppl .why{font-family:var(--serif);font-style:italic;font-size:17px;opacity:.85}
-.sesl{margin:8px 16px 0;padding:6px 18px 8px;background:var(--cream);color:var(--ox);border-radius:0 0 var(--cut) 0}
+.sesl{margin:8px 16px 0;padding:6px 18px 8px;background:var(--cream);color:var(--ox);border-radius:0 0 var(--cut) 0;box-shadow:6px 6px 0 var(--gold)}
+.rooms{margin:8px 16px 0;padding:18px 18px 16px;background:var(--teal);color:var(--cream);border-radius:0 var(--cut) 0 0}
+.rooms p{margin:0 0 14px;font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.15}
+.rooms .nightcard{width:100%;margin:0 0 12px}
+.hostcta.solid{margin:0;width:100%;background:var(--red);color:var(--cream);box-shadow:none}
+.hostcta.alt{background:var(--gold);color:var(--ox);box-shadow:none}
+.sesl .srow i{background:var(--teal)}
+.emptyc.warm{background:var(--red);color:var(--cream);border:0;opacity:1}
 .sesl .srow:first-child{border-top:0}
 .srow i.now{background:var(--red)}
 .hostcta{margin:16px 16px 0;width:calc(100% - 32px);padding:16px;border-radius:999px;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.5);color:var(--cream);font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
@@ -1773,7 +1784,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.31.0 · community';
+const BUILD='0.31.1 · community colour';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3627,13 +3638,13 @@ function renderScene(){
 
   <div class="sh"><span>Your sessions</span><em>${S.filter(x=>x.items&&x.items.length).length||'None yet'}</em></div>
   <p class="shnote">Every record Listen follows becomes a session. Name it, share its card, or save it as an Apple Music playlist.</p>
-  ${recent.length?`<div class="sesl">${recent.map(sesRow).join('')}</div>${S.length>5?'<button class="hostcta press" data-year="open">All your sessions and your year</button>':''}`
-   :`<div class="emptyc"><b>Your first session starts with a record</b><span>Put one on, tap Listen, and turn on Follow along. Each song lands here.</span></div><button class="hostcta press" data-hear="open">Start listening</button>`}
+  ${recent.length?`<div class="sesl">${recent.map(sesRow).join('')}</div>${S.length>5?'<button class="hostcta alt press" data-year="open">All your sessions and your year</button>':''}`
+   :`<div class="emptyc warm"><b>Your first session starts with a record</b><span>Put one on, tap Listen, and turn on Follow along. Each song lands here.</span></div><button class="hostcta alt press" data-hear="open">Start listening</button>`}
 
   <div class="sh"><span>Rooms</span><em>${DEMO?new Date(nextNightAt()).toLocaleDateString(undefined,{month:'short',day:'numeric'}):(st.sessions.length?st.sessions.length+' yours':'None scheduled')}</em></div>
-  <p class="shnote">The same album at the same time, from anywhere, with live chat. Bring your copy or stream it.</p>
+  <div class="rooms"><p>The same album at the same time, from anywhere, with live chat. Bring your copy or stream it.</p>
   ${DEMO?`<button class="nightcard press" data-nroom="sitk"><div class="nk">Thursday · 8:00 PM Pacific</div><b>Songs in the Key of Life</b><span>Stevie Wonder, side by side with the world. Play your own copy or stream it. Live chat the whole time.</span><span style="opacity:.75;margin-top:6px">Sample room · your time: ${esc(localWhen(nextNightAt()))}</span><i>Open the room</i></button>`:''}
-  <button class="hostcta press" data-host="start"${DEMO?'':' style="margin-top:4px"'}>Host a room</button>
+  <button class="hostcta solid press" data-host="start">Host a room</button></div>
   ${st.sessions.length?`<div class="ser" style="margin-top:12px"><h4 class="disp">Your rooms</h4><p class="sub">Hosted by ${n?esc(n):'you'}.</p>${st.sessions.map(x=>`<button class="srow" data-sess="${x.id}"><div><b>${esc(x.name)}</b><span>${[whenText(x),x.recs.length+' record'+(x.recs.length===1?'':'s'),HVIS[x.vis]].filter(Boolean).join(' · ')}</span></div><i>Open</i></button>`).join('')}</div>`:''}
   ${DEMO?`<div class="ser"><h4 class="disp">Words On Wax</h4><p class="sub">An example of a hand-run series: six nights so far. Every night keeps its records, its stories, and its recap.</p>
     ${NIGHTS.map(x=>`<button class="srow" data-recap="w${x.id}"><div><b>${x.t}</b><span>${x.n} · ${x.recs.length} records · ${x.guests} guests</span></div><i>Recap</i></button>`).join('')}</div>`:''}
@@ -3643,7 +3654,7 @@ function renderScene(){
   <div class="ppl"><h5>Friends</h5><p>People you know. You both say yes, then they see the shelves you set to Friends and what you’re spinning.</p><p class="why">For your own collection, with people you trust.</p>
     ${DEMO?fr.req.map((q,i)=>`<div class="frow"><div><b>${q}</b><span>Wants to be friends</span></div><div style="display:flex;gap:6px"><button class="pb" data-frok="${i}">Accept</button><button class="pb o" data-frno="${i}">Not now</button></div></div>`).join('')+fr.list.map(q=>`<div class="frow"><div><b>${q}</b><span>Friends · both approved</span></div></div>`).join(''):''}
   </div>
-  <div class="ppl"><h5>Curators</h5><p>Selectors, shops and listening bars whose taste you admire. Follow with one tap, no approval needed. You see only the shelves they share with everyone, and they never see who follows them.</p><p class="why">For discovering records, from people you don’t have to know.</p>
+  <div class="ppl cur2"><h5>Curators</h5><p>Selectors, shops and listening bars whose taste you admire. Follow with one tap, no approval needed. You see only the shelves they share with everyone, and they never see who follows them.</p><p class="why">For discovering records, from people you don’t have to know.</p>
     ${DEMO?`<div class="curs" style="margin:10px 0 0">${[...CURS].sort((a,b)=>st.follow.has(b.id)-st.follow.has(a.id)).map(c=>`<div class="cur"><button class="open" data-cur="${c.id}"><div class="av m${c.m}" aria-hidden="true">${c.n[0]}</div><div class="nm">${c.n}</div><div class="tg">${c.tag}</div><div class="kd">${c.kind} · sample · ${c.shelves.length} ${c.shelves.length>1?'shelves':'shelf'} shared</div></button><button class="follow" data-follow="${c.id}" aria-pressed="${st.follow.has(c.id)}">${st.follow.has(c.id)?'Following':'Follow'}</button></div>`).join('')}</div>`:''}
   </div>
   ${DEMO?'':`<div class="emptyc" style="margin-top:12px"><b>Friends and curators arrive with profiles</b><span>Until then, nothing you keep here leaves your devices, except what you choose to share.</span></div>`}`;
