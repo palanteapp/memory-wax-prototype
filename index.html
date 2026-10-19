@@ -75,8 +75,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 .screen:not(.active){pointer-events:none}
 .scroll{position:absolute;inset:0;overflow-y:auto;padding:60px 0 210px;scrollbar-width:none}
 .scroll::-webkit-scrollbar{display:none}
-.screen:not(.arrive):not(.scan)::before{content:"";position:absolute;top:0;left:0;right:0;height:96px;z-index:20;pointer-events:none;background:linear-gradient(var(--ox) 45%,rgba(84,11,14,.6) 70%,transparent)}
-.screen.reveal::before{background:linear-gradient(var(--cream) 62%,transparent)!important}
+.screen:not(.arrive):not(.scan)::before{content:"";position:absolute;top:0;left:0;right:0;height:104px;z-index:20;pointer-events:none;background:linear-gradient(rgba(84,11,14,.8),rgba(84,11,14,.4) 60%,rgba(84,11,14,0));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);-webkit-mask-image:linear-gradient(#000 56%,transparent);mask-image:linear-gradient(#000 56%,transparent)}
+.screen.reveal::before{background:linear-gradient(rgba(255,243,176,.86),rgba(255,243,176,.4) 60%,rgba(255,243,176,0))!important}
 
 /* arrival: the record is the sun */
 .arrive{background:radial-gradient(120% 70% at 50% 100%,#6a1519 0%,var(--ox) 55%,var(--night) 100%);overflow:hidden;cursor:pointer}
@@ -543,6 +543,29 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .npchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .npchip{text-align:left;padding:7px 11px;border-radius:14px;background:rgba(255,243,176,.14);color:var(--cream);transition:transform 160ms ease-out}
 .npchip:active{transform:scale(.97)}
+.trail{display:flex;gap:4px;align-items:center;overflow-x:auto;scrollbar-width:none;margin:-6px 0 12px;padding:2px 0}
+.trail::-webkit-scrollbar{display:none}
+.trail i{font-style:normal;opacity:.4;font-size:13px}
+.trail button{flex:none;padding:6px 11px;border-radius:999px;background:rgba(84,11,14,.1);color:var(--ox);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;transition:transform 160ms ease-out}
+.trail button:active{transform:scale(.96)}
+.trail button.on{background:var(--ox);color:var(--cream)}
+.trail .tb{width:32px;padding:6px 0;font-size:18px;line-height:1;text-align:center}
+.digart{display:block;width:132px;height:132px;object-fit:cover;border-radius:4px;margin:8px 0 6px;box-shadow:6px 6px 0 var(--gold)}
+.digx{margin-top:10px}.digx .kv{margin:8px 0 0}.digx .sxh{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin:16px 0 8px;opacity:.7}
+.digx .sxcred{font-size:12px;line-height:1.35;opacity:.75;margin:8px 0 0}.digx .opts{display:flex;flex-wrap:wrap;gap:6px}
+.digx .sxown{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:12px;background:rgba(84,11,14,.09);margin-bottom:6px;font-size:14px}
+.digx .sxown span{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-top:2px}
+.digx details{margin-top:12px;font-size:14px}.digx summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+#storyX .kv{margin:14px 0 0}
+#storyX .sxh{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:18px 0 8px}
+#storyX .sxcred{font-family:var(--sans,system-ui);font-style:normal;font-size:12px;line-height:1.35;opacity:.8;margin:8px 0 0}
+#storyX .sxcred a{color:inherit}
+#storyX .opts{display:flex;flex-wrap:wrap;gap:6px}
+#storyX .sxown{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:12px;background:rgba(255,243,176,.12);color:var(--cream);margin-bottom:6px;font-family:var(--sans,system-ui);font-style:normal;font-size:14px;line-height:1.3;transition:transform 160ms ease-out}
+#storyX .sxown:active{transform:scale(.98)}
+#storyX .sxown span{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-top:2px}
+#storyX details{margin-top:12px;font-family:var(--sans,system-ui);font-style:normal;font-size:14px;line-height:1.4}
+#storyX summary{cursor:pointer;color:var(--gold);font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
 .tout{margin-top:10px}.tline{display:flex;gap:8px;font-size:14px;line-height:1.35;padding:5px 0}.tline b{width:16px;flex:none}.tline.ok b{color:var(--teal,#1f6f5a)}.tline.bad b{color:var(--red)}.tline.wait{opacity:.6}
 .sheet.sp,.sheet.sp.on{transition:none;overscroll-behavior:contain}
 #sheet-credit{z-index:82}
@@ -950,6 +973,13 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .sheet{overflow-x:hidden}
 .art .covbtn{position:absolute;left:8px;bottom:8px;z-index:4;padding:6px 10px;border-radius:999px;background:var(--ox);color:var(--cream);font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transform:rotate(3deg)}
 .art .covbtn[hidden]{display:none}
+/* glass chrome: the collection's view switcher stays put and the list scrolls under it */
+#collection .colbar{position:sticky;top:30px;z-index:22;padding:10px 20px 10px;background:rgba(84,11,14,.5);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 1px 0 rgba(255,243,176,.1)}
+@media (prefers-reduced-transparency:reduce){
+  #collection .colbar{background:var(--ox);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .screen:not(.arrive):not(.scan)::before{-webkit-backdrop-filter:none;backdrop-filter:none;background:linear-gradient(var(--ox) 45%,rgba(84,11,14,.6) 70%,transparent)}
+  .screen.reveal::before{background:linear-gradient(var(--cream) 62%,transparent)!important}
+}
 </style>
 </head>
 <body>
@@ -1067,6 +1097,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
           </article>
           <article class="blk story"><div class="q" aria-hidden="true">“</div><header><span class="num">04</span><h3 class="disp">The Story</h3></header>
             <p id="repStory">The gatefold carries Coltrane’s own devotional poem, written to be read alongside the four parts: Acknowledgement, Resolution, Pursuance, and Psalm.<sup><a href="#s1">1</a></sup></p>
+            <div id="storyX"></div>
           </article>
           <article class="blk mycopy"><header><span class="num">07</span><h3 class="disp">My Copy</h3></header>
             <p>The pressing is the record. This part is yours.</p>
@@ -1646,7 +1677,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.25.1 · details';
+const BUILD='0.26.0 · story';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -1693,10 +1724,11 @@ function maybeAuto(delay=700){
     if(st.scanMode==='barcode')startBarcodeScan();else if(st.scanMode==='label')startLabelAuto('label');else if(st.scanMode==='cover')startLabelAuto('cover');
   },delay);
 }
-function closeSheets(){maybeAuto(900);phone.scrollTop=0;if(typeof nightStop==='function')nightStop();setTimeout(()=>{const lb=$('#listenBody');if(lb&&!$('#sheet-listen').classList.contains('on'))lb.innerHTML=''},450);$('#backdrop').classList.remove('on');$$('.sheet').forEach(s=>s.classList.remove('on'))}
+var DIG={stack:[],n:0};
+function closeSheets(){DIG.stack=[];maybeAuto(900);phone.scrollTop=0;if(typeof nightStop==='function')nightStop();setTimeout(()=>{const lb=$('#listenBody');if(lb&&!$('#sheet-listen').classList.contains('on'))lb.innerHTML=''},450);$('#backdrop').classList.remove('on');$$('.sheet').forEach(s=>s.classList.remove('on'))}
 /* leaving a person's page that was opened from the player goes back to the player, not to the screen behind it */
 function closeBack(){
-  if(st.ret==='listen'&&$('#sheet-credit').classList.contains('on')&&$('#sheet-listen').classList.contains('on')){st.ret=null;$('#sheet-credit').classList.remove('on');return}
+  if(st.ret==='listen'&&$('#sheet-credit').classList.contains('on')&&$('#sheet-listen').classList.contains('on')){st.ret=null;DIG.stack=[];$('#sheet-credit').classList.remove('on');return}
   st.ret=null;closeSheets();
 }
 /* sheets that move like objects: springs, grabbable at any moment, flick to dismiss, a page opened over another pushes it back */
@@ -1760,6 +1792,10 @@ function initSheets(){
     L.s=1-.05*p;L.b=1-.3*p;L.paint();L.el.style.pointerEvents=p>.02?'none':'';
   });
   $$('.sheet').forEach(e=>{if(e.id!=='sheet-listen'&&e.id!=='sheet-credit')mkSheet(e)});
+  /* swipe in from the left edge to step back along the trail */
+  let ex=null;const cs=$('#sheet-credit'),edge=x=>x-phone.getBoundingClientRect().left;
+  cs.addEventListener('touchstart',e=>{const t=e.touches[0];ex=edge(t.clientX)<34?{x:t.clientX,y:t.clientY}:null},{passive:true});
+  cs.addEventListener('touchend',e=>{if(!ex)return;const t=e.changedTouches[0],dx=t.clientX-ex.x,dy=Math.abs(t.clientY-ex.y);ex=null;if(dx>70&&dy<60)digBack()});
 }
 initSheets();
 $('#backdrop').addEventListener('click',()=>{if(!openSheetsLocked())closeBack()});
@@ -1781,6 +1817,21 @@ let camIsHi=false;
 async function camHi(on){const t=camStream&&camStream.getVideoTracks()[0];if(!t||!t.applyConstraints||camIsHi===on)return;try{await t.applyConstraints(on?{width:{ideal:3840},height:{ideal:2160}}:{width:{ideal:1920},height:{ideal:1080}});camIsHi=on}catch(e){return}if(on){try{await t.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}await sleepMs(450)}}
 function camOff(){camIsHi=false;if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}const v=$('#liveVid');if(v)v.srcObject=null;$('#vf')&&$('#vf').classList.remove('live')}
 window.addEventListener('pagehide',camOff);
+/* a spring as a CSS easing: sampled from the physics so web animations settle the way the sheets do */
+const SPRING_OK=(()=>{try{return CSS.supports('animation-timing-function','linear(0,1)')}catch(e){return false}})();
+function springEase(resp,damp){
+  const w=2*Math.PI/resp,pts=[];let x=0,v=0,t=0,i=0;const dt=1/240;
+  while(t<2.5){const a=-w*w*(x-1)-2*damp*w*v;v+=a*dt;x+=v*dt;t+=dt;if(i++%6===0)pts.push(+x.toFixed(4));if(Math.abs(x-1)<.0008&&Math.abs(v)<.01)break}
+  pts.push(1);return {easing:`linear(${pts.join(',')})`,duration:Math.round(t*1000)};
+}
+function springIn(el,from,resp,damp){
+  if(!el||reduce||!el.animate||!SPRING_OK){return}
+  const sp=springEase(resp||.46,damp||1);
+  try{el.animate([{transform:from,opacity:0},{transform:'none',opacity:1}],{duration:sp.duration,easing:sp.easing,fill:'none'})}catch(e){}
+}
+/* a small tap you can feel: native on the phone, a short buzz on Android, nothing elsewhere */
+const HAP_OK=()=>{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.nativePromise&&(C.PluginHeaders||[]).some(h=>h.name==='Haptics'))};
+function haptic(k){try{if(HAP_OK())Capacitor.nativePromise('Haptics','play',{kind:k});else if(navigator.vibrate)navigator.vibrate(({tick:8,press:14,success:[30,40,60],warn:[50,40,50]})[k]||8)}catch(e){}}
 function go(name){
   const from=st.screen;st.screen=name;
   if(name!=='scan'&&name!=='reveal')camOff();
@@ -1793,6 +1844,7 @@ function go(name){
   const el=$('[data-screen="'+name+'"]');
   $$('.screen').forEach(s=>{if(s!==el&&!(from==='scan'&&name==='reveal'&&s.dataset.screen==='scan'))s.classList.remove('active')});
   el.classList.add('active');
+  if(name==='reveal'&&from!=='reveal')springIn(el,'translateY(34px) scale(.985)',.5,.9);
   if(from==='scan'&&name==='reveal'){leaveTimer=setTimeout(()=>$('#scan').classList.remove('active'),reduce?0:850)}
   $('#dock').style.setProperty('--i',TABIDX[name]??0);
   $$('.tab').forEach(t=>t.setAttribute('aria-current',t.dataset.go===(name==='reveal'?'scan':name)?'page':'false'));
@@ -1885,7 +1937,7 @@ function finish(res){
   }
   // success: deadwax confirms the pressing; cover and barcode find the album/release only
   $('#vf').classList.add('locked');setPrompt(dw?'Locked.':'Found.');$('#guide').textContent=dw?'Matrix confirmed':'Pressing not confirmed yet';
-  shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}
+  shake();thunk();haptic('success');
   if(quiet){
     let msg;
     if(st.offline){st.pending++;msg='No signal. Saved. We’ll identify it when you’re back online.'}
@@ -1895,7 +1947,7 @@ function finish(res){
   st.mode=dw?'confirmed':st.scanMode;
   setTimeout(()=>go('reveal'),reduce?250:1000);
 }
-$('#shutter').addEventListener('click',()=>{
+$('#shutter').addEventListener('click',()=>{haptic('press');
   if(!st.camAsked){st.camAsked=true;openSheet('cam');return}
   if(st.scanMode==='barcode'){startBarcodeScan();return}
   if(st.scanMode==='label'){startLabelScan();return}
@@ -2068,7 +2120,65 @@ function fillReport(r,mode){
   $('#repIh').hidden=!R.ih;$('#repIhP').innerHTML=(R.ih||'')+'<sup><a href="#s2">2</a></sup>';
   $('#repStory').innerHTML=(R.story||'')+'<sup><a href="#s1">1</a></sup>';
   fillCopy(r.id);fillPlan(r.id);fillAvail(r.id);
-  tidyReport(r,R);if(r.real)realReport(r,mode);creditsNote(r);{const rb=$('#repRemove');if(rb)rb.hidden=!st.owned.has(r.id)}
+  tidyReport(r,R);if(r.real)realReport(r,mode);creditsNote(r);if(r.real)fillStory(r);{const rb=$('#repRemove');if(rb)rb.hidden=!st.owned.has(r.id)}
+}
+/* ---------- the story of a record: what's known about the album, from sources, each name a way onward ----------
+   Wikipedia (CC BY-SA) for the album's own article, MusicBrainz/Discogs for who, where and when. A part is shown only when a source gave it. */
+const WIKIAB=new Map();
+async function wikiAlbum(t,a){
+  const key='mw_wa_'+nz((t||'')+' '+(a||''));
+  if(WIKIAB.has(key))return WIKIAB.get(key);
+  try{const o=JSON.parse(localStorage.getItem(key)||'null');if(o&&Date.now()-o.at<(o.v?30:1)*864e5){WIKIAB.set(key,o.v);return o.v}}catch(e){}
+  const t0=noParen(t),lead=(a||'').split(/ [&,] /)[0].trim(),various=!lead||isVarious(lead)||/^unknown/i.test(lead),last=nz(lead.split(' ').pop()||'');
+  const ok=x=>x&&/album|\bEP\b|soundtrack|mixtape|compilation|live recording|studio recording/i.test(x.desc+' '+x.text.slice(0,240))&&(various||!last||nz(x.text+' '+x.desc).includes(last));
+  let b=null;
+  for(const q of [!various&&`${t0} (${lead} album)`,`${t0} (album)`,t0].filter(Boolean)){try{const x=await wikiSummary(q);if(ok(x)){b=x;break}}catch(e){}}
+  if(!b){try{const j=await (await fetch('https://en.wikipedia.org/w/rest.php/v1/search/page?q='+encodeURIComponent(t0+' '+(various?'':lead+' ')+'album')+'&limit=6')).json();
+    for(const p of (j.pages||[])){if(nz(noParen(p.title))!==nz(t0))continue;const x=await wikiSummary(p.title);if(ok(x)){b=x;break}}}catch(e){}}
+  if(b)b.short=shortBio(b.text,430);
+  WIKIAB.set(key,b);try{localStorage.setItem(key,JSON.stringify({at:Date.now(),v:b}))}catch(e){}
+  return b;
+}
+function storyHTML(r,wiki){
+  const C=r.mbc||{},X=r.dgx||{},crew=C.crew||[],who=re=>crew.filter(c=>re.test(c[1])).slice(0,2);
+  const facts=[],add=(k,v)=>{if(v)facts.push(`<dt>${k}</dt><dd>${v}</dd>`)};
+  const rec=(C.dates&&C.dates.length?whenText2(C.dates):'')+(C.studio&&C.studio.length?(C.dates&&C.dates.length?' · ':'')+esc(C.studio[0]):'');
+  add('Recorded',C.dates&&C.dates.length?esc(whenText2(C.dates))+(C.studio&&C.studio.length?' at '+esc(C.studio[0]):''):C.studio&&C.studio.length?'At '+esc(C.studio[0]):'');
+  const rel=[C.date||X.released||(r.y?String(r.y):''),r.ctry||C.ctry||X.ctry].filter(Boolean).join(' · ');add('Released',esc(rel)+(r.lab?' on '+esc(r.lab):''));
+  const pr=who(/producer/);add('Produced by',pr.map(c=>nameBtn(c[0],c[1],c[2],c[3])).join(', '));
+  const en=who(/engineer|mastering|mixing/);add('Engineered by',en.map(c=>nameBtn(c[0],c[1],c[2],c[3])).join(', '));
+  const sty=[...(X.styles||[]),...(X.genres||[])].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4);add('Sound',esc(sty.join(', ')));
+  if(C.tracks&&C.tracks.length)add('Tracks',C.tracks.length+(C.tracks.length===1?' track':' tracks'));
+  const lead=(r.a||'').split(/ [&,] /)[0];
+  const dig=[];
+  if(lead&&!isVarious(lead)&&!/^unknown/i.test(lead))dig.push(`<button class="pb" aria-pressed="true" data-crn="${esc(lead)}" data-crr="Artist">${esc(lead)}</button>`);
+  [...pr,...en].forEach(c=>{if(c[0]!==lead&&!dig.some(d=>d.includes('>'+esc(c[0])+'<')))dig.push(`<button class="pb" aria-pressed="true" data-crn="${esc(c[0])}" data-crr="${esc(c[1])}"${c[2]?` data-mbid="${c[2]}"`:''}${c[3]?` data-pid="${c[3]}"`:''}>${esc(c[0])}</button>`)});
+  /* records you own that share people with this one */
+  const mine=new Set((C.crew||[]).map(c=>c[0])),kin=RECS.filter(x=>x.id!==r.id&&norm(x.t)!==norm(r.t)&&x.real&&st.owned.has(x.id)).map(x=>({x,shared:(x.cred||[]).filter(n=>mine.has(n))})).filter(k=>k.shared.length>=1).sort((a,b)=>b.shared.length-a.shared.length).slice(0,3);
+  const notes=String(X.notes||'').replace(/\[[^\]]*\]/g,'').replace(/\s+/g,' ').trim().slice(0,600);
+  let h='';
+  if(facts.length)h+=`<dl class="kv">${facts.join('')}</dl>`;
+  if(dig.length)h+=`<div class="sxh">Keep digging</div><div class="opts">${dig.join('')}</div>`;
+  if(kin.length)h+=`<div class="sxh">Also on your shelf</div>`+kin.map(k=>`<button class="sxown" data-open="${k.x.id}">${esc(k.x.t)}<span>shares ${esc(k.shared.slice(0,3).join(', '))}</span></button>`).join('');
+  if(notes)h+=`<details><summary>Pressing notes</summary><p>${esc(notes)}${X.notes.length>600?'…':''}</p><p class="sxcred">Data provided by <a href="https://www.discogs.com/release/${r.dg}" target="_blank" rel="noopener">Discogs</a>.</p></details>`;
+  const src=[];if(wiki)src.push(`<a href="${esc(wiki.url)}" target="_blank" rel="noopener">Wikipedia</a> (<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>), shortened`);
+  if(C.src==='discogs'&&C.link)src.push(`credits from <a href="${esc(C.link)}" target="_blank" rel="noopener">Discogs</a>`);else if(r.mb)src.push(`credits from <a href="https://musicbrainz.org/release/${r.mb}" target="_blank" rel="noopener">MusicBrainz</a>`);
+  if(src.length)h+=`<p class="sxcred">${src.join(' · ')}.</p>`;
+  return h;
+}
+function fillStory(r){
+  const blk=$('.rep .blk.story'),p=$('#repStory'),x=$('#storyX');if(!blk||!p||!x)return;
+  if(!r||!r.real){p.hidden=false;x.innerHTML='';return}
+  const paint=wiki=>{
+    if(st.rec!==r.id)return;
+    p.innerHTML=wiki?esc(wiki.short):'';p.hidden=!wiki;
+    const h=storyHTML(r,wiki);x.innerHTML=h;
+    blk.hidden=!(wiki||h);
+    $$('.rep .blk:not([hidden]) .num').forEach((n,i)=>n.textContent=String(i+1).padStart(2,'0'));
+  };
+  const key='mw_wa_'+nz((r.t||'')+' '+(r.a||''));
+  paint(WIKIAB.has(key)?WIKIAB.get(key):null);
+  if(!WIKIAB.has(key))wikiAlbum(r.t,r.a).then(paint).catch(()=>{});
 }
 /* A real (scanned) record has only what the lookup returned. Hide the sections that would otherwise show sample text, and renumber the rest. */
 function tidyReport(r,R){
@@ -2167,6 +2277,59 @@ async function fillBio(name,mbid){
   e2.innerHTML=b?`${b.desc?`<div class="biodesc">${esc(b.desc)}</div>`:''}<p class="biotext">${esc(b.short)}</p><p class="fine2">From <a href="${esc(b.url)}" target="_blank" rel="noopener">Wikipedia</a> (<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>), shortened.</p>`:'';
   if(b){const sub=$('#csub'),sm=$('#csample');if(sub&&sub.dataset.sample)sub.hidden=true;if(sm)sm.hidden=true}
 }
+/* ---------- rabbit hole: person → record → person, with a trail you can step back along ---------- */
+function digPush(e){
+  const open=$('#sheet-credit').classList.contains('on');
+  if(!open)DIG.stack=[];
+  const top=DIG.stack[DIG.stack.length-1];
+  if(top&&top.k===e.k&&(e.k==='person'?top.name===e.name:top.t===e.t&&top.a===e.a))return;
+  DIG.stack.push(e);if(DIG.stack.length>12)DIG.stack.shift();
+}
+function trailHTML(){
+  const S=DIG.stack;if(S.length<2)return '';
+  const lab=e=>e.k==='person'?e.name:e.t,short=x=>x.length>18?x.slice(0,17)+'…':x;
+  return `<nav class="trail" aria-label="Where you've been"><button class="tb" data-trailback="1" aria-label="Back">‹</button>`+S.map((e,i)=>`<button class="${i===S.length-1?'on':''}" data-trail="${i}"${i===S.length-1?' aria-current="true"':''}>${esc(short(lab(e)))}</button>`).join('<i>›</i>')+`</nav>`;
+}
+function digRender(e,dir){
+  if(e.k==='person'){if(e.c)buildCredit(e.c);else openCreditNameRender(e)}else renderDigRec(e);
+  const body=$('#creditBody');if(dir)springIn(body,dir>0?'translateX(34px)':'translateX(-34px)',.42,1);
+  const sh=$('#sheet-credit');if(sh)sh.scrollTop=0;
+}
+function digBack(to){
+  const S=DIG.stack;if(S.length<2)return;
+  const n=to==null?S.length-2:to;if(n<0||n>=S.length-1)return;
+  S.length=n+1;haptic('tick');digRender(S[n],-1);
+}
+function openCreditNameRender(e){
+  const name=e.name,role=e.role,mbid=e.mbid,pid=e.pid;
+  const hits=RECS.filter(r=>(r.cred||[]).includes(name)||r.a===name||r.a.split(' & ').includes(name));
+  const base={mbid:mbid||'',type:typeOf(role||''),name,role:role||'',blurb:`Credited on ${hits.length} record${hits.length===1?'':'s'} in your collection.`,path:hits.map(r=>[r.t,String(r.y),'Credited'])};
+  st.pbase=base;e.c=base;buildCredit(base);if(IDX&&!DEMO)idxPerson(name,role,pid?+pid:0,base);
+}
+/* a record you don't own: found by name, shown as a story with its people */
+async function openDigRec(t,a,y){
+  digPush({k:'rec',t,a,y:+y||0});const e=DIG.stack[DIG.stack.length-1];haptic('tick');digRender(e,1);openSheet('credit');
+}
+async function renderDigRec(e){
+  const body=$('#creditBody'),r=e.r||(e.r={id:-(++DIG.n),t:e.t,a:e.a||'',y:+e.y||0,real:true,temp:true,cred:[]});
+  const paint=(wiki,state)=>{
+    if(DIG.stack[DIG.stack.length-1]!==e||!$('#sheet-credit').classList.contains('on'))return;
+    const C=r.mbc,crew=(C&&C.crew||[]).slice(0,16),cover=r.mb?`https://coverartarchive.org/release/${r.mb}/front-250`:'';
+    const want=st.wants.some(w=>w.t===r.t);
+    body.innerHTML=`${trailHTML()}<span class="crtype">Record</span><h4 class="disp">${esc(r.t)}</h4>
+     <div class="crmeta">${esc([r.a,r.y||''].filter(Boolean).join(' · '))}</div>
+     ${cover?`<img class="digart" alt="" src="${esc(cover)}" onerror="this.remove()">`:''}
+     ${wiki?`<p class="sub">${esc(wiki.short)}</p>`:''}
+     ${state==='load'?'<p class="fine2 bioload">Looking this record up…</p>':''}
+     ${C?`<div class="digx">${storyHTML(r,wiki)}</div>`:''}
+     ${crew.length?`<div class="pathh">Who played on it</div><div class="opts" style="margin-top:8px">${crew.map(c=>`<button class="pb" aria-pressed="true" data-crn="${esc(c[0])}" data-crr="${esc(c[1])}"${c[2]?` data-mbid="${c[2]}"`:''}${c[3]?` data-pid="${c[3]}"`:''}>${esc(c[0])}<small style="display:block;font-weight:400;opacity:.75">${esc(String(c[1]).split(',')[0])}</small></button>`).join('')}</div>`:''}
+     ${state!=='load'&&!C&&!wiki?`<p class="fine2">We couldn’t find more on this one yet.</p>`:''}
+     <button class="dcbtn" style="margin-top:14px" data-dc="${esc(r.t)}|${esc(r.a)}" aria-pressed="${want}">${want?'In your Dream Crate':'+ Dream Crate'}</button>`;
+  };
+  paint(null,'load');
+  try{await Promise.all([ensureCredits(r,true),wikiAlbum(r.t,r.a).then(w=>{e.wiki=w})])}catch(_){}
+  paint(e.wiki||null,'done');
+}
 function buildCredit(c){
   const owns=t=>RECS.some(r=>r.t===t&&st.owned.has(r.id));
   const P=PEOPLE[c.name]||{};
@@ -2175,7 +2338,8 @@ function buildCredit(c){
   path.sort((a,b)=>(+a[1]||0)-(+b[1]||0));
   const n=path.filter(p=>owns(p[0])).length,al=alongside(c.name);
   const meta=[P.from,P.yrs].filter(Boolean).join(' · ');
-  $('#creditBody').innerHTML=`<span class="crtype">${c.type}</span><h4 class="disp">${esc(c.name)}</h4>
+  {const top=DIG.stack[DIG.stack.length-1];if(top&&top.k==='person'&&top.name===c.name)top.c=c}
+  $('#creditBody').innerHTML=`${trailHTML()}<span class="crtype">${c.type}</span><h4 class="disp">${esc(c.name)}</h4>
     ${meta?`<div class="crmeta">${esc(meta)}</div>`:''}
     <div class="crrole">${esc(c.role)}</div>
     <p class="sub" id="csub"${P.known?' data-sample="1"':''}>${esc(P.known||c.blurb)}</p>
@@ -2184,18 +2348,18 @@ function buildCredit(c){
     <div class="pathh">Albums and sessions · ${path.length}</div>
     <ul class="path">${path.map(p=>{const rr=RECS.find(x=>x.t===p[0]),o=owns(p[0]);const by=p[3]&&p[3]!==c.name?` · ${esc(p[3])}`:'';const inner=`<b>${esc(p[0])}${o?'<em>In your collection</em>':''}</b><span>${p[1]} · ${esc(p[2])}${rr?'':by}</span>`;
       const want=st.wants.some(w=>w.t===p[0]);
-      return `<li class="${o?'own':''}">${rr?`<button data-open="${rr.id}">${inner}</button>`:`${inner}<button class="dcbtn" data-dc="${esc(p[0])}|${esc(p[3]||c.name)}" aria-pressed="${want}">${want?'In your Dream Crate':'+ Dream Crate'}</button>`}</li>`}).join('')}</ul>
+      return `<li class="${o?'own':''}">${rr?`<button data-open="${rr.id}">${inner}</button>`:`<button data-digrec="${esc(p[0])}|${esc(p[3]&&p[3]!==c.name?p[3]:c.name)}|${esc(p[1]||'')}">${inner}</button><button class="dcbtn" data-dc="${esc(p[0])}|${esc(p[3]||c.name)}" aria-pressed="${want}">${want?'In your Dream Crate':'+ Dream Crate'}</button>`}</li>`}).join('')}</ul>
     ${al.length?`<div class="pathh">Played alongside</div><div class="opts" style="margin-top:8px">${al.map(x=>`<button class="pb" aria-pressed="true" data-crn="${esc(x)}" data-crr="">${esc(x)}</button>`).join('')}</div>`:''}
     <p class="fine" style="margin-top:12px;font-weight:600">${P.known?`<span id="csample">Sample bio, written for this prototype and kept short. In the real product bios and credits come from sourced data (Wikipedia, MusicBrainz, Discogs), with attribution and links. </span>`:c.src==='discogs'?`Credits from Discogs (open data). Data provided by Discogs. `:`Credits from MusicBrainz (open data). `}You own ${n} of ${path.length} here.</p>`;
   openSheet('credit');
   fillBio(c.name,c.mbid);
 }
-function openCredit(key){const c=CR[key];if(c)buildCredit(c)}
+function openCredit(key){const c=CR[key];if(!c)return;digPush({k:'person',name:c.name,key,c});buildCredit(c)}
 function openCreditName(name,role,pid,mbid){
   const hits=RECS.filter(r=>(r.cred||[]).includes(name)||r.a===name||r.a.split(' & ').includes(name));
   const roleFor=r=>{const cr=((REP[r.id]||{}).crew||[]).find(x=>x[0]===name);return cr?cr[1]:(r.a.includes(name)?'Leader':'Credited')};
   const base={mbid:mbid||'',type:typeOf(role||''),name,role:role||'',blurb:`Credited on ${hits.length} record${hits.length===1?'':'s'} in ${DEMO?'this sample catalog':'your collection'}.`,path:hits.map(r=>[r.t,String(r.y),roleFor(r)])};
-  st.pbase=base;buildCredit(base);
+  digPush({k:'person',name,role,pid,mbid});st.pbase=base;buildCredit(base);
   if(IDX&&!DEMO)idxPerson(name,role,pid?+pid:0,base);
 }
 /* everything a person is credited on, from the index. Names and credited roles only. */
@@ -2500,7 +2664,7 @@ function npFail(reason){
     subscription:`<p class="npmsg">Playing full songs needs an Apple Music subscription on this phone.</p>${link}`}[reason]||`<p class="npmsg">That didn’t play. Try again, or open it in Apple Music.</p>${link}`;
 }
 async function npAct(a,i){
-  const I=NP.info;if(!I)return;const el=$('#npMsg');if(el)el.innerHTML='';
+  const I=NP.info;if(!I)return;haptic('tick');const el=$('#npMsg');if(el)el.innerHTML='';
   try{
     if(a==='play'||(a==='toggle'&&!(NP.s&&NP.s.title))){const r=await npCall('play',{id:I.id,index:a==='play'?i:0});if(!r.ok){npFail(r.reason);return}}
     else if(a==='toggle')await npCall('transport',{action:NP.s&&NP.s.playing?'pause':'resume'});
@@ -3298,7 +3462,7 @@ async function startBarcodeScan(){
 async function realFound(code){
   st.scanGen=(st.scanGen||0)+1;st.scanning=true;
   $('#vf').classList.remove('reading');$('#vf').classList.add('locked');setPrompt('Got the barcode.');$('#guide').textContent=code;
-  shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}
+  shake();thunk();haptic('success');
   let hit=null,err=null;try{hit=await mbLookup(code)}catch(e){err=e}
   st.found={code,hit,err};renderFound();openSheet('found');
   setTimeout(resetScan,400);
@@ -3752,7 +3916,7 @@ async function finishLabel(P,gen,src){
     if(!cands.length&&P.names.length){cands=await mbByNames(P.names,P.lab);if(cands.length)via='name'}
   }catch(e){err=e}
   if(st.scanGen!==gen)return;
-  $('#vf').classList.remove('reading');if(cands.length){$('#vf').classList.add('locked');shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}}
+  $('#vf').classList.remove('reading');if(cands.length){$('#vf').classList.add('locked');shake();thunk();haptic('success');}
   st.found={kind:'label',parse:P,cands,err,via,src:src||'label'};renderFound();openSheet('found');setTimeout(resetScan,400);
 }
 /* hands-free: watch the circle, and when the picture has settled try to read it; fire as soon as a label is clearly there */
@@ -3857,7 +4021,7 @@ async function startDeadwaxScan(){
         if(!albums.length){try{albums=await mbByNames(names.slice(0,1),null)}catch(e){}}
       }
     }
-    $('#vf').classList.remove('reading');if(V.mx){$('#vf').classList.add('locked');shake();thunk();try{navigator.vibrate&&navigator.vibrate([40,30,70])}catch(_){}}
+    $('#vf').classList.remove('reading');if(V.mx){$('#vf').classList.add('locked');shake();thunk();haptic('success');}
     st.found={kind:'deadwax',ctx:ctx?ctx.id:null,dw:{mx:V.mx,conf:V.conf,frames:V.frames,n:V.n,parts:V.parts,match,gloss:decodeRunout(V.mx),cands:cands.map(c=>({id:c.id,title:c.title,year:c.year,country:c.country,uri:c.uri,ids:(c.ids||[]).map(i=>i.v)}))},albums,names,dgErr};
     renderFound();openSheet('found');setTimeout(resetScan,400);
   }catch(e){await torch(false);stopReal();toast(e.message||'Something went wrong reading the deadwax.')}
@@ -4072,6 +4236,7 @@ async function ensureCredits(r,force){
 }
 /* the line under the names: where the credits came from, and how complete they are */
 function creditsNote(r){
+  if(r.temp)return;
   const C=r.mbc,el=$('#repHint');if(!el)return;
   if(!r.real){el.textContent='Tap any name for a short bio and what else they played on';return}
   if(!C){el.innerHTML=r.mbcErr?`Couldn’t fetch credits: ${esc(r.mbcErr)}`:r.mbcTried?'No credits found for this release on MusicBrainz yet.':'Fetching credits from MusicBrainz…';return}
@@ -4388,7 +4553,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
@@ -4451,6 +4616,9 @@ document.addEventListener('click',e=>{
   if(t.dataset.dgtoken){openDgToken();return}
   if(t.dataset.imprun){dgImport();return}
   if(t.dataset.dgtest){dgTest();return}
+  if(t.dataset.trailback){digBack();return}
+  if(t.dataset.trail!==undefined){digBack(+t.dataset.trail);return}
+  if(t.dataset.digrec){const [a,b,y]=t.dataset.digrec.split('|');openDigRec(a,b,y);return}
   if(t.dataset.impfill){impFill();return}
   if(t.dataset.impfillstop){IMP.fillStop=true;return}
   if(t.dataset.impcancel){IMP.cancel=true;return}
