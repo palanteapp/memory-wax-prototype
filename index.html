@@ -980,6 +980,17 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
   .screen:not(.arrive):not(.scan)::before{-webkit-backdrop-filter:none;backdrop-filter:none;background:linear-gradient(var(--ox) 45%,rgba(84,11,14,.6) 70%,transparent)}
   .screen.reveal::before{background:linear-gradient(var(--cream) 62%,transparent)!important}
 }
+/* Pressing (dark) → Story (gold) → Session (dark): the colours keep alternating now that the Story comes first */
+.blk.story{background:var(--gold);color:var(--ox)}
+.story .q{color:var(--ox);opacity:.9}.story h3{color:var(--ox)}
+.story .kv dt{color:var(--red)}
+#storyX .sxh,#storyX summary,#storyX .sxown span{color:var(--red)}
+#storyX .sxown{background:rgba(84,11,14,.1);color:var(--ox)}
+.blk.session{background:var(--ox);color:var(--cream)}
+.session h3{color:var(--gold)}
+.session .people li{border-bottom-color:rgba(255,243,176,.22)}
+.session .people span{background:var(--gold);color:var(--ox)}
+.session .ih{box-shadow:6px 6px 0 var(--gold)}
 </style>
 </head>
 <body>
@@ -1677,7 +1688,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.26.1 · story';
+const BUILD='0.26.2 · story';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
