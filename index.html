@@ -602,6 +602,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .yyears button[aria-pressed="true"]{background:var(--ox);color:var(--cream)}
 .logspin{margin:6px 0 4px;padding:8px 12px;border-radius:999px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;box-shadow:inset 0 0 0 1.5px currentColor;transition:transform 160ms ease-out}
 .logspin:active{transform:scale(.96)}
+.horig{font-size:15px;line-height:1.4;margin:0 0 10px}.horig b{font-weight:800}
 .hnext{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin:8px 0 0}
 .trail{display:flex;gap:4px;align-items:center;overflow-x:auto;scrollbar-width:none;margin:-6px 0 12px;padding:2px 0}
 .trail::-webkit-scrollbar{display:none}
@@ -1752,7 +1753,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.29.0 · your year';
+const BUILD='0.29.1 · originals';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -1926,9 +1927,12 @@ async function hearGo(){
   if(g!==HEAR.gen||!res||res.cancelled)return;
   if(res.error){HEAR.state='error';HEAR.msg=res.error;renderHear();return}
   if(res.none){HEAR.misses++;HEAR.state=HEAR.m&&HEAR.follow?'match':'none';renderHear();if(HEAR.follow)hearNext(HEAR.misses>2?45:20);return}
-  HEAR.misses=0;HEAR.flipNow='';HEAR.m=res;HEAR.rec=hearFind(res);HEAR.state='match';
+  HEAR.misses=0;HEAR.flipNow='';res.rawTitle=res.title||'';res.rawAlbum=res.album||'';res.title=cleanEd(res.title);res.album=cleanEd(res.album);
+  if(!HEAR.m||nz(HEAR.m.title)!==nz(res.title)||nz(HEAR.m.artist)!==nz(res.artist))HEAR.orgOpen=false;
+  HEAR.m=res;HEAR.rec=hearFind(res);HEAR.state='match';
   if(HEAR.rec){hearLog(HEAR.rec,res);hearVersionCheck(HEAR.rec,res)}sitLog(res,HEAR.rec||0);haptic('success');renderHear();
   if(HEAR.follow)hearSchedule();
+  hearOrigins(res);
 }
 function hearNext(sec){
   clearTimeout(HEAR.timer);HEAR.timer=0;if(!hearOpen()||!HEAR.follow)return;
@@ -1963,8 +1967,60 @@ function hearPos(r,m){
 }
 /* one spin per sitting, kept with your copy */
 function hearLog(id,m){const cp=copyOf(id);cp.plays=cp.plays||[];const last=cp.plays[cp.plays.length-1];if(!last||Date.now()-last.at>40*60e3){cp.plays.push({at:Date.now(),t:m.title||'',src:'heard'});if(cp.plays.length>300)cp.plays.shift();saveState()}}
+/* Apple's catalogue is digital, so Shazam often names a remaster or deluxe edition. Strip those tags so we look for the record itself. */
+const EDKW='remaster|anniversary|deluxe|expanded|edition|bonus track|reissue|\\bmono\\b|\\bstereo\\b|\\d{4} mix|single version|album version';
+const cleanEd=s=>String(s||'').replace(new RegExp('\\s*[\\(\\[][^\\)\\]]*(?:'+EDKW+')[^\\)\\]]*[\\)\\]]','gi'),'').replace(new RegExp('\\s+-\\s+[^-]*(?:'+EDKW+')[^-]*$','i'),'').trim();
+const orgKey=m=>nz(m.artist||'')+'|'+nz(m.title||'');
+/* every record a song is on, from MusicBrainz: the album it first came out on, then singles, compilations, live and soundtracks */
+async function hearOrigins(m){
+  const key=orgKey(m);if(!m.title||(HEAR.org&&HEAR.org.key===key&&!HEAR.org.err))return;
+  HEAR.org={key,busy:true,groups:[]};renderHear();
+  try{
+    const art=String(m.albumArtist||m.artist||'').split(/\s+(?:&|feat\.?|featuring|with|x)\s+|,\s*/i)[0];
+    const q='recording:"'+m.title.replace(/"/g,'')+'"'+(art?' AND artist:"'+art.replace(/"/g,'')+'"':'');
+    const j=await mbGet('recording/?query='+encodeURIComponent(q)+'&limit=100',{hi:true}),G=new Map();
+    ((j||{}).recordings||[]).filter(x=>!x.video&&simText(noParen(cleanEd(x.title||'')),noParen(m.title))>=.85).forEach(x=>{
+      const ac=(x['artist-credit']||[]).map(c=>c.name+(c.joinphrase||'')).join(''),sa=simArtist(ac,art);if(sa!==null&&sa<.5)return;
+      (x.releases||[]).forEach(rl=>{const g=rl['release-group']||{};if(!g.id||(rl.status&&rl.status!=='Official'))return;
+        const y=+String(rl.date||'').slice(0,4)||0,vin=(rl.media||[]).some(md=>/vinyl|7"|10"|12"/i.test(md.format||''));
+        const o=G.get(g.id)||{rg:g.id,t:g.title||rl.title||'',type:g['primary-type']||'',sec:g['secondary-types']||[],y:0,n:0,vinyl:false,rel:'',ry:0};
+        o.n++;if(y&&(!o.y||y<o.y))o.y=y;if(vin){o.vinyl=true;if(y&&(!o.ry||y<o.ry)){o.ry=y;o.rel=rl.id}}if(!o.rel)o.rel=rl.id;G.set(g.id,o)})});
+    const kind=o=>o.sec.includes('Compilation')?'comp':o.sec.includes('Live')?'live':o.sec.includes('Soundtrack')?'st':o.sec.length?'other':o.type==='Album'?'album':(o.type==='Single'||o.type==='EP')?'single':'other';
+    const L=[...G.values()].map(o=>({...o,k:kind(o)})).sort((a,b)=>(a.y||9999)-(b.y||9999)||b.n-a.n);
+    const orig=L.find(o=>o.k==='album')||L.find(o=>o.k==='single')||L[0]||null;
+    HEAR.org={key,groups:L,orig};
+    if(orig){
+      if(!HEAR.rec&&HEAR.m&&orgKey(HEAR.m)===key){const own=RECS.find(r=>st.owned.has(r.id)&&L.some(g=>g.k==='album'&&sameTitle(r.t,g.t))&&(simArtist(r.a,art)||0)>=.5);if(own){HEAR.rec=own.id;hearLog(own.id,HEAR.m);hearVersionCheck(own.id,HEAR.m)}}
+      const S=curSit(),it=S&&S.items[S.items.length-1];if(it&&nz(it.t)===nz(m.title)&&!it.al){it.al=orig.t;if(HEAR.rec&&!it.id)it.id=HEAR.rec;saveState()}
+    }
+  }catch(e){HEAR.org={key,groups:[],err:e.message||'Couldn’t reach MusicBrainz.'}}
+  renderHear();
+  const O=HEAR.org;if(O.orig&&!HEAR.rec&&O.orig.rel&&!O.mbc){try{const j=await mbGet('release/'+O.orig.rel+'?inc='+MB_INC);if(j&&HEAR.org===O){O.mbc=mbCredits(j);renderHear()}}catch(e){}}
+}
+/* who played on it, for a song that isn't on your shelf yet */
+function hearAltCrewHTML(m){
+  const O=HEAR.org&&HEAR.org.key===orgKey(m)?HEAR.org:null,C=O&&O.mbc;if(!C)return O&&O.orig&&!O.err?'<p class="fine2">Looking up who played on it…</p>':'';
+  const ti=(C.tracks||[]).findIndex(t=>simText(noParen(t.t),noParen(m.title||''))>=.85);
+  const map=new Map();if(ti>=0)(C.byTrack[ti]||[]).forEach(([n,role,mb])=>{const p=map.get(n)||{n,roles:[],mb};if(!p.roles.includes(role))p.roles.push(role);map.set(n,p)});
+  const tc=[...map.values()].sort((a,b)=>(NONPERF.test(a.roles.join(' '))?1:0)-(NONPERF.test(b.roles.join(' '))?1:0));
+  const crew=tc.length?tc.slice(0,12).map(p=>[p.n,p.roles.join(', '),p.mb]):(C.crew||[]).slice(0,10);
+  if(!crew.length)return '';
+  return `<div class="pathh">${tc.length?'On this track':'On '+esc(O.orig.t)}</div><div class="opts" style="margin-top:8px">${crew.map(c=>`<button class="pb" aria-pressed="true" data-crn="${esc(c[0])}" data-crr="${esc(c[1]||'')}"${c[2]?` data-mbid="${c[2]}"`:''}>${esc(c[0])}<small style="display:block;font-weight:400;opacity:.75">${esc(String(c[1]||'').split(',')[0])}</small></button>`).join('')}</div>`;
+}
+function hearOrgListHTML(m){
+  const O=HEAR.org&&HEAR.org.key===orgKey(m)?HEAR.org:null;if(!O||O.busy||!O.groups.length)return '';
+  let h=`<button class="ghost" data-hearorg="1" aria-expanded="${!!HEAR.orgOpen}">${HEAR.orgOpen?'Hide':'Every record this song is on'} (${O.groups.length})</button>`;
+  if(!HEAR.orgOpen)return h;
+  const K=[['album','Albums'],['single','Singles and EPs'],['comp','Compilations'],['live','Live'],['st','Soundtracks'],['other','Other']];
+  K.forEach(([k,label])=>{const L=O.groups.filter(g=>g.k===k);if(!L.length)return;
+    h+=`<div class="pathh">${label}</div><div class="ylist">${L.slice(0,30).map(g=>{const own=RECS.find(r=>st.owned.has(r.id)&&sameTitle(r.t,g.t));return `<button ${own?`data-open="${own.id}"`:`data-hearadd="rg:${g.rg}"`}><span class="tx"><b>${esc(g.t)}</b><small>${g.y||'Year unknown'} · ${g.n} release${g.n===1?'':'s'}${g.vinyl?' · on vinyl':''}${g===O.orig?' · the original':''}</small></span><span class="ct">${own?'On your shelf':'Add'}</span></button>`}).join('')}</div>${L.length>30?`<p class="fine2">And ${L.length-30} more.</p>`:''}`});
+  return h+'<p class="fine2" style="margin-top:8px">From MusicBrainz. Tap one to pick your exact pressing.</p>';
+}
 function hearAdd(kind){
-  const m=HEAR.m;if(!m)return;const AL=albumOf(m),single=kind==='single'||/\s-\s(Single|EP)$/i.test(m.album||'');
+  const m=HEAR.m;if(!m)return;
+  const O=HEAR.org&&HEAR.org.key===orgKey(m)?HEAR.org:null,G=kind==='orig'?O&&O.orig:kind&&kind.startsWith('rg:')?O&&O.groups.find(g=>g.rg===kind.slice(3)):null;
+  if(G){st.heardPend={title:m.title||'',artist:m.artist||'',album:G.t,at:Date.now()};st.typSize=G.k==='single'?'7':'';openCatEntry({artist:m.albumArtist||m.artist||'',title:G.t,heard:1});setTimeout(()=>catLook(),80);return}
+  const AL=albumOf(m),single=kind==='single'||/\s-\s(Single|EP)$/i.test(m.album||'');
   st.heardPend={title:m.title||'',artist:m.artist||'',album:AL,at:Date.now()};st.typSize=single?'7':'';
   openCatEntry({artist:m.albumArtist||m.artist||'',title:single?(m.title||''):(AL||m.title||''),heard:1});setTimeout(()=>catLook(),80);
 }
@@ -2155,7 +2211,7 @@ function renderHear(){
   else if(!m||HEAR.state==='idle'||HEAR.state==='none')h+=`<p class="sub">${HEAR.state==='none'?'Couldn’t name it yet. Turn it up a little or move closer, then try again.':'Play a record and hold your phone near the speaker. We’ll name it, show who’s on the track, and find it on your shelf.'}</p>${ring(false)}<button class="go press" data-hear="go">${HEAR.state==='none'?'Listen again':'Start listening'}</button>${follow}`;
   else{
     const AL=albumOf(m),pos=r?hearPos(r,m):null,left=hearLeft(m);
-    h+=`<div class="hmatch">${m.artwork?`<img src="${esc(m.artwork)}" alt="" onerror="this.remove()">`:''}<div><span class="npk">Playing now</span><b>${esc(m.title||'')}</b><em>${esc(m.artist||'')}</em>${AL&&nz(AL)!==nz(m.title)?`<small>from ${esc(AL)}${m.year?' · '+m.year:''}</small>`:''}</div></div>`;
+    h+=`<div class="hmatch">${m.artwork?`<img src="${esc(m.artwork)}" alt="" onerror="this.remove()">`:''}<div><span class="npk">Playing now</span><b>${esc(m.title||'')}</b><em>${esc(m.artist||'')}</em>${AL&&nz(AL)!==nz(m.title)?`<small>from ${esc(AL)}</small>`:''}</div></div>`;
     if(HEAR.flipNow)h+=`<div class="hflip">Side ${esc(HEAR.flipNow)} is done. Time to flip${pos&&pos.next?' to side '+pos.next:''}.</div>`;
     if(r){
       const where=pos?(pos.side?`Side ${pos.side} · track ${pos.k} of ${pos.of}`:`Track ${pos.k} of ${pos.of}`)+(left?` · about ${fmtDur(left)} left`:'')+(pos.last&&pos.side&&pos.next?` · then flip to ${pos.next}`:''):'';
@@ -2165,8 +2221,14 @@ function renderHear(){
       if(crew.length)h+=`<div class="pathh">${tc&&tc.length?'On this track':'On this record'}</div><div class="opts" style="margin-top:8px">${crew.map(c=>`<button class="pb" aria-pressed="true" data-crn="${esc(c[0])}" data-crr="${esc(c[1]||'')}"${c[2]?` data-mbid="${c[2]}"`:''}${c[3]?` data-pid="${c[3]}"`:''}>${esc(c[0])}<small style="display:block;font-weight:400;opacity:.75">${esc(String(c[1]||'').split(',')[0])}</small></button>`).join('')}</div>`;
       else if(r.real&&!r.mbc){ensureCredits(r);h+='<p class="fine2">Looking up who played on it…</p>'}
     }else{
-      h+=`<p class="fine2" style="margin:0 0 8px">Not in your collection yet.</p><button class="go press" data-hearadd="album">Add ${esc(AL||m.title||'it')}</button>${AL&&nz(AL)!==nz(m.title||'')?`<button class="ghost" data-hearadd="single">Add the single “${esc(m.title||'')}”</button>`:''}`;
+      const O=HEAR.org&&HEAR.org.key===orgKey(m)?HEAR.org:null,G=O&&O.orig;
+      h+=`<p class="fine2" style="margin:0 0 8px">Not in your collection yet.</p>`;
+      if(G)h+=`<p class="horig">First released on <b>${esc(G.t)}</b>${G.y?' ('+G.y+')':''}${AL&&!sameTitle(AL,G.t)?`. Apple named it from ${esc(AL)}, a later release.`:'.'}</p><button class="go press" data-hearadd="orig">Add ${esc(G.t)}${G.y?' ('+G.y+')':''}</button>`;
+      else if(O&&O.busy)h+=`<p class="horig">Finding the album it first came out on…</p>`;
+      else h+=`<button class="go press" data-hearadd="album">Add ${esc(AL||m.title||'it')}</button>${AL&&nz(AL)!==nz(m.title||'')?`<button class="ghost" data-hearadd="single">Add the single “${esc(m.title||'')}”</button>`:''}`;
+      h+=hearAltCrewHTML(m);
     }
+    h+=hearOrgListHTML(m);
     if(HEAR.follow&&HEAR.nextAt)h+=`<p class="hnext">Following along · next listen in about ${fmtDur(Math.max(1,(HEAR.nextAt-Date.now())/1000))}</p>`;
     h+=`<button class="ghost" data-hear="go">Listen again</button>${follow}`;
   }
@@ -4908,7 +4970,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
@@ -4973,6 +5035,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.dgtest){dgTest();return}
   if(t.dataset.hear){const a=t.dataset.hear;if(a==='open')openHear();else if(a==='go')hearGo();else if(a==='stop'){hearStop();renderHear()}return}
   if(t.dataset.hearadd){hearAdd(t.dataset.hearadd);return}
+  if(t.dataset.hearorg){HEAR.orgOpen=!HEAR.orgOpen;renderHear();return}
   if(t.dataset.hearver){const a=t.dataset.hearver,id=HEAR.vflag&&HEAR.vflag.id;if(a==='find')hearVersions(id);else if(a==='no'){const r=recOf(id);if(r){r.verOk=Date.now();saveReal()}HEAR.vflag=null;HEAR.ver=null;renderHear()}else if(a.startsWith('pick:'))hearSwitch(id,a.slice(5));return}
   if(t.dataset.sit!=null&&t.dataset.sit!==''){openSit(+t.dataset.sit);return}
   if(t.dataset.sitshare){sitShare();return}
