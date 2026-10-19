@@ -1757,7 +1757,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.30.3 · sessions';
+const BUILD='0.30.4 · session card';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2084,7 +2084,7 @@ const amRace=(p,ms)=>Promise.race([p,new Promise((_,no)=>setTimeout(()=>no(new E
 function shareText(title,text){if(navigator.share)navigator.share({title,text}).catch(()=>{});else copyText(text,'Song list copied. Paste it anywhere.')}
 async function sitPlaylist(mode){
   const S=(st.sits||[])[st.sitI];if(!S)return;const X=sitStats(S);
-  const name=sitTitle(S).replace(/^./,c=>c.toUpperCase())+', '+new Date(X.t0).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+  const name=sitName(S);
   const items=[];S.items.forEach(x=>{if(x.t&&!items.some(y=>nz(y.title)===nz(x.t)&&nz(y.artist)===nz(x.a)))items.push({title:x.t,artist:x.a,am:x.am||''})});
   if(!items.length){toast('No songs in this one yet.');return}
   const plain=()=>`${name}. What I played on the turntable:\n\n`+items.map((x,i)=>`${i+1}. ${x.title} · ${x.artist}`).join('\n')+'\n\nMade with Memory Wax';
@@ -2104,15 +2104,16 @@ async function amConnectNative(){try{const r=await amRace(Capacitor.nativePromis
    on the cream card the transparent wordmark. */
 const IMGC={};
 function loadImg(src){return IMGC[src]||(IMGC[src]=new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=no;im.src=src}))}
-async function cardLogo(x,W,H,bg){
+async function cardLogo(x,W,H,bg,lh){
   const h=String(bg||'#000').replace('#',''),lum=(parseInt(h.slice(0,2),16)*.3+parseInt(h.slice(2,4),16)*.59+parseInt(h.slice(4,6),16)*.11)/255;
   try{
-    if(lum<.5){const im=await loadImg('assets/memory-wax-logo.png'),sx=80,sy=225,sw=1100,sh=800,w=300,hh=w*sh/sw;x.save();x.globalCompositeOperation='lighten';x.drawImage(im,sx,sy,sw,sh,W-64-w,H-50-hh,w,hh);x.restore()}
+    if(lum<.5){const im=await loadImg('assets/memory-wax-logo.png'),sx=80,sy=225,sw=1100,sh=800,hh=lh||218,w=hh*sw/sh;x.save();x.globalCompositeOperation='lighten';x.drawImage(im,sx,sy,sw,sh,W-64-w,H-50-hh,w,hh);x.restore()}
     else{const im=await loadImg('assets/memory-wax-wordmark-ox.png'),w=230,hh=w*844/1643;x.drawImage(im,W-72-w,H-62-hh,w,hh)}
   }catch(e){x.save();x.font='500 26px "DM Mono",monospace';x.globalAlpha=.85;x.textAlign='right';x.fillText('MADE WITH MEMORY WAX',W-72,H-70);x.restore()}
 }
 async function cardFonts(){try{await document.fonts.load('900 100px Archivo');await document.fonts.load('italic 40px "Instrument Serif"');await document.fonts.load('20px "DM Mono"')}catch(_){}}
-function cardShare(b,name){const f=new File([b],name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'Memory Wax'}).catch(()=>{});else saveBlob(b)}
+function cardShare(b,name,text){const f=new File([b],name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share(text?{files:[f],title:'Memory Wax',text}:{files:[f],title:'Memory Wax'}).catch(()=>{});else saveBlob(b)}
+const sitName=S=>sitTitle(S).replace(/^./,c=>c.toUpperCase())+', '+new Date(S.s).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
 async function cardDraw(o){
   await cardFonts();const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   x.fillStyle='#540B0E';x.fillRect(0,0,W,H);
@@ -2131,11 +2132,46 @@ async function cardDraw(o){
   await cardLogo(x,W,H,'#540B0E');
   return new Promise(res=>c.toBlob(res,'image/png'));
 }
-async function sitShare(){
-  const S=(st.sits||[])[st.sitI];if(!S)return;const X=sitStats(S);
-  const b=await cardDraw({kicker:sitTitle(S)+' · '+new Date(X.t0).toLocaleDateString(undefined,{month:'short',day:'numeric'}),big:X.recs.length+' record'+(X.recs.length===1?'':'s'),sub:fmtHrs(X.dur)+' · '+X.songs+' song'+(X.songs===1?'':'s'),rows:X.recs.map(g=>[g.t,g.a]),quote:X.star?`${X.star.n}${X.star.role?' on '+X.star.role:''}, on ${X.star.recs.length} of them.`:(()=>{const o=X.people.filter(p=>!p.lead).slice(0,3).map(p=>p.n);return o.length?'With '+(o.length>1?o.slice(0,-1).join(', ')+' and '+o[o.length-1]:o[0])+'.':''})()});
-  cardShare(b,'memory-wax-session.png');
+/* the session card: every song, in the order it played. Rows size themselves to the space; long sessions go to two columns. */
+function fitText(x,t,w){t=String(t||'');if(x.measureText(t).width<=w)return t;while(t.length>1&&x.measureText(t+'…').width>w)t=t.slice(0,-1);return t.trimEnd()+'…'}
+async function sitCard(S){
+  await cardFonts();const X=sitStats(S),W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),L=72,R=W-72;
+  const songs=[];(S.items||[]).forEach(it=>{if(it.t&&!songs.some(o=>nz(o.t)===nz(it.t)&&nz(o.a)===nz(it.a)))songs.push(it)});
+  const CREAM='#FFF3B0',GOLD='#E09F3E',sp=v=>{if('letterSpacing' in x)x.letterSpacing=v};
+  x.fillStyle='#540B0E';x.fillRect(0,0,W,H);
+  x.fillStyle=GOLD;x.beginPath();x.arc(985,95,215,0,7);x.fill();x.fillStyle='#540B0E';x.beginPath();x.arc(985,95,34,0,7);x.fill();
+  x.fillStyle=CREAM;x.textBaseline='alphabetic';
+  x.font='500 28px "DM Mono",monospace';sp('5px');x.fillText(fitText(x,(sitTitle(S)+' · '+new Date(X.t0).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})).toUpperCase(),700),L,100);sp('0px');
+  x.font='900 156px Archivo,sans-serif';if('fontStretch' in x)x.fontStretch='ultra-condensed';
+  x.fillText((songs.length+' song'+(songs.length===1?'':'s')).toUpperCase(),L-4,252);if('fontStretch' in x)x.fontStretch='normal';
+  x.font='500 28px "DM Mono",monospace';sp('3px');x.globalAlpha=.85;
+  x.fillText(`${X.recs.length} RECORD${X.recs.length===1?'':'S'} · ${fmtHrs(X.dur).toUpperCase()}`,L,304);x.globalAlpha=1;sp('0px');
+  let top=352;
+  const q=X.star?`${X.star.n}${X.star.role?' on '+X.star.role:''}, on ${X.star.recs.length} of the records.`:(()=>{const o=X.people.filter(p=>!p.lead).slice(0,3).map(p=>p.n);return o.length?'With '+(o.length>1?o.slice(0,-1).join(', ')+' and '+o[o.length-1]:o[0])+'.':''})();
+  if(q){x.fillStyle=GOLD;x.font='italic 46px "Instrument Serif",Georgia,serif';x.fillText(fitText(x,q,R-L),L,top+18);x.fillStyle=CREAM;top+=58}
+  /* the list fills from here to just above the logo */
+  const LOGO_H=150,bottom=H-56-LOGO_H-26,avail=bottom-top-10,MAX2=36;
+  const two=songs.length>14,cols=two?2:1,shown=songs.length>MAX2?songs.slice(0,MAX2-1):songs,more=songs.length-shown.length;
+  const rows=Math.ceil((shown.length+(more?1:0))/cols),rh=Math.min(84,avail/Math.max(rows,1)),fs=Math.max(two?21:26,Math.min(two?25:42,rh*.56));
+  const gap=40,cw=(R-L-(cols-1)*gap)/cols;
+  shown.forEach((it,i)=>{
+    const col=two?Math.floor(i/rows):0,row=two?i%rows:i,cx=L+col*(cw+gap),y=top+row*rh+rh*.72;
+    if(row>0){x.globalAlpha=.18;x.fillRect(cx,top+row*rh,cw,2);x.globalAlpha=1}
+    x.font=`500 ${Math.round(fs*.62)}px "DM Mono",monospace`;x.globalAlpha=.6;x.fillText(String(i+1).padStart(2,'0'),cx,y);x.globalAlpha=1;
+    const nx=cx+fs*1.55,room=cx+cw-nx;
+    /* the title comes first; the artist gives up space before the title does */
+    const TF=`700 ${Math.round(fs)}px Archivo,sans-serif`,AF=`400 ${Math.round(fs*.78)}px Archivo,sans-serif`,artist=it.a||'';
+    x.font=TF;const tw=x.measureText(it.t).width;x.font=AF;const full=x.measureText(artist).width;
+    const aw=Math.min(full,Math.max(room*(two?.24:.34),room-tw-20));
+    x.font=TF;const title=fitText(x,it.t,room-aw-20);x.fillText(title,nx,y);
+    x.font=AF;x.globalAlpha=.7;x.textAlign='right';x.fillText(fitText(x,artist,aw),cx+cw,y);x.textAlign='left';x.globalAlpha=1;
+  });
+  if(more){const i=shown.length,col=two?Math.floor(i/rows):0,row=two?i%rows:i;x.font=`500 ${Math.round(fs*.7)}px "DM Mono",monospace`;x.globalAlpha=.75;x.fillText(`+ ${more} MORE`,L+col*(cw+gap)+fs*1.55,top+row*rh+rh*.72);x.globalAlpha=1}
+  await cardLogo(x,W,H,'#540B0E',LOGO_H);
+  return new Promise(res=>c.toBlob(res,'image/png'));
 }
+async function sitShare(){const S=(st.sits||[])[st.sitI];if(!S)return;const X=sitStats(S),n=new Set((S.items||[]).map(i=>nz(i.t)+'|'+nz(i.a))).size;
+  cardShare(await sitCard(S),'memory-wax-session.png',`${sitName(S)}. What I played on the turntable: ${n} song${n===1?'':'s'} from ${X.recs.length} record${X.recs.length===1?'':'s'}.\n\nMade with Memory Wax`)}
 
 /* ---------- Your year on the turntable: counted from spins Listen heard and spins you logged ---------- */
 function yearData(Y){
@@ -2178,7 +2214,7 @@ function renderYear(){
 async function yearShare(){
   const D=yearData(st.yearY),P=D.ppl[0];
   const b=await cardDraw({kicker:D.Y+' on the turntable',big:D.total+' spin'+(D.total===1?'':'s'),sub:D.per.length+' record'+(D.per.length===1?'':'s')+' · '+D.nights.length+' listening session'+(D.nights.length===1?'':'s'),rows:D.per.map(x=>[x.r.t,x.n+'×']),quote:P?`Heard most: ${P.n}${P.role?' on '+P.role:''}, ${P.n2} spins.`:''});
-  cardShare(b,'memory-wax-'+D.Y+'.png');
+  cardShare(b,'memory-wax-'+D.Y+'.png',`${D.Y} on the turntable: ${D.total} spin${D.total===1?'':'s'} across ${D.per.length} record${D.per.length===1?'':'s'}${P?`. The player I heard most: ${P.n}`:''}.\n\nMade with Memory Wax`);
 }
 
 /* ---------- Which version is this? Listening checks the songs against the pressing you picked ---------- */
