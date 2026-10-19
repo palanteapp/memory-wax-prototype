@@ -1479,7 +1479,9 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <button class="opt-card" data-set="import"><b>Import from Discogs</b><span>Your own collection, read with your Discogs token. Nothing is written back.</span></button>
       <button class="opt-card" data-set="csv"><b>Upload a CSV</b><span>Title and Artist columns are enough. Label, catalog number, barcode, matrix, condition and price come along when present.</span></button>
       <div class="sethead">Your data</div>
-      <button class="opt-card" data-set="yourdata"><b>What’s on this phone</b><span>Counts, what leaves the phone, and why nothing syncs yet.</span></button>
+      <div class="trow" id="cloudRow" hidden><div><b>Sync with iCloud</b><span class="d" id="cloudSub">Keeps your iPhone and iPad the same.</span></div><button class="sw" data-cloud="toggle" aria-pressed="true" aria-label="Sync with iCloud"></button></div>
+      <button class="ghost" id="cloudNow" data-cloud="now" hidden style="margin:-4px 0 8px">Sync now</button>
+      <button class="opt-card" data-set="yourdata"><b>What’s on this phone</b><span>Counts, what leaves the phone, and where your copies are kept.</span></button>
       <button class="opt-card" data-set="promises"><b>Our promises</b><span>Free, yours to take with you, and what happens if we ever close.</span></button>
       <button class="opt-card" data-set="backup"><b>Download a backup</b><span>One file: records, shelves, grades, prices, Dream Crate and your photos. Save it to iCloud Drive or anywhere.</span></button>
       <button class="opt-card" data-set="restore"><b>Restore a backup</b><span>Replaces what is on this phone with a backup file.</span></button>
@@ -1753,7 +1755,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.29.1 · originals';
+const BUILD='0.30.0 · icloud';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -1940,7 +1942,7 @@ function hearNext(sec){
 }
 const hearLeft=m=>m&&m.duration?Math.max(0,m.duration-(m.offset||0)-(Date.now()/1000-(m.at||Date.now()/1000))):0;
 function hearSchedule(){
-  const m=HEAR.m,left=hearLeft(m),r=HEAR.rec?recOf(HEAR.rec):null,pos=r?hearPos(r,m):null;
+  const m=HEAR.m,left=hearLeft(m),r=HEAR.rec?recIf(HEAR.rec):null,pos=r?hearPos(r,m):null;
   clearTimeout(HEAR.flip);HEAR.flip=0;
   if(pos&&pos.last&&pos.side&&left)HEAR.flip=setTimeout(()=>{HEAR.flip=0;HEAR.flipNow=pos.side;haptic('tick');renderHear()},left*1000);
   hearNext(left?Math.min(300,Math.max(8,Math.round(left+4))):45);
@@ -2044,9 +2046,9 @@ function sidePeople(r){
 function sitStats(S){
   const it=S.items||[],st0=it.map(x=>x.at-(x.off||0)*1e3),en=it.map(x=>x.at-(x.off||0)*1e3+(x.dur||0)*1e3);
   const t0=Math.min(...st0),t1=Math.max(...en,...it.map(x=>x.at));
-  const recs=new Map();it.forEach(x=>{const r=x.id?recOf(x.id):null,k=r?'r'+r.id:nz(x.al||x.t)+'|'+nz(x.a);const g=recs.get(k)||{id:r?r.id:0,t:r?r.t:(x.al||x.t),a:r?r.a:x.a,art:r?cov(r):x.art,songs:[]};if(!g.songs.includes(x.t))g.songs.push(x.t);recs.set(k,g)});
+  const recs=new Map();it.forEach(x=>{const r=x.id?recIf(x.id):null,k=r?'r'+r.id:nz(x.al||x.t)+'|'+nz(x.a);const g=recs.get(k)||{id:r?r.id:0,t:r?r.t:(x.al||x.t),a:r?r.a:x.a,art:r?cov(r):x.art,songs:[]};if(!g.songs.includes(x.t))g.songs.push(x.t);recs.set(k,g)});
   const R=[...recs.values()],ppl=new Map();
-  R.forEach(g=>{if(!g.id)return;sidePeople(recOf(g.id)).forEach(p=>{const q=ppl.get(p.n)||{...p,recs:[]};if(!p.lead)q.lead=false;q.recs.push(g.t);ppl.set(p.n,q)})});
+  R.forEach(g=>{if(!g.id)return;sidePeople(recIf(g.id)).forEach(p=>{const q=ppl.get(p.n)||{...p,recs:[]};if(!p.lead)q.lead=false;q.recs.push(g.t);ppl.set(p.n,q)})});
   const P=[...ppl.values()].sort((a,b)=>b.recs.length-a.recs.length||(a.lead?1:0)-(b.lead?1:0));
   const star=P.find(p=>!p.lead&&p.recs.length>=2)||P.find(p=>p.recs.length>=2)||null;
   return {t0,t1,dur:Math.max(0,t1-t0),recs:R,songs:it.length,people:P,star};
@@ -2062,10 +2064,10 @@ function renderSit(){
   h+=`<div class="pathh">What you played</div><div class="ylist">${X.recs.map((g,i)=>`<button${g.id?` data-open="${g.id}"`:' disabled'}><span class="rk">${String(i+1).padStart(2,'0')}</span><span class="ythumb"${g.art?` style="background-image:url('${esc(g.art)}')"`:''}></span><span class="tx"><b>${esc(g.t)}</b><small>${esc(g.a)}${g.id?'':' · not on your shelf'}</small></span><span class="ct">${g.songs.length} song${g.songs.length===1?'':'s'}</span></button>`).join('')}</div>`;
   const others=X.people.filter(p=>!p.lead).slice(0,10);
   if(others.length)h+=`<div class="pathh">Who you heard</div><div class="opts" style="margin-top:8px">${others.map(p=>`<button class="pb" aria-pressed="true" data-crn="${esc(p.n)}" data-crr="${esc(p.role)}"${p.mb?` data-mbid="${p.mb}"`:''}>${esc(p.n)}<small style="display:block;font-weight:400;opacity:.75">${esc(p.role)}</small></button>`).join('')}</div>`;
-  else if(X.recs.some(g=>g.id&&!recOf(g.id).mbc))h+='<p class="fine2">Who played on these appears once their credits load.</p>';
+  else if(X.recs.some(g=>g.id&&recIf(g.id)&&!recIf(g.id).mbc))h+='<p class="fine2">Who played on these appears once their credits load.</p>';
   h+=`<button class="go press" data-sitshare="1" style="margin-top:16px">Share the card</button><p class="fine2" style="margin-top:8px">Made from the songs Listen named. Only you see this unless you share the card.</p>`;
   B.innerHTML=h;
-  X.recs.forEach(g=>{if(g.id){const r=recOf(g.id);if(r&&r.real&&!r.mbc)ensureCredits(r)}});
+  X.recs.forEach(g=>{if(g.id){const r=recIf(g.id);if(r&&r.real&&!r.mbc)ensureCredits(r)}});
 }
 async function cardFonts(){try{await document.fonts.load('900 100px Archivo');await document.fonts.load('italic 40px "Instrument Serif"');await document.fonts.load('20px "DM Mono"')}catch(_){}}
 function cardShare(b,name){const f=new File([b],name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'Memory Wax'}).catch(()=>{});else saveBlob(b)}
@@ -2201,7 +2203,7 @@ async function hearSwitch(id,mbid){
   await pr;renderHear();
 }
 function renderHear(){
-  const B=$('#hearBody');if(!B)return;const m=HEAR.m,r=HEAR.rec?recOf(HEAR.rec):null;
+  const B=$('#hearBody');if(!B)return;const m=HEAR.m,r=HEAR.rec?recIf(HEAR.rec):null;
   const ring=on=>`<div class="hring${on?' on':''}" aria-hidden="true"><i></i><i></i><i></i><b></b></div>`;
   const follow=`<label class="hfollow"><input type="checkbox" data-hearfollow="1"${HEAR.follow?' checked':''}><span>Follow along: name each track as it plays, and tell me when it’s time to flip</span></label>`;
   let h='<h4 class="disp">Listen</h4>';
@@ -2395,6 +2397,7 @@ const MODES={
 };
 const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const recOf=id=>RECS.find(r=>r.id===id)||RECS[0];
+const recIf=id=>RECS.find(r=>r.id===id)||null;
 const copyOf=id=>(st.copies[id]=st.copies[id]||{cond:null,paid:'',where:''});
 const MODEOF={confirmed:'confirmed',likely:'likely',album:'cover'};
 const realModeOf=r=>r.ev?evMode(r):'barcode';
@@ -2879,7 +2882,7 @@ function fillLegalContact(){
   const links=SITE_URL?`<p class="fine2">The full <a href="${esc(SITE_URL)}/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="${esc(SITE_URL)}/support.html" target="_blank" rel="noopener">Support</a> pages are on our website.</p>`:'';
   el.innerHTML=mail+links;
 }
-function renderSettings(){$$('#sheet-settings .sw').forEach(b=>b.setAttribute('aria-pressed',String(!!prefs[b.dataset.set])));const x=safetyInfo(),b=$('#safetyBtn');if(b){b.hidden=!x;if(x)$('#safetySub').textContent=`A copy from ${new Date(x.at).toLocaleDateString()}, before the update from ${x.from} to ${x.to}.`}}
+function renderSettings(){$$('#sheet-settings .sw[data-set]').forEach(b=>b.setAttribute('aria-pressed',String(!!prefs[b.dataset.set])));cloudPaint();const x=safetyInfo(),b=$('#safetyBtn');if(b){b.hidden=!x;if(x)$('#safetySub').textContent=`A copy from ${new Date(x.at).toLocaleDateString()}, before the update from ${x.from} to ${x.to}.`}}
 function renderBatch(){
   const n=st.queue.length,rv=st.queue.filter(q=>q.review).length;
   $('#batchList').innerHTML=st.queue.map(q=>{const r=RECS.find(x=>x.id===q.id);return `<div class="vr"><b>${r.t}</b><span>${q.review?'Needs a second look':'Confirmed'}</span></div>`}).join('');
@@ -4285,7 +4288,7 @@ function evMode(r){const e=r.ev||{};if(e.dw&&e.dw.match&&e.dw.match.sc>=.8)retur
 function addRel(hit,ev){
   const ex=RECS.find(r=>r.real&&(hit.mbid?r.mb===hit.mbid:hit.dg?r.dg===hit.dg:hit.am?r.am===hit.am:(hit.src==='typed'&&r.src==='typed'&&nz(r.t)===nz(hit.t)&&nz(r.a)===nz(hit.a))));let id;
   if(ex){id=ex.id;st.owned.add(id);ex.ev={...(ex.ev||{}),...ev};if(!ex.cat&&hit.cat)ex.cat=hit.cat;if(!ex.lab&&hit.lab)ex.lab=hit.lab;if(!ex.ctry&&hit.ctry)ex.ctry=hit.ctry}
-  else{id=Math.max(100,...RECS.map(r=>r.id))+1;const ord=Math.max(...RECS.map(r=>r.ord||0))+1;
+  else{id=newRecId();const ord=Math.max(...RECS.map(r=>r.ord||0))+1;
     RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid||'',dg:hit.dg||undefined,am:hit.am||undefined,src:hit.src||undefined,rg:hit.rg||'',bc:ev.bc?ev.bc.code:(ev.bcRaw||undefined),cover:hit.mbid?'https://coverartarchive.org/release/'+hit.mbid+'/front-250':'',ev,added:Date.now()});st.owned.add(id);st.justAdded=id}
   const r=recOf(id);{const qs=st.found&&st.found.q&&st.found.q.size;if(qs&&!r.fmt)r.fmt=SIZEFMT[qs]}if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
   if((r.src==='discogs'||r.src==='apple')&&!r.mb)attachMB(r);
@@ -4970,7 +4973,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
@@ -5035,6 +5038,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.dgtest){dgTest();return}
   if(t.dataset.hear){const a=t.dataset.hear;if(a==='open')openHear();else if(a==='go')hearGo();else if(a==='stop'){hearStop();renderHear()}return}
   if(t.dataset.hearadd){hearAdd(t.dataset.hearadd);return}
+  if(t.dataset.cloud){if(t.dataset.cloud==='toggle'){if(cloudOn()){try{localStorage.setItem('mw_cloud','off');localStorage.removeItem('mw_sync_base')}catch(e){}toast('iCloud sync is off on this device.')}else{try{localStorage.removeItem('mw_cloud')}catch(e){}CS.status='';cloudSync('on')}}else{CS.status='';cloudSync('now')}cloudPaint();return}
   if(t.dataset.hearorg){HEAR.orgOpen=!HEAR.orgOpen;renderHear();return}
   if(t.dataset.hearver){const a=t.dataset.hearver,id=HEAR.vflag&&HEAR.vflag.id;if(a==='find')hearVersions(id);else if(a==='no'){const r=recOf(id);if(r){r.verOk=Date.now();saveReal()}HEAR.vflag=null;HEAR.ver=null;renderHear()}else if(a.startsWith('pick:'))hearSwitch(id,a.slice(5));return}
   if(t.dataset.sit!=null&&t.dataset.sit!==''){openSit(+t.dataset.sit);return}
@@ -5280,6 +5284,7 @@ function safetyRestore(){
 const BK_NATIVE=()=>{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.nativePromise&&(C.PluginHeaders||[]).some(h=>h.name==='Backup'))};
 let mirrorTimer=0,mirrorLast='';
 function mirrorSave(){
+  cloudSoon();
   if(DEMO||!BK_NATIVE())return;
   clearTimeout(mirrorTimer);
   mirrorTimer=setTimeout(()=>{
@@ -5287,6 +5292,115 @@ function mirrorSave(){
     if(!text||text===mirrorLast)return;
     Capacitor.nativePromise('Backup','save',{text}).then(()=>{mirrorLast=text;try{localStorage.setItem('mw_mirror_at',String(Date.now()))}catch(e){}}).catch(()=>{});
   },4000);
+}
+/* ---------- iCloud sync ----------
+   One private CloudKit record holds the collection. Each device merges three ways: what both last agreed on (the base),
+   what changed here, and what changed there. Edits on both sides survive; a field changed on both keeps this device's version.
+   Photos and tokens never leave the device. */
+/* numbers that two devices adding records at the same moment won't both pick */
+function newRecId(){let id=(Date.now()%1e12)*10+Math.floor(Math.random()*10);while(RECS.some(r=>r.id===id))id++;return id}
+const CLOUD_OK=()=>{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.nativePromise&&(C.PluginHeaders||[]).some(h=>h.name==='Cloud'))};
+var CS={busy:false,last:0,err:'',status:'',again:false,dev:'',timer:0};
+const cloudOn=()=>{try{return localStorage.getItem('mw_cloud')!=='off'}catch(e){return true}};
+const syIsO=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
+function syCanon(x){if(x===undefined||x===null)return 'null';if(Array.isArray(x))return '['+x.map(syCanon).join(',')+']';if(typeof x==='object')return '{'+Object.keys(x).filter(k=>x[k]!==undefined).sort().map(k=>JSON.stringify(k)+':'+syCanon(x[k])).join(',')+'}';return JSON.stringify(x)}
+function syM3(b,l,r){
+  const L=syCanon(l),R=syCanon(r);if(L===R)return l;const B=syCanon(b);
+  if(L===B)return r;if(R===B)return l;
+  if(syIsO(l)&&syIsO(r)){const o={},bb=syIsO(b)?b:{};new Set([...Object.keys(l),...Object.keys(r)]).forEach(k=>{const v=syM3(bb[k],l[k],r[k]);if(v!==undefined)o[k]=v});return o}
+  return l===undefined?r:l;
+}
+const syBy=(a,k)=>{const o={};(a||[]).forEach((x,i)=>{o[k?k(x):(x&&x.id!=null?String(x.id):'i'+i)]=x});return o};
+const SYK={wants:w=>nz(w.t||'')+'|'+nz(w.a||''),series:x=>nz(x.n||'')};
+function syNorm(d){
+  d=d||{};const copies={},sits={},own={};
+  Object.entries(d.copies||{}).forEach(([id,c])=>{const {plays,...rest}=c||{};copies[id]={...rest,plays:syBy(plays,p=>String(p.at))}});
+  (d.sits||[]).forEach(S=>{sits[String(S.s)]={s:S.s,e:S.e,items:syBy(S.items,x=>String(x.at))}});
+  (d.owned||[]).forEach(id=>own[id]=1);
+  return {recs:syBy(d.recs),owned:own,copies,shelves:syBy(d.shelves),wants:syBy(d.wants,SYK.wants),playlists:syBy(d.playlists),sessions:syBy(d.sessions),series:syBy(d.series,SYK.series),sits,spin:d.spin||null,lastImport:d.lastImport||null};
+}
+function syDenorm(N,L,R){
+  const arr=(o,prev,k)=>{const ks=Object.keys(o||{}),ord=(prev||[]).map((x,i)=>k?k(x):(x&&x.id!=null?String(x.id):'i'+i)).filter(x=>x in o);ks.forEach(x=>{if(!ord.includes(x))ord.push(x)});return ord.map(x=>o[x])};
+  return {app:'memory-wax',v:1,at:Date.now(),
+    recs:arr(N.recs,L.recs),owned:Object.keys(N.owned||{}).map(Number),
+    copies:Object.fromEntries(Object.entries(N.copies||{}).map(([id,c])=>{const {plays,...rest}=c||{};const P=Object.values(plays||{}).sort((a,b)=>a.at-b.at);return [id,P.length?{...rest,plays:P}:rest]})),
+    shelves:arr(N.shelves,L.shelves),nextShelf:Math.max(L.nextShelf||1,R.nextShelf||1,...arr(N.shelves,L.shelves).map(x=>(x.id||0)+1)),
+    wants:arr(N.wants,L.wants,SYK.wants),playlists:arr(N.playlists,L.playlists),sessions:arr(N.sessions,L.sessions),nextSess:Math.max(L.nextSess||1,R.nextSess||1),
+    series:arr(N.series,L.series,SYK.series),spin:N.spin||null,lastImport:N.lastImport||null,photoKeys:L.photoKeys||{},
+    sits:Object.values(N.sits||{}).map(S=>({s:S.s,e:S.e,items:Object.values(S.items||{}).sort((a,b)=>a.at-b.at)})).sort((a,b)=>a.s-b.s)};
+}
+const syIdent=r=>r.mb?'mb:'+r.mb:r.dg?'dg:'+r.dg:r.am?'am:'+r.am:'t:'+nz(r.t||'')+'|'+nz(r.a||'');
+/* the same record added on both devices, or two records that happened to get the same number */
+function syRemap(base,local,remote){
+  const B=new Set(((base&&base.recs)||[]).map(r=>r.id)),Lid=new Map((local.recs||[]).map(r=>[r.id,r])),Lident=new Map((local.recs||[]).map(r=>[syIdent(r),r.id])),map=new Map();
+  (remote.recs||[]).forEach(r=>{if(B.has(r.id))return;const li=Lident.get(syIdent(r));
+    if(li!=null&&li!==r.id&&!B.has(li)){map.set(r.id,li);return}
+    const l=Lid.get(r.id);if(l&&syIdent(l)!==syIdent(r))map.set(r.id,newRecId())});
+  if(!map.size)return remote;
+  const f=id=>map.has(id)?map.get(id):id,d=JSON.parse(JSON.stringify(remote));
+  d.recs.forEach(r=>r.id=f(r.id));d.owned=(d.owned||[]).map(f);
+  d.copies=Object.fromEntries(Object.entries(d.copies||{}).map(([k,v])=>[String(f(+k)),v]));
+  (d.shelves||[]).forEach(x=>x.recs=(x.recs||[]).map(f));(d.playlists||[]).forEach(p=>(p.items||[]).forEach(i=>{i.rec=f(i.rec)}));
+  (d.sits||[]).forEach(S=>(S.items||[]).forEach(x=>{if(x.id)x.id=f(x.id)}));if(d.spin&&d.spin.id)d.spin.id=f(d.spin.id);
+  return d;
+}
+function syMerge(base,local,remote){
+  const R=syRemap(base,local,remote),NB=base?syNorm(base):undefined,NL=syNorm(local),NR=syNorm(R),M=syM3(NB,NL,NR);
+  /* removing something is deliberate; a cover or credits fetched in the background on the other device must not bring it back */
+  if(NB)['recs','owned','copies','shelves','wants','playlists','sessions','series'].forEach(k=>Object.keys(NB[k]||{}).forEach(id=>{if(M[k]&&(!(id in (NL[k]||{}))||!(id in (NR[k]||{}))))delete M[k][id]}));
+  return syDenorm(M,local,R);
+}
+const sySame=(a,b)=>syCanon(syNorm(a))===syCanon(syNorm(b));
+const syBaseGet=()=>{try{return JSON.parse(localStorage.getItem('mw_sync_base')||'null')}catch(e){return null}};
+const syBaseSet=d=>{try{localStorage.setItem('mw_sync_base',JSON.stringify(d))}catch(e){}};
+/* replace this device's records with the merged copy (sample records are left alone) */
+function syApply(d){
+  const realBefore=new Set(RECS.filter(r=>r.real).map(r=>r.id)),demoOwned=[...st.owned].filter(id=>!realBefore.has(id));
+  const keep=RECS.filter(r=>!r.real);RECS.length=0;RECS.push(...keep,...(d.recs||[]));
+  st.owned.clear();demoOwned.forEach(id=>st.owned.add(id));(d.owned||[]).forEach(id=>st.owned.add(id));
+  Object.keys(st.copies).forEach(k=>{if(realBefore.has(+k))delete st.copies[k]});Object.assign(st.copies,d.copies||{});
+  if(d.shelves)st.shelves=d.shelves;st.nextShelf=Math.max(st.nextShelf||1,d.nextShelf||1);
+  if(d.wants)st.wants=d.wants;if(d.playlists)st.playlists=d.playlists;if(d.sessions){st.sessions=d.sessions;st.nextSess=Math.max(st.nextSess||1,d.nextSess||1)}
+  if(d.series)st.series=d.series;st.spin=d.spin||null;st.lastImport=d.lastImport||st.lastImport||null;st.sits=d.sits||[];
+  saveReal();saveState();
+  try{renderCollection()}catch(e){}
+  if(st.screen==='reveal'){if(!recIf(st.rec))go('collection');else{try{fillCopy(st.rec)}catch(e){}}}
+}
+async function cloudSync(why,tries){
+  tries=tries||0;if(DEMO||!CLOUD_OK()||!cloudOn())return;
+  if(CS.busy){CS.again=true;return}CS.busy=true;cloudPaint();
+  try{
+    const local=snapshot(),base=syBaseGet();
+    if(why==='save'&&base&&sySame(local,base)){CS.busy=false;cloudPaint();return}
+    const r=await cloudCall('pull',{});if(r.error)throw new Error(r.error);
+    let remote=null;if(r.text){try{remote=JSON.parse(r.text)}catch(e){}}if(remote&&remote.app!=='memory-wax')remote=null;
+    let merged=remote?syMerge(base,local,remote):{...local,at:Date.now()};
+    const lo=new Set(local.owned||[]),mo=new Set(merged.owned||[]),gone=[...lo].filter(id=>!mo.has(id));
+    if(remote&&gone.length>=5&&gone.length>lo.size*.3&&!confirm(`Your other device removed ${gone.length} records from your collection. Remove them on this device too? Tap Cancel to keep them everywhere.`))merged=syMerge(null,local,remote);
+    const here=!sySame(merged,local);
+    if(here)syApply(merged);
+    if(!remote||!sySame(merged,remote)){
+      const p=await cloudCall('push',{text:JSON.stringify(merged)});
+      if(p.conflict){CS.busy=false;if(tries<3)return cloudSync('conflict',tries+1);throw new Error('busy')}
+      if(p.error)throw new Error(p.error);
+    }
+    syBaseSet(merged);CS.last=Date.now();CS.err='';CS.dev=r.device||'';try{console.log('[cloud] '+why+': ok, '+(merged.recs||[]).length+' records')}catch(x){}
+    if(here&&remote&&why!=='start')toast('Updated from your other device.');
+  }catch(e){CS.err=String((e&&e.message)||e);if(/noAccount|restricted/.test(CS.err))CS.status='';try{console.warn('[cloud] '+why+': '+CS.err)}catch(x){}}
+  CS.busy=false;cloudPaint();
+  if(CS.again){CS.again=false;setTimeout(()=>cloudSync('again'),1500)}
+}
+/* iCloud can go quiet (no signal, account settling); never let one stuck call stop syncing for good */
+function cloudCall(m,o){return Promise.race([Capacitor.nativePromise('Cloud',m,o),new Promise(ok=>setTimeout(()=>ok({error:'offline'}),25000))])}
+function cloudSoon(){if(!CLOUD_OK()||!cloudOn())return;clearTimeout(CS.timer);CS.timer=setTimeout(()=>cloudSync('save'),5000)}
+function cloudPaint(){
+  const row=$('#cloudRow'),now=$('#cloudNow');if(!row)return;const ok=CLOUD_OK();row.hidden=!ok;now.hidden=!ok||!cloudOn();if(!ok)return;
+  const on=cloudOn(),sw=row.querySelector('[data-cloud]');sw.setAttribute('aria-pressed',String(on));
+  const ago=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?'just now':m<60?m+' min ago':new Date(t).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})};
+  const E=CS.err,msg=!on?'Off on this device. Your records stay only here.':CS.busy?'Syncing…':
+    /noAccount/.test(E)?'Sign in to iCloud in the Settings app to sync.':/restricted/.test(E)?'iCloud is restricted on this device.':/offline/.test(E)?'Waiting for a connection. It syncs when you’re back online.':/full/.test(E)?'Your iCloud storage is full, so syncing is paused.':/unavailable/.test(E)?'iCloud isn’t available in this build.':
+    E?'Couldn’t sync just now. It will try again.':CS.last?`On · synced ${ago(CS.last)}. Photos and tokens stay on each device.`:'Keeps your iPhone and iPad the same. Photos and tokens stay on each device.';
+  $('#cloudSub').textContent=msg;
 }
 /* if this phone has no records but the Documents folder has a copy (storage cleared, or a fresh install restored from iCloud), offer it back */
 async function mirrorCheck(){
@@ -5340,10 +5454,10 @@ async function backupRestore(){
 }
 /* ---- erase ---- */
 async function eraseAll(){
-  if(!confirm('Erase everything Memory Wax keeps on this phone? Records, shelves, grades, prices, photos, lab results and tokens, and the copy in the Memory Wax folder. Download a backup first if you want any of it back.'))return;
+  if(!confirm('Erase everything Memory Wax keeps on this phone? Records, shelves, grades, prices, photos, lab results and tokens, and the copy in the Memory Wax folder. iCloud sync turns off on this phone, so your other devices keep their records. Download a backup first if you want any of it back.'))return;
   try{['mw_state','mw_real_recs','mw_prefs','mw_lab','mw_backup_at','mw_demo'].forEach(k=>localStorage.removeItem(k));localStorage.removeItem('mw_rt')}catch(e){}
   try{indexedDB.deleteDatabase('mwlab')}catch(e){}
-  try{['mw_build','mw_safety','mw_mirror_at','mw_state_unreadable'].forEach(k=>localStorage.removeItem(k))}catch(e){}
+  try{['mw_build','mw_safety','mw_mirror_at','mw_state_unreadable','mw_sync_base'].forEach(k=>localStorage.removeItem(k));localStorage.setItem('mw_cloud','off')}catch(e){}
   if(BK_NATIVE()){try{await Capacitor.nativePromise('Backup','clear',{})}catch(e){}}
   location.reload();
 }
@@ -5356,7 +5470,7 @@ function dgRecord(x){
   /* same Discogs release, or a record added by scan/CSV with the same title and lead artist: merge rather than duplicate */
   const ex=RECS.find(r=>r.real&&r.dg===b.id)||RECS.find(r=>r.real&&!r.dg&&norm(r.t)===norm(b.title||'')&&(!a0||norm(r.a).includes(a0)));
   const lab=(b.labels||[])[0]||{},fmt=(b.formats||[]).map(f=>[f.name,...(f.descriptions||[])].join(' ')).join(', ');
-  const rec=ex||{id:Math.max(100,...RECS.map(r=>r.id))+1,ord:Math.max(0,...RECS.map(r=>r.ord||0))+1,cred:[],real:true,c:'album',g:(b.genres||[])[0]||''};
+  const rec=ex||{id:newRecId(),ord:Math.max(0,...RECS.map(r=>r.ord||0))+1,cred:[],real:true,c:'album',g:(b.genres||[])[0]||''};
   Object.assign(rec,{t:b.title||'Untitled',a:(b.artists||[]).map(a=>dgClean(a.name)+(a.join&&a.join!==','?' '+a.join+' ':a.join?', ':'')).join('').replace(/[\s,]+$/,'')||'Unknown artist',y:b.year||rec.y||0,m:rec.id%4,lab:dgClean(lab.name),cat:lab.catno||'',fmt,dg:b.id,dgm:b.master_id||0,cover:b.cover_image||b.thumb||rec.cover||'',src:'discogs',
     ev:{...(rec.ev||{}),dg:{id:b.id,inst:x.instance_id,folder:x.folder_id,at:Date.now()}}});
   if(!ex)RECS.push(rec);st.owned.add(rec.id);
@@ -5414,7 +5528,7 @@ function csvImportReal(rows){
     const t=g(r,'t');if(!t)return;const a=g(r,'a');
     const ex=RECS.find(x=>x.real&&norm(x.t)===norm(t)&&(!a||norm(x.a)===norm(a)));
     if(ex){had++;st.owned.add(ex.id);return}
-    const id=Math.max(100,...RECS.map(x=>x.id))+1,ord=Math.max(0,...RECS.map(x=>x.ord||0))+1,mx=g(r,'mx');
+    const id=newRecId(),ord=Math.max(0,...RECS.map(x=>x.ord||0))+1,mx=g(r,'mx');
     const rec={id,t,a:a||'Unknown artist',y:+(g(r,'y').match(/\d{4}/)||[0])[0]||0,g:'',c:mx?'likely':'album',m:id%4,ord,lab:g(r,'lab'),cat:g(r,'cat'),ctry:g(r,'ctry'),fmt:g(r,'fmt'),cred:[],real:true,src:'csv',bc:g(r,'bc')||undefined,mx:mx||undefined,ev:{csv:{at:Date.now()},...(mx?{dw:{mx,conf:0,frames:0,n:0,parts:[],match:null,gloss:decodeRunout(mx),typed:true}}:{})}};
     if(rec.bc)rec.ev.bc={code:rec.bc,n:1,typed:true};
     const cond=g(r,'cond').toUpperCase().replace(/\s/g,''),cp=copyOf(id);if(/^(M|NM|VG\+|VG|G\+|G|F|P)$/.test(cond))cp.cond=cond;if(g(r,'paid'))cp.paid=g(r,'paid');if(g(r,'where'))cp.where=g(r,'where');
@@ -5442,6 +5556,7 @@ async function renderYourData(){
     ${DEVTOOLS?`<div><b>${(LAB.trials||[]).length}</b><span>Phase 0 lab trial${(LAB.trials||[]).length===1?'':'s'}</span></div>`:''}
     <div><b>${kb} KB</b><span>saved in this browser${back?' · last backup '+esc(back):' · never backed up'}</span></div>
     <div><b>${BK_NATIVE()?'On':'Off'}</b><span>${BK_NATIVE()?'copy in the Memory Wax folder (Files app), included in iCloud Backup'+(mir?' · saved '+esc(mir):''):'copy in the Memory Wax folder: iPhone app only'}</span></div>
+    ${CLOUD_OK()?`<div><b>${cloudOn()?'On':'Off'}</b><span>iCloud sync${cloudOn()?': your collection is kept in your private iCloud so your iPhone and iPad match. Photos and tokens stay here.'+(CS.last?' Synced '+new Date(CS.last).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})+'.':''):'. Turn it on in Settings.'}</span></div>`:''}
     <div><b>${sf?'Kept':'None yet'}</b><span>${sf?'copy from before the last update, '+new Date(sf.at).toLocaleDateString()+'. Restore it in Settings.':'a copy is made automatically before each update'}</span></div>
    </div>
    <div class="sethead">What leaves this phone</div>
@@ -5451,6 +5566,7 @@ async function renderYourData(){
     <li><b>Discogs</b>${dgTok()?' (token set)':' (no token)'}: catalog numbers and your collection list, with your token.</li>
     <li><b>Memory Wax index</b>: only when it is switched on, the barcode, catalogue number or artist and title you search for, to find the release.</li>
     <li><b>Apple Music</b>: only if you connect it, to play or save playlists.</li>
+    <li><b>Your iCloud</b>: if iCloud sync is on, your collection (not photos, not tokens) is kept in your private iCloud so your devices match. Only your Apple Account can read it.</li>
     <li><b>Apple’s Shazam</b>: only while you tap Listen, a short fingerprint of the sound (not a recording), to name the record that’s playing.</li>
    </ul>
    <p class="fine2">No account exists yet, so nothing syncs by itself. Your backup is a file you keep. Prices and places you paid never leave the phone.</p>
@@ -5459,6 +5575,7 @@ async function renderYourData(){
 }
 
 loadPrefs();applyPrefs();renderSettings();fillLegalContact();restoreState();renderCollection();loadCovers().then(()=>{try{renderCollection()}catch(e){}});setInterval(saveState,2500);mirrorCheck();addEventListener('pagehide',saveState);
+setTimeout(()=>{cloudSync('start');if(CLOUD_OK())Capacitor.nativePromise('Cloud','status',{}).then(x=>{try{console.log('[cloud] account: '+x.status+' '+(x.why||''))}catch(e){}}).catch(()=>{})},1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')cloudSync('resume')});setInterval(()=>{if(document.visibilityState==='visible')cloudSync('tick')},60000);
 {const b=$('#buildTag');if(b){b.textContent='Memory Wax '+(DEVTOOLS?BUILD:BUILD.split(' ')[0])+(DEMO?' · sample data on':'');let n=0,t0=0;b.addEventListener('click',()=>{const now=Date.now();n=now-t0<2500?n+1:1;t0=now;if(DEVTOOLS&&n>=7){n=0;closeSheets();openLab()}})}}
 renderCollection();updatePills();
 </script>
