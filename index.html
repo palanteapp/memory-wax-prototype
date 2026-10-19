@@ -576,7 +576,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .lpill::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:7px;vertical-align:1px}
 #doneBtn:not([hidden]) ~ #hearBtn{display:none}
 /* Teal accent, used sparingly: it marks the listening features (Listen, What's playing) and one action per page */
-#hearBtn.lpill{background:var(--teal);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.28),0 3px 0 rgba(0,0,0,.28)}
+#barType,#hearBtn.lpill{background:var(--teal);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.28),0 3px 0 rgba(0,0,0,.28)}
 .hearpill:not(.yr){background:var(--teal);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.28),0 3px 0 rgba(0,0,0,.28)}
 .nudge:not(.n2) i{background:var(--teal)}
 .hearpill{margin-top:14px;padding:9px 14px;border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cream);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.45);transition:transform 160ms ease-out}
@@ -1799,7 +1799,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.31.3 · name fix, teal';
+const BUILD='0.31.4 · teal pills';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
