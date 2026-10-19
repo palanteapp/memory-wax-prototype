@@ -461,7 +461,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .mestrip{display:flex;align-items:center;gap:14px;margin:18px 16px 0;width:calc(100% - 32px);padding:12px 18px 12px 12px;border-radius:999px 24px 24px 999px;background:var(--gold);color:var(--ox);text-align:left;box-shadow:6px 6px 0 var(--red);transition:transform 160ms ease-out}
 .mestrip:active{transform:scale(.98)}
 .mestrip>div{flex:1;min-width:0}
-.meedit{flex:none;font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;background:var(--ox);color:var(--cream);padding:8px 14px;border-radius:999px}
+.meedit{flex:none;font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;background:var(--teal);color:var(--cream);padding:8px 14px;border-radius:999px}
 .ppl .soon{display:inline-block;margin-top:12px;padding:7px 12px;border-radius:999px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-style:normal;background:rgba(0,0,0,.18)}
 .ppl.cur2 .soon{background:rgba(84,11,14,.12)}
 .mestrip b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:24px;line-height:.95;text-transform:uppercase}
@@ -1799,7 +1799,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.31.4 · teal pills';
+const BUILD='0.31.5 · teal edit';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
