@@ -1839,7 +1839,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.34.3 · photo on invites';
+const BUILD='0.35.0 · memorywax.app';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3841,7 +3841,7 @@ async function acVerifyCode(){
   catch(err){toast(/expired|invalid/i.test(err.message)?'That code didn’t work. Check it, or send a new one.':'Couldn’t sign in: '+err.message)}
 }
 /* Invites: a one-time link, texted. It opens a small web page with your card and an Open in Memory Wax button. */
-const INVITE_PAGE='https://palanteapp.github.io/memory-wax-prototype/invite.html';
+const INVITE_PAGE='https://memorywax.app/invite';
 const b64u=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const bytesB64u=b=>btoa(String.fromCharCode(...b)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const unb64u=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
