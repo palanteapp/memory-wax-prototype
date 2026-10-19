@@ -1839,7 +1839,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.34.0 · email + invites';
+const BUILD='0.34.1 · email link';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3809,28 +3809,44 @@ async function acDelete(){
   try{await sb('/rest/v1/rpc/delete_me',{method:'POST',body:{}});delete AC.s;delete AC.apple;acSave();FR={me:null,inc:[],out:[],list:[],at:0,busy:false,err:''};renderAc();renderScene();toast('Account deleted.')}
   catch(e){toast('Couldn’t delete: '+e.message)}
 }
-/* Email sign-in: a one-time code, no password. Supabase sends it; the code is typed here. */
-let OTP={email:'',sent:0};
+/* Email sign-in, no password. Supabase emails a one-time link; tapping it on this phone opens
+   memorywax://auth?code=…, and the app swaps that code for a session using a secret (PKCE) that never left
+   this device, so a forwarded or intercepted link is useless. If the email carries a code instead
+   (custom email templates, later), it can be typed in. */
+let OTP=(()=>{try{return JSON.parse(localStorage.getItem('mw_pkce')||'null')||{email:'',sent:0}}catch(e){return {email:'',sent:0}}})();
+const otpSave=()=>{try{if(OTP.email)localStorage.setItem('mw_pkce',JSON.stringify(OTP));else localStorage.removeItem('mw_pkce')}catch(e){}};
 async function acSendCode(){
   const e=(($('#acEmail')||{}).value||'').trim().toLowerCase();
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){toast('That email doesn’t look right.');return}
-  try{await sb('/auth/v1/otp',{method:'POST',auth:false,body:{email:e,create_user:true}});OTP={email:e,sent:Date.now()};renderAc();setTimeout(()=>{const c=$('#acCode');if(c)c.focus()},350);toast('Code sent. Check your email.')}
-  catch(err){toast(err.status===429||/rate|seconds/i.test(err.message)?'Too many codes for now. Wait a minute and try again.':'Couldn’t send the code: '+err.message)}
+  const r=new Uint8Array(32);crypto.getRandomValues(r);const v=bytesB64u(r);
+  const ch=bytesB64u(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v))));
+  try{await sb('/auth/v1/otp?redirect_to='+encodeURIComponent('memorywax://auth'),{method:'POST',auth:false,body:{email:e,create_user:true,code_challenge:ch,code_challenge_method:'s256'}});
+    OTP={email:e,sent:Date.now(),v};otpSave();renderAc();toast('Sent. Open the email on this phone and tap the link.')}
+  catch(err){toast(err.status===429||/rate|seconds/i.test(err.message)?'Too many emails for now. Wait a minute and try again.':/not authorized|authorized/i.test(err.message)?'This server can only email its owner until an email service is connected.':'Couldn’t send the email: '+err.message)}
+}
+async function acFinishLink(p){
+  if(p.error||p.error_description){toast(/expired/i.test(p.error_code||p.error_description||'')?'That sign-in link expired. Send a new one.':'That link didn’t work: '+(p.error_description||p.error));openAc();return}
+  if(!p.code)return;
+  if(!OTP.v){toast('Open the link on the phone that asked for it.');return}
+  try{const j=await sb('/auth/v1/token?grant_type=pkce',{method:'POST',auth:false,body:{auth_code:p.code,code_verifier:OTP.v}});acKeep(j);OTP={email:'',sent:0};otpSave();
+    await acLoad(true);closeSheets();go('scene');setTimeout(openAc,350);toast(FR.me?'Signed in.':'Signed in. Now pick a username.')}
+  catch(err){toast(/expired|invalid|used/i.test(err.message)?'That link was already used or expired. Send a new one.':'Couldn’t sign in: '+err.message)}
 }
 async function acVerifyCode(){
   const c=(($('#acCode')||{}).value||'').replace(/\D/g,'');
   if(c.length<6){toast('Type the code from the email.');return}
-  try{const j=await sb('/auth/v1/verify',{method:'POST',auth:false,body:{type:'email',email:OTP.email,token:c}});acKeep(j);OTP={email:'',sent:0};
+  try{const j=await sb('/auth/v1/verify',{method:'POST',auth:false,body:{type:'email',email:OTP.email,token:c}});acKeep(j);OTP={email:'',sent:0};otpSave();
     await acLoad(true);renderAc();renderScene();toast(FR.me?'Signed in.':'Signed in. Now pick a username.')}
   catch(err){toast(/expired|invalid/i.test(err.message)?'That code didn’t work. Check it, or send a new one.':'Couldn’t sign in: '+err.message)}
 }
 /* Invites: a one-time link, texted. It opens a small web page with your card and an Open in Memory Wax button. */
 const INVITE_PAGE='https://palanteapp.github.io/memory-wax-prototype/invite.html';
 const b64u=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const bytesB64u=b=>btoa(String.fromCharCode(...b)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const unb64u=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
 async function acInvite(){
   if(!acIn()||!FR.me){openAc();return}
-  const r=new Uint8Array(16);crypto.getRandomValues(r);const t=b64u(String.fromCharCode(...r)).slice(0,22).replace(/[^A-Za-z0-9_-]/g,'x');
+  const r=new Uint8Array(16);crypto.getRandomValues(r);const t=bytesB64u(r);
   try{await sb('/rest/v1/invites',{method:'POST',body:{token:t,inviter:AC.s.uid}})}catch(e){toast('Couldn’t make the invite: '+e.message);return}
   const m=st.me||{},q=new URLSearchParams({i:t,n:m.name||FR.me.name||'',h:FR.me.handle,f:m.from||'',s:m.spin||'',a:m.fav||'',c:b64u(JSON.stringify({u:AC.url,k:AC.key}))});
   [...q.keys()].forEach(k=>{if(!q.get(k))q.delete(k)});
@@ -3849,7 +3865,8 @@ async function linkTake(){
   if(!NATIVE||!(window.Capacitor&&(Capacitor.PluginHeaders||[]).some(h=>h.name==='Links')))return;
   let u='';try{u=(await Capacitor.nativePromise('Links','take',{})).url||''}catch(e){}
   if(!u)return;
-  try{const x=new URL(u);if(x.protocol==='memorywax:'&&(x.host==='invite'||x.pathname.replace(/\//g,'')==='invite'))handleInvite(Object.fromEntries(x.searchParams))}catch(e){console.warn('[links]',e)}
+  try{const x=new URL(u);const kind=x.protocol==='memorywax:'?(x.host||x.pathname.replace(/\//g,'')):'',q=Object.fromEntries(x.searchParams);
+    if(kind==='invite')handleInvite(q);else if(kind==='auth')acFinishLink({...q,...Object.fromEntries(new URLSearchParams((x.hash||'').slice(1)))})}catch(e){console.warn('[links]',e)}
 }
 window.addEventListener('mwlink',linkTake);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(linkTake,250)});
@@ -3883,11 +3900,12 @@ function renderAc(){
   else if(!acIn())main=`<p class="sub">Sign in to add friends. They’ll see the shelves you set to Friends and what you’re spinning. Your collection stays on this phone and in iCloud.</p>
     <button class="applebtn press" data-ac="apple"><span aria-hidden="true">&#xF8FF;</span> Sign in with Apple</button>
     <div class="acor"><span>or with your email</span></div>
-    ${OTP.email?`<p class="fine2" style="margin:0 0 4px">We sent a code to <b>${esc(OTP.email)}</b>. It can take a minute; check spam too.</p>
-      <label class="slab" for="acCode">Code from the email</label><input class="sin" id="acCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" enterkeyhint="go">
-      <button class="go press" data-ac="code">Sign in</button><button class="ghost" data-ac="resend">Send a new code</button><button class="ghost" data-ac="otheremail">Use a different email</button>`
+    ${OTP.email?`<p class="sub" style="margin:0 0 4px">We emailed <b>${esc(OTP.email)}</b>. Open it <b>on this ${/iPad/.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Mac/.test(navigator.userAgent))?'iPad':'iPhone'}</b> and tap the link. It opens Memory Wax, signed in.</p>
+      <p class="fine2">It can take a minute; check spam too. The link works once.</p>
+      <button class="ghost" data-ac="resend">Send it again</button><button class="ghost" data-ac="otheremail">Use a different email</button>
+      <details class="acsrv" style="margin-top:8px"><summary>Got a code instead?</summary><label class="slab" for="acCode">Code from the email</label><input class="sin" id="acCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" enterkeyhint="go"><button class="go press" data-ac="code">Sign in</button></details>`
     :`<label class="slab" for="acEmail">Email</label><input class="sin" id="acEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@example.com" enterkeyhint="send">
-      <button class="go press" data-ac="email">Email me a code</button>`}
+      <button class="go press" data-ac="email">Email me a sign-in link</button>`}
     <p class="fine2" style="margin-top:10px">No password either way. Your email is only for signing in; it never shows on your profile.</p>`;
   else if(!FR.me)main=`<p class="sub">${FR.busy?'Checking your profile…':'Pick a username so friends can find you. Lowercase letters, numbers, dots and underscores.'}</p>
     <label class="slab" for="acHandle">Username</label><input class="sin" id="acHandle" placeholder="djvarganessca" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
@@ -3920,9 +3938,9 @@ function acClick(t){
     if(k.length<20){toast('Paste the public key.');return}
     AC.url=u;AC.key=k;acSave();renderAc();renderScene();toast('Server saved on this device.')}
   else if(a==='apple')acSignIn();
-  else if(a==='email'||a==='resend'){if(a==='resend'){const e=OTP.email;OTP={email:'',sent:0};renderAc();const f=$('#acEmail');if(f)f.value=e}acSendCode()}
+  else if(a==='email'||a==='resend'){if(a==='resend'){const e=OTP.email;OTP={email:'',sent:0};otpSave();renderAc();const f=$('#acEmail');if(f)f.value=e}acSendCode()}
   else if(a==='code')acVerifyCode();
-  else if(a==='otheremail'){OTP={email:'',sent:0};renderAc()}
+  else if(a==='otheremail'){OTP={email:'',sent:0};otpSave();renderAc()}
   else if(a==='invite')acInvite();
   else if(a==='invok')invAccept();
   else if(a==='invno'){delete AC.inv;acSave();renderAc()}
