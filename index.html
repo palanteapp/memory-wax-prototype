@@ -575,6 +575,10 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 #hearBtn.lpill{left:auto;right:22px}
 .lpill::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:7px;vertical-align:1px}
 #doneBtn:not([hidden]) ~ #hearBtn{display:none}
+/* Teal accent, used sparingly: it marks the listening features (Listen, What's playing) and one action per page */
+#hearBtn.lpill{background:var(--teal);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.28),0 3px 0 rgba(0,0,0,.28)}
+.hearpill:not(.yr){background:var(--teal);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.28),0 3px 0 rgba(0,0,0,.28)}
+.nudge:not(.n2) i{background:var(--teal)}
 .hearpill{margin-top:14px;padding:9px 14px;border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cream);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.45);transition:transform 160ms ease-out}
 .hearpill::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:8px;vertical-align:1px}
 .hearpill:active{transform:scale(.96)}
@@ -884,6 +888,11 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .cond button[aria-pressed=true]{background:var(--gold);color:var(--ox);box-shadow:none}
 .mc-in{width:100%;background:rgba(255,243,176,.12);border:1.5px solid rgba(255,243,176,.45);padding:11px 13px;color:var(--cream);font-family:var(--ui);font-size:15px;font-weight:600}
 .mc-in::placeholder{color:rgba(255,243,176,.55);font-weight:500}
+/* text boxes on the cream sheets */
+.sin{display:block;width:100%;margin:6px 0 10px;padding:13px 14px;border-radius:12px;background:#fff;border:2px solid var(--ox);color:var(--ox);font-family:var(--ui);font-size:17px;font-weight:700}
+.sin::placeholder{color:rgba(84,11,14,.45);font-weight:500}
+.sin:focus{outline:none;box-shadow:0 0 0 4px rgba(224,159,62,.55)}
+.slab{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;margin-top:6px}
 .mc-two{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
 .mc-note{margin-top:14px;font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.1;opacity:.95}
 .sw{position:relative;width:48px;height:28px;border-radius:999px;background:rgba(84,11,14,.22);flex:none;transition:background-color 160ms ease-out}
@@ -1790,7 +1799,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.31.2 · profile edit';
+const BUILD='0.31.3 · name fix, teal';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2095,7 +2104,7 @@ function openSit(i){st.sitI=i;renderSit();openSheet('sit')}
 function renderSit(){
   const B=$('#sitBody'),S=(st.sits||[])[st.sitI];if(!B)return;if(!S){B.innerHTML='<h4 class="disp">Nothing here</h4>';return}
   const X=sitStats(S),live=S===curSit();
-  let h=`<h4 class="disp">${esc(sitTitle(S))}</h4><input class="mc-in" data-sitname="1" value="${esc(S.name||'')}" placeholder="Name it: DJ set at Lena’s, Sunday digging…" aria-label="Name this session" maxlength="60" style="margin:6px 0 4px;width:100%"><p class="sub">${new Date(X.t0).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})} · ${new Date(X.t0).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}${live?' · still going':''}</p>`;
+  let h=`<h4 class="disp">${esc(sitTitle(S))}</h4><input class="sin" data-sitname="1" value="${esc(S.name||'')}" placeholder="Name it: DJ set at Lena’s…" aria-label="Name this session" maxlength="60" autocomplete="off" enterkeyhint="done"><p class="sub">${new Date(X.t0).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})} · ${new Date(X.t0).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}${live?' · still going':''}</p>`;
   h+=`<div class="ystats"><div><b>${X.recs.length}</b><span>record${X.recs.length===1?'':'s'}</span></div><div><b>${X.songs}</b><span>song${X.songs===1?'':'s'}</span></div><div><b>${esc(fmtHrs(X.dur).replace(/ min$/,'m').replace(' hr','h'))}</b><span>listening</span></div></div>`;
   if(X.star)h+=`<div class="yhi"><small>Heard most ${live?'this session':'that '+dayPart(S.s)}</small>${esc(X.star.n)}${X.star.role?', '+esc(X.star.role)+',':''} on ${X.star.recs.length} of the records</div>`;
   h+=`<div class="pathh">What you played</div><div class="ylist">${X.recs.map((g,i)=>`<button${g.id?` data-open="${g.id}"`:' disabled'}><span class="rk">${String(i+1).padStart(2,'0')}</span><span class="ythumb"${g.art?` style="background-image:url('${esc(g.art)}')"`:''}></span><span class="tx"><b>${esc(g.t)}</b><small>${esc(g.a)}${g.id?'':' · not on your shelf'}</small></span><span class="ct">${g.songs.length} song${g.songs.length===1?'':'s'}</span></button>`).join('')}</div>`;
@@ -3608,12 +3617,20 @@ function renderSession(id){
 const meName=()=>(st.me&&st.me.name)||'';
 function meAv(big){const m=st.me||{},n=meName();return `<span class="meav${big?' big':''}"${m.photo?` style="background-image:url('${m.photo}')"`:''} aria-hidden="true">${m.photo?'':esc((n||'?').trim()[0]||'?').toUpperCase()}</span>`}
 function openMe(){renderMe();openSheet('me')}
+function meSaveName(close){
+  const el=$('#meName');if(!el)return;const v=el.value.trim().slice(0,40),was=meName();
+  if(v!==was){st.me={...(st.me||{}),name:v};if(!v)delete st.me.name;saveState();renderScene();if(typeof acctPushProfile==='function')acctPushProfile();toast(v?`Saved. You’re ${v} on your cards.`:'Name removed.')}
+  if(close){el.blur();closeSheets()}else{const h=$('#meBody h4');if(h)h.textContent=v||'Your name'}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&(e.target.id==='meName'||e.target.dataset.sitname)){e.preventDefault();e.target.blur()}});
 function renderMe(){
   const m=st.me||{};
-  $('#meBody').innerHTML=`<h4 class="disp">You</h4><p class="sub">Your name and photo go on the cards you share, your playlists, and the rooms you host.</p>
+  $('#meBody').innerHTML=`<h4 class="disp">${esc(m.name||'Your name')}</h4><p class="sub">Your name and photo go on the cards you share, your playlists, and the rooms you host.</p>
    ${meAv(true)}
-   <input class="mc-in" id="meName" data-mename="1" value="${esc(m.name||'')}" placeholder="Your name or DJ name" aria-label="Your name or DJ name" maxlength="40" style="width:100%">
-   <button class="go press" data-me="photo">${m.photo?'Change the photo':'Add a photo'}</button>
+   <label class="slab" for="meName">Your name or DJ name</label>
+   <input class="sin" id="meName" data-mename="1" value="${esc(m.name||'')}" placeholder="DJ Varganessca" maxlength="40" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
+   <button class="go press" data-me="savename">Save name</button>
+   <button class="ghost" data-me="photo">${m.photo?'Change the photo':'Add a photo'}</button>
    ${m.photo?'<button class="ghost" data-me="nophoto">Remove the photo</button>':''}
    <p class="fine2" style="margin-top:10px">Kept on your devices and in your private iCloud. A profile other people can visit comes with accounts, and you’ll choose then what it shows.</p>`;
 }
@@ -5198,7 +5215,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.dgtest){dgTest();return}
   if(t.dataset.hear){const a=t.dataset.hear;if(a==='open')openHear();else if(a==='go')hearGo();else if(a==='stop'){hearStop();renderHear()}return}
   if(t.dataset.hearadd){hearAdd(t.dataset.hearadd);return}
-  if(t.dataset.me){const a=t.dataset.me;if(a==='edit')openMe();else if(a==='photo')$('#meIn').click();else if(a==='nophoto'){if(st.me)delete st.me.photo;saveState();renderMe();renderScene()}return}
+  if(t.dataset.me){const a=t.dataset.me;if(a==='savename'){meSaveName(true);return}if(a==='edit')openMe();else if(a==='photo')$('#meIn').click();else if(a==='nophoto'){if(st.me)delete st.me.photo;saveState();renderMe();renderScene()}return}
   if(t.dataset.sitend){sitEnd();return}
   if(t.dataset.sitdel){const S=(st.sits||[])[st.sitI];if(!S)return;askSure({title:'Delete this session?',body:`“${sitTitle(S)}” and its ${S.items.length} song${S.items.length===1?'':'s'} come off your listening log. Spins counted on your records stay.`,yes:'Delete',go:()=>{st.sits.splice(st.sitI,1);saveState();closeSheets();toast('Session deleted.')}});return}
   if(t.dataset.sitpl){sitPlaylist(t.dataset.sitpl);return}
@@ -5360,7 +5377,7 @@ document.addEventListener('click',e=>{
 });
 $('#search').addEventListener('input',e=>{st.q=e.target.value;renderCollection()});
 document.addEventListener('input',e=>{const f=e.target.closest('[data-hf]');if(f&&st.host){st.host[f.dataset.hf]=f.value;return}const n=e.target.closest('[data-hnote]');if(n&&st.host)st.host.notes[n.dataset.hnote]=n.value});
-document.addEventListener('change',e=>{if(e.target.id==='meIn'){const f=e.target.files&&e.target.files[0];e.target.value='';if(f)mePhoto(f);return}const mn=e.target.closest('[data-mename]');if(mn){const v=mn.value.trim().slice(0,40);st.me={...(st.me||{}),name:v};if(!v)delete st.me.name;saveState();renderScene();toast(v?'Name saved. It goes on your cards.':'Name removed.');return}const n=e.target.closest('[data-sitname]');if(n){const S=(st.sits||[])[st.sitI];if(S){const v=n.value.trim().slice(0,60);if(v)S.name=v;else delete S.name;saveState();renderSit()}return}const t=e.target.closest('[data-pltr]');if(t&&st.plDraft)st.plDraft.items[+t.dataset.pltr].track=+t.value});
+document.addEventListener('change',e=>{if(e.target.id==='meIn'){const f=e.target.files&&e.target.files[0];e.target.value='';if(f)mePhoto(f);return}const mn=e.target.closest('[data-mename]');if(mn){meSaveName(false);return}const n=e.target.closest('[data-sitname]');if(n){const S=(st.sits||[])[st.sitI];if(S){const v=n.value.trim().slice(0,60);if(v)S.name=v;else delete S.name;saveState();renderSit()}return}const t=e.target.closest('[data-pltr]');if(t&&st.plDraft)st.plDraft.items[+t.dataset.pltr].track=+t.value});
 $('#mcAsk').addEventListener('input',e=>{copyOf(st.rec||1).ask=e.target.value});
 $('#mcPaid').addEventListener('input',e=>{copyOf(st.rec||1).paid=e.target.value});
 $('#mcWhere').addEventListener('input',e=>{copyOf(st.rec||1).where=e.target.value});
