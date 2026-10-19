@@ -1081,6 +1081,10 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 
         <div class="rep">
           <article class="blk pressing"><header><span class="num">01</span><h3 class="disp">The Pressing</h3></header><dl class="kv" id="pressing"></dl></article>
+          <article class="blk story"><div class="q" aria-hidden="true">“</div><header><span class="num">04</span><h3 class="disp">The Story</h3></header>
+            <p id="repStory">The gatefold carries Coltrane’s own devotional poem, written to be read alongside the four parts: Acknowledgement, Resolution, Pursuance, and Psalm.<sup><a href="#s1">1</a></sup></p>
+            <div id="storyX"></div>
+          </article>
           <article class="blk session"><header><span class="num">02</span><h3 class="disp">The Session</h3></header>
             <ul class="people" id="repPeople">
               <li><button class="cr" data-cr="coltrane">John Coltrane</button><span>tenor sax</span></li>
@@ -1094,10 +1098,6 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
             <p class="hint" id="repHint">Tap any name for a short bio and what else they played on</p>
             <div class="ih" id="repIh"><small>Invisible History</small>
               <p id="repIhP">Archie Shepp and Art Davis joined for a second session the next day. The sextet take of “Acknowledgement” wasn’t released until the 2002 deluxe edition.<sup><a href="#s2">2</a></sup></p></div>
-          </article>
-          <article class="blk story"><div class="q" aria-hidden="true">“</div><header><span class="num">04</span><h3 class="disp">The Story</h3></header>
-            <p id="repStory">The gatefold carries Coltrane’s own devotional poem, written to be read alongside the four parts: Acknowledgement, Resolution, Pursuance, and Psalm.<sup><a href="#s1">1</a></sup></p>
-            <div id="storyX"></div>
           </article>
           <article class="blk mycopy"><header><span class="num">07</span><h3 class="disp">My Copy</h3></header>
             <p>The pressing is the record. This part is yours.</p>
@@ -1677,7 +1677,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.26.0 · story';
+const BUILD='0.26.1 · story';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
