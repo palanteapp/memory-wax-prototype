@@ -1839,7 +1839,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.35.1 · email codes';
+const BUILD='0.36.0 · one-tap links';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3866,7 +3866,9 @@ async function linkTake(){
   if(!NATIVE||!(window.Capacitor&&(Capacitor.PluginHeaders||[]).some(h=>h.name==='Links')))return;
   let u='';try{u=(await Capacitor.nativePromise('Links','take',{})).url||''}catch(e){}
   if(!u)return;
-  try{const x=new URL(u);const kind=x.protocol==='memorywax:'?(x.host||x.pathname.replace(/\//g,'')):'',q=Object.fromEntries(x.searchParams);
+  try{const x=new URL(u);const web=x.protocol==='https:'&&/^(www\.)?memorywax\.app$/.test(x.hostname);
+    const kind=x.protocol==='memorywax:'?(x.host||x.pathname.replace(/\//g,'')):web?x.pathname.replace(/^\/+|\/+$/g,'').split('/')[0]:'';
+    const q={...Object.fromEntries(x.searchParams),...(web&&kind==='invite'?Object.fromEntries(new URLSearchParams((x.hash||'').slice(1))):{})};
     if(kind==='invite')handleInvite(q);else if(kind==='auth')acFinishLink({...q,...Object.fromEntries(new URLSearchParams((x.hash||'').slice(1)))})}catch(e){console.warn('[links]',e)}
 }
 window.addEventListener('mwlink',linkTake);
