@@ -48,6 +48,12 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 .app .phone{border-radius:0;box-shadow:none}
 .app .island,.app .status{display:none}
 .app .panel{display:none}
+/* iPad: fill the screen. Sheets, dock and bars become centred panels instead of stretching across */
+.wide .scaler{width:100vw;height:100vh;height:100dvh}
+.wide .phone{width:calc(var(--cw)*1px);height:calc(var(--ch)*1px)}
+.wide .sheet{left:calc(50% - min(50%,290px));right:auto;width:min(100%,580px)}
+.wide .dock{left:calc(50% - min(50% - 30px,270px));right:auto;width:min(100% - 60px,540px)}
+.wide .mini{left:calc(50% - min(50% - 30px,270px));right:auto;width:min(100% - 60px,540px)}
 
 /* ---------- side panel ---------- */
 .panel{width:320px;font-size:14px;line-height:1.5;color:var(--mute)}
@@ -537,6 +543,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .npchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .npchip{text-align:left;padding:7px 11px;border-radius:14px;background:rgba(255,243,176,.14);color:var(--cream);transition:transform 160ms ease-out}
 .npchip:active{transform:scale(.97)}
+.tout{margin-top:10px}.tline{display:flex;gap:8px;font-size:14px;line-height:1.35;padding:5px 0}.tline b{width:16px;flex:none}.tline.ok b{color:var(--teal,#1f6f5a)}.tline.bad b{color:var(--red)}.tline.wait{opacity:.6}
 .sheet.sp,.sheet.sp.on{transition:none;overscroll-behavior:contain}
 #sheet-credit{z-index:82}
 #sheet-credit.stk{max-height:74%}
@@ -1639,7 +1646,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.24.2 · fluid';
+const BUILD='0.25.1 · details';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -1658,9 +1665,16 @@ let coverURL=null;
   })(0);
 })();
 
-const APPMODE=/[?&]app=1/.test(location.search)||(matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,innerWidth)<=520);
+const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+const PAD=NATIVE?Math.min(screen.width,screen.height)>=700:/[?&]pad=1/.test(location.search);
+const APPMODE=/[?&]app=1/.test(location.search)||NATIVE||PAD||(matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,innerWidth)<=520);
 if(APPMODE)document.documentElement.classList.add('app');
-function fit(){const s=APPMODE?Math.min(1.25,innerWidth/390,innerHeight/844):Math.min(1,(innerHeight-32)/870,(innerWidth-32)/420);document.documentElement.style.setProperty('--s',s)}
+function fit(){
+  if(PAD){   /* iPad: the app fills the screen. The canvas is as wide as the screen allows at a readable scale, and as tall as the screen */
+    const w=innerWidth,h=innerHeight;let sc=Math.max(1.15,Math.min(1.5,w/640));if(h/sc<820)sc=h/820;
+    const R=document.documentElement.style;R.setProperty('--s',sc);R.setProperty('--cw',Math.round(w/sc));R.setProperty('--ch',Math.round(h/sc));document.documentElement.classList.add('wide');return;
+  }
+  const s=APPMODE?Math.min(1.25,innerWidth/390,innerHeight/844):Math.min(1,(innerHeight-32)/870,(innerWidth-32)/420);document.documentElement.style.setProperty('--s',s)}
 addEventListener('resize',fit);fit();
 
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2800)}
@@ -1701,7 +1715,7 @@ function mkSheet(src,onY){
       const dt=Math.min(.032,(now-last)/1000);last=now;const n=Math.max(1,Math.ceil(dt/.004));
       for(let i=0;i<n;i++){const h=dt/n;v+=(-k*(o.y-t)-c*v)*h;o.y+=v*h}
       o.v=v;o.set(o.y);
-      if(Math.abs(v)<2&&Math.abs(o.y-t)<.3){o.v=0;o.set(t);o.raf=0;settle();return}
+      if((Math.abs(v)<14&&Math.abs(o.y-t)<.6)||(t>=o.H-1&&o.y>=t-3)){o.v=0;o.set(t);o.raf=0;settle();return}
       o.raf=requestAnimationFrame(step);
     };
     o.raf=requestAnimationFrame(step);
@@ -1718,7 +1732,7 @@ function mkSheet(src,onY){
   const move=(y,t,ev)=>{
     if(!g)return;
     if(!g.on){if(y-g.y0>6&&el.scrollTop<=0&&!inner(g.tg)){g.on=true;cancelAnimationFrame(o.raf);o.v=0;g.base=o.y;g.y0=y;o.drag=true}else return}
-    let ny=g.base+(y-g.y0);if(ny<0)ny=-rband(-ny,o.H);
+    const sc=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--s'))||1;let ny=g.base+(y-g.y0)/sc;if(ny<0)ny=-rband(-ny,o.H);
     o.set(ny);g.hist.push({t,y:ny});if(g.hist.length>6)g.hist.shift();
     if(!(id==='sheet-credit'&&st.ret==='listen'))$('#backdrop').style.opacity=String(Math.max(0,Math.min(1,1-o.y/o.H)));
     if(ev&&ev.cancelable)ev.preventDefault();
@@ -3542,6 +3556,49 @@ async function mbByNames(names,lab){
 const DG={cache:new Map()};
 const dgTok=()=>(typeof LAB!=='undefined'&&LAB.discogs)||'';
 async function dgFetch(url){const r=await fetch(url,{headers:{Authorization:'Discogs token='+dgTok()}});if(r.status===401)throw new Error('Discogs did not accept the token.');if(r.status===429)throw new Error('Discogs is rate limiting. Wait a minute and try again.');if(!r.ok)throw new Error('Discogs search failed ('+r.status+').');return r.json()}
+/* the same call, plus the rate-limit headers Discogs sends back (when the browser lets us see them) */
+async function dgFetchH(url){const r=await fetch(url,{headers:{Authorization:'Discogs token='+dgTok()}});const rl=r.headers.get('X-Discogs-Ratelimit-Remaining');if(r.status===401)throw new Error('Discogs did not accept the token.');if(r.status===429)throw new Error('Discogs is rate limiting. Wait a minute and try again.');if(!r.ok)throw new Error('Discogs answered '+r.status+'.');return {j:await r.json(),rl}}
+/* checks the token end to end without showing it: who it signs in as, search, release details, your collection */
+async function dgTest(){
+  const out=$('#dgTestOut');if(!out)return;
+  const rows=[],show=()=>{out.innerHTML=rows.map(x=>`<div class="tline ${x[0]}"><b>${x[0]==='ok'?'✓':x[0]==='bad'?'✕':'…'}</b><span>${esc(x[1])}</span></div>`).join('')};
+  const step=async(label,fn)=>{rows.push(['wait',label+'…']);show();const i=rows.length-1;try{const t=await fn();rows[i]=['ok',label+(t?': '+t:'')]}catch(e){rows[i]=['bad',label+': '+e.message];show();return false}show();return true};
+  if(!dgTok()){rows.push(['bad','No token saved yet. Paste it above and tap Save first.']);show();return}
+  let me=null,rl=null;
+  if(!await step('Token accepted',async()=>{const x=await dgFetchH('https://api.discogs.com/oauth/identity');me=x.j;rl=x.rl;return 'signed in as '+me.username}))return;
+  await step('Search works',async()=>{const x=await dgFetchH('https://api.discogs.com/database/search?type=release&per_page=1&q='+encodeURIComponent('John Coltrane Blue Train'));rl=x.rl||rl;return (x.j.pagination&&x.j.pagination.items||0).toLocaleString()+' releases found for a test search'});
+  await step('Release details work',async()=>{const x=await dgFetchH('https://api.discogs.com/releases/249504');rl=x.rl||rl;const j=x.j;return `${(j.tracklist||[]).length} tracks and ${(j.extraartists||[]).length} credits on a test release`});
+  await step('Your collection is readable',async()=>{const x=await dgFetchH('https://api.discogs.com/users/'+encodeURIComponent(me.username)+'/collection/folders/0');rl=x.rl||rl;return (x.j.count||0).toLocaleString()+' records'});
+  if(rl!=null)rows.push(['ok','Requests left this minute: '+rl+' of 60']);else rows.push(['ok','Discogs allows 60 requests a minute with a token. The app waits between big jobs.']);
+  rows.push(['ok','All good. Credits, tracklists and pressing notes will come from Discogs when a record has a Discogs match.']);show();
+}
+/* Discogs release JSON → the shape the credits code already reads */
+const dgCleanName=n=>String(n||'').replace(/\s*\(\d+\)$/,'').trim();
+function dgToIdx(j){
+  const tl=[],cr=[];
+  (j.tracklist||[]).forEach((t,i)=>{
+    if(t.type_&&t.type_!=='track')return;
+    const pos=t.position||String(tl.length+1);tl.push([pos,t.title||'',t.duration||'']);
+    (t.extraartists||[]).forEach(x=>cr.push({name:dgCleanName(x.name),role:x.role||'',id:x.id||0,tracks:x.tracks||pos}));
+  });
+  (j.extraartists||[]).forEach(x=>cr.push({name:dgCleanName(x.name),role:x.role||'',id:x.id||0,tracks:x.tracks||''}));
+  const lab=(j.labels||[])[0]||{};
+  return {dg:j.id,tracklist:tl,credits:cr.filter(c=>c.name&&c.role),companies:(j.companies||[]).map(c=>[c.name,c.entity_type_name||'']),ctry:j.country||'',released:j.released||'',lab:dgCleanName(lab.name),cat:lab.catno||'',link:j.uri||('https://www.discogs.com/release/'+j.id),master:j.master_id||0};
+}
+/* what else Discogs knows about this pressing, kept small */
+function dgExtra(j){
+  return {notes:String(j.notes||'').slice(0,1200),genres:j.genres||[],styles:j.styles||[],released:j.released||'',ctry:j.country||'',
+    ids:(j.identifiers||[]).filter(i=>/matrix|barcode/i.test(i.type||'')).slice(0,12).map(i=>({t:i.type,v:i.value||'',d:i.description||''})),at:Date.now()};
+}
+/* a record added without a Discogs number: find its release by barcode, then catalogue number, then (strictly) title and artist */
+async function dgFind(r){
+  const code=(r.ev&&r.ev.bc&&r.ev.bc.code)||r.bc||'',pick=(res,how)=>{const x=(res||[]).find(z=>sameTitle(dgCleanName(z.title||'').replace(/^.*? - /,''),r.t));if(x){r.dg=x.id;r.dgHow=how;return true}return false};
+  if(code){const x=await dgFetchH('https://api.discogs.com/database/search?type=release&per_page=8&barcode='+encodeURIComponent(code));if(x.j.results&&x.j.results.length){const f=x.j.results[0];r.dg=f.id;r.dgHow='barcode';return true}}
+  if(r.cat){const x=await dgFetchH('https://api.discogs.com/database/search?type=release&per_page=10&catno='+encodeURIComponent(r.cat)+(r.lab?'&label='+encodeURIComponent(r.lab):''));if(pick(x.j.results,'catalogue'))return true}
+  if(r.t&&r.a&&r.a!=='Unknown artist'){const x=await dgFetchH('https://api.discogs.com/database/search?type=release&per_page=10&release_title='+encodeURIComponent(r.t)+'&artist='+encodeURIComponent(r.a.split(/ [&,] /)[0]));
+    const a0=norm(r.a.split(/ [&,] /)[0]);if(pick((x.j.results||[]).filter(z=>norm(z.title||'').includes(a0)),'title'))return true}
+  return false;
+}
 async function dgCandidates(cat,lab){const j=await dgFetch('https://api.discogs.com/database/search?type=release&format=Vinyl&per_page=8&catno='+encodeURIComponent(cat)+(lab?'&label='+encodeURIComponent(lab):''));return (j.results||[]).map(x=>({id:x.id,title:x.title,catno:x.catno||'',year:x.year||'',country:x.country||'',label:(x.label||[])[0]||'',fmt:(x.format||[]).join(', '),uri:x.uri||''}))}
 async function dgRunouts(id){if(DG.cache.has(id))return DG.cache.get(id);const j=await dgFetch('https://api.discogs.com/releases/'+id);const o={ids:(j.identifiers||[]).filter(i=>/matrix/i.test(i.type||'')).map(i=>({v:i.value||'',d:i.description||''})),title:j.title,year:j.year,country:j.country,uri:j.uri,notes:j.notes||''};DG.cache.set(id,o);return o}
 /* how much of a known runout string the read covers (tokens of 3+ characters, one edit allowed on long ones) */
@@ -3896,7 +3953,8 @@ function openDgToken(){
   $('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Discogs token</h4><p class="sub">Lets the deadwax reader compare your etching with the runouts Discogs lists for each pressing.</p>
    <p class="fine2">Make a personal access token at discogs.com → Settings → Developers, and paste it here. It stays on this phone only and is sent to Discogs with each lookup. Never paste a password.</p>
    <div class="hf"><label for="dgIn">Personal access token</label><input class="txt sm" id="dgIn" value="${esc(dgTok())}" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
-   <button class="go press" data-dgsave="1">Save</button>${dgTok()?'<button class="ghost" data-dgclear="1">Remove the token</button>':''}
+   <button class="go press" data-dgsave="1">Save</button>${dgTok()?'<button class="ghost" data-dgtest="1">Test the connection</button><button class="ghost" data-dgclear="1">Remove the token</button>':''}
+   <div id="dgTestOut" class="tout" aria-live="polite"></div>
    <p class="fine2" style="margin-top:8px">This app uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs.</p>`;closeSheets();openSheet('barcode');
 }
 
@@ -3995,8 +4053,18 @@ async function ensureCredits(r,force){
   CRED_BUSY.add(r.id);
   try{
     if(IDX&&await idxCredits(r)){r.mbcTried=Date.now();saveReal();saveState();if(st.screen==='reveal'&&st.rec===r.id){fillReport(r,st.cameFromScan?st.mode:realModeOf(r));$$('.rep .blk:not([hidden])').forEach(b=>{if(!b.classList.contains('in'))ios&&ios.observe(b)})}CRED_BUSY.delete(r.id);return}
+    let dgC=null;
+    if(dgTok()){
+      try{
+        if(!r.dg)await dgFind(r);
+        if(r.dg){const j=await dgRelease(r.dg);r.dgx=dgExtra(j);dgC=idxToMbc(dgToIdx(j));dgC.how=r.dgHow||'';
+          if(dgC.crew.length>=3){r.mbc=dgC;r.tracks=dgC.tracks.map(t=>t.t);r.cred=dgC.crew.map(c=>c[0]);r.src='discogs';if(!r.ctry&&dgC.ctry)r.ctry=dgC.ctry;if(!r.cat&&dgC.cat)r.cat=dgC.cat;if(!r.lab&&dgC.lab)r.lab=dgC.lab;if(!r.y&&dgC.date)r.y=+String(dgC.date).slice(0,4)||0;
+            r.mbcTried=Date.now();saveReal();saveState();if(st.screen==='reveal'&&st.rec===r.id){fillReport(r,st.cameFromScan?st.mode:realModeOf(r));$$('.rep .blk:not([hidden])').forEach(b=>{if(!b.classList.contains('in'))ios&&ios.observe(b)})}CRED_BUSY.delete(r.id);return}}
+      }catch(e){if(/token|rate/i.test(e.message))r.mbcErr=e.message}
+    }
     const mb=await mbResolve(r);
     if(mb){const j=await mbGet('release/'+mb+'?inc='+MB_INC);if(j){r.mbc=mbCredits(j);r.tracks=r.mbc.tracks.map(t=>t.t);r.cred=r.mbc.crew.map(c=>c[0]);if(!r.ctry&&r.mbc.ctry)r.ctry=r.mbc.ctry;if(!r.cat&&r.mbc.cat)r.cat=r.mbc.cat;if(!r.lab&&r.mbc.lab)r.lab=r.mbc.lab;if(!r.y&&r.mbc.date)r.y=+r.mbc.date.slice(0,4)||0;if(!r.rg&&r.mbc.rg)r.rg=r.mbc.rg;if(!r.cover&&r.mb)r.cover='https://coverartarchive.org/release/'+r.mb+'/front-250';if(r.rg&&r.cover&&COV.bad.has(r.cover)&&!/release-group/.test(r.cover))r.cover='https://coverartarchive.org/release-group/'+r.rg+'/front-250'}}
+    if(dgC&&(!r.mbc||r.mbc.crew.length<dgC.crew.length)&&dgC.tracks.length){r.mbc=dgC;r.tracks=dgC.tracks.map(t=>t.t);r.cred=dgC.crew.map(c=>c[0]);r.src='discogs'}
     r.mbcTried=Date.now();saveReal();saveState();
     if(st.screen==='reveal'&&st.rec===r.id){fillReport(r,st.cameFromScan?st.mode:realModeOf(r));$$('.rep .blk:not([hidden])').forEach(b=>{if(!b.classList.contains('in'))ios&&ios.observe(b)})}
   }catch(e){r.mbcTried=Date.now()-864e5+6e4;r.mbcErr=e.message;creditsNote(r)}
@@ -4009,7 +4077,7 @@ function creditsNote(r){
   if(!C){el.innerHTML=r.mbcErr?`Couldn’t fetch credits: ${esc(r.mbcErr)}`:r.mbcTried?'No credits found for this release on MusicBrainz yet.':'Fetching credits from MusicBrainz…';return}
   if(C.src==='discogs'){const dl=`<a href="${esc(C.link)}" target="_blank" rel="noopener">Discogs</a>`;
     el.innerHTML=(C.n>=C.of&&C.of?`Credits for all ${C.of} tracks, from ${dl} (open data). Tap a name to see everything they worked on.`:C.n?`Credits on ${C.n} of ${C.of} tracks, from ${dl} (open data). Tap a name to see everything they worked on.`:`${dl} has no player credits for this release yet.`)
-      +(C.borrowed?` These come from the ${[C.borrowed.ctry,C.borrowed.y].filter(Boolean).join(' ')} pressing of the same album, because your pressing lists few. Data provided by Discogs.`:' Data provided by Discogs.');return}
+      +(C.how==='title'?' Matched by title, so check it is your pressing.':'')+(C.borrowed?` These come from the ${[C.borrowed.ctry,C.borrowed.y].filter(Boolean).join(' ')} pressing of the same album, because your pressing lists few. Data provided by Discogs.`:' Data provided by Discogs.');return}
   const link=r.mb?`<a href="https://musicbrainz.org/release/${r.mb}" target="_blank" rel="noopener">MusicBrainz</a>`:'MusicBrainz';
   el.innerHTML=(C.n>=C.of?`Credits for all ${C.of} tracks, from ${link} (open data). Tap a name to follow it.`:C.n?`Credits on ${C.n} of ${C.of} tracks, from ${link} (open data). The rest aren’t entered yet.`:`${link} has the tracklist but no player credits for this release yet. Add them there and they’ll show here.`)+(r.mbHow==='catno'||r.mbHow==='title'?' Matched by '+(r.mbHow==='catno'?'catalog number':'title')+', so check it’s the same release.':'');
 }
@@ -4320,7 +4388,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
@@ -4382,6 +4450,9 @@ document.addEventListener('click',e=>{
   if(t.dataset.catlook){catLook();return}
   if(t.dataset.dgtoken){openDgToken();return}
   if(t.dataset.imprun){dgImport();return}
+  if(t.dataset.dgtest){dgTest();return}
+  if(t.dataset.impfill){impFill();return}
+  if(t.dataset.impfillstop){IMP.fillStop=true;return}
   if(t.dataset.impcancel){IMP.cancel=true;return}
   if(t.dataset.dgsave){const v=($('#dgIn').value||'').trim();if(/^[A-Za-z0-9]{20,}$/.test(v)){LAB.discogs=v;labSave();closeSheets();toast('Token saved on this phone.')}else toast('That doesn’t look like a Discogs personal access token.');return}
   if(t.dataset.dgclear){LAB.discogs='';labSave();closeSheets();toast('Token removed.');return}
@@ -4701,8 +4772,19 @@ function renderImport(){
   const B=$('#importBody');
   B.innerHTML=`<h4 class="disp">Import from Discogs</h4><p class="sub">Your collection, from your own Discogs account. Keep using the app while it runs.</p>
    <div class="pbar"><i id="impBar" style="width:${IMP.pct||0}%"></i></div><p class="fine2" id="impTxt" style="margin:0 0 10px">${esc(IMP.msg||'Ready.')}</p>
+   ${IMP.fill?`<p class="fine2" style="margin:0 0 6px">${esc(IMP.fillMsg||'')}</p><button class="ghost" data-impfillstop="1">Stop filling in</button>`:IMP.done||st.lastImport?'<button class="ghost" data-impfill="1">Fill in credits and details for my records</button>':''}
    ${IMP.run?'<button class="ghost" data-impcancel="1">Stop</button>':IMP.done?`<button class="go press" data-set="batchview">View in Collection</button>`:`<button class="go press" data-imprun="1">${st.lastImport?'Import again':'Start the import'}</button>`}
    <p class="fine2" style="margin-top:10px">${st.lastImport?'Last import '+new Date(st.lastImport).toLocaleString()+'. Importing again adds new records and updates the rest; nothing is deleted. ':''}Nothing is written to Discogs. Data provided by Discogs. This app uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs.</p>`;
+}
+/* one record at a time, slowly, so Discogs and MusicBrainz are never hammered */
+async function impFill(){
+  if(IMP.fill)return;const list=RECS.filter(r=>r.real&&st.owned.has(r.id)&&!r.mbc);if(!list.length){IMP.fillMsg='Every record here already has its details.';renderImport();return}
+  IMP.fill=true;IMP.fillStop=false;let n=0,ok=0;
+  for(const r of list){
+    if(IMP.fillStop)break;n++;IMP.fillMsg=`Filling in ${n} of ${list.length}: ${r.t}`;renderImport();
+    await ensureCredits(r,true);if(r.mbc)ok++;await sleepMs(1200);
+  }
+  IMP.fill=false;IMP.fillMsg=`${IMP.fillStop?'Stopped. ':'Done. '}${ok} of ${n} records got credits and details.`;saveReal();saveState();renderImport();renderCollection();
 }
 async function dgImport(){
   if(IMP.run)return;IMP.run=true;IMP.cancel=false;IMP.done=null;IMP.pct=0;IMP.msg='Checking the token…';renderImport();
