@@ -1400,7 +1400,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 
     <div class="sheet" id="sheet-session" role="dialog" aria-label="Listening session"><div id="sessBody"></div></div>
 
-    <div class="sheet" id="sheet-night" role="dialog" aria-label="Listening session room"><div id="nightBody"></div></div>
+    <div class="sheet" id="sheet-room" role="dialog" aria-label="Listening session room"><div id="roomBody"></div></div>
 
     <div class="sheet" id="sheet-lab" role="dialog" aria-label="Phase 0 test lab"><div id="labBody"></div></div>
 
@@ -1639,7 +1639,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.24.1 · fluid';
+const BUILD='0.24.2 · fluid';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2975,7 +2975,7 @@ function openRoom(key){
   const D=nightDef(key);if(!D)return;
   if(!st.nt||st.nt.def.key!==key)st.nt={def:D,phase:'before',at:D.at,mode:'own',svc:'am',asHost:D.asHost,ti:0,sec:0,msgs:[{sys:true,t:D.sample?'Chat is open. Say hello while you wait.':'Chat between phones isn’t open yet. Follow the track list on your own.'}],hidden:new Set(),slow:5,locked:false,lastSend:0,count:D.going||1,remind:false,gather:false,pi:0,welcomed:false,lastState:0,bc:null,nick:'Collector '+(1000+Math.floor(Math.random()*9000))};
   st.shareUrl='https://memorywax.app/night/'+D.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  renderNight();openSheet('night');nightStart();
+  renderNight();openSheet('room');nightStart();
 }
 const NSELF=Math.random().toString(36).slice(2,8);let nSeq=0;
 function nPost(o){const N=st.nt;if(N&&N.tx)try{N.tx.send({...o,from:NSELF})}catch(e){}}
@@ -3058,7 +3058,7 @@ function nAdvance(manual){
   if(N.asHost)nPost(nStateMsg());
 }
 function nTick(){
-  const N=st.nt;if(!N||!$('#sheet-night').classList.contains('on')&&!N.force)return;
+  const N=st.nt;if(!N||!$('#sheet-room').classList.contains('on')&&!N.force)return;
   if(N.phase==='before'){
     const ms=N.at-Date.now();
     if(ms<=0){N.phase='live';N.ti=0;N.sec=0;nLiveStart();renderNight();return}
@@ -3150,7 +3150,7 @@ function renderNight(){
    ${N.gather?`<p class="fine2" style="margin:10px 0 0"><b>Los Angeles area:</b> 14 listeners opted in (sample).</p><button class="ghost" data-nplan="1" style="padding:10px 0 0;text-align:left">Plan a gathering</button>`:''}</div>`;
   h+=`<div class="sethead">${N.phase==='after'?'What played':'The plan'}</div><ul class="ntl" id="nTL"></ul>
    <p class="fine2" style="margin-top:14px">Memory Wax doesn’t stream or broadcast this music. Each person plays their own record or their own streaming account. Report anything that doesn’t belong. You must be 13 or older.</p>`;
-  $('#nightBody').innerHTML=h;
+  $('#roomBody').innerHTML=h;
   const el=$('#nCount');if(el)el.innerHTML=nCountHTML(N.at-Date.now());
   nNow();nTimeline();nChat();nEmbed();
   const inp=$('#nIn');if(inp&&keep)inp.value=keep;
