@@ -458,6 +458,20 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .emptyc b{font-family:var(--disp);font-size:19px}
 .emptyc span{font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.2}
 .shnote{margin:0;padding:0 20px 10px;font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.15;opacity:.9}
+.mestrip{display:flex;align-items:center;gap:14px;margin:18px 16px 0;width:calc(100% - 32px);padding:12px 14px;border-radius:999px 18px 18px 999px;background:rgba(255,243,176,.08);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.22);text-align:left;color:var(--cream);transition:transform 160ms ease-out}
+.mestrip:active{transform:scale(.98)}
+.mestrip b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:24px;line-height:.95;text-transform:uppercase}
+.mestrip span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-top:4px}
+.meav{width:56px;height:56px;flex:none;border-radius:50%;background:var(--gold) center/cover no-repeat;color:var(--ox);display:grid;place-items:center;font-family:var(--disp);font-weight:900;font-size:26px;box-shadow:0 0 0 3px rgba(255,243,176,.25)}
+.meav.big{width:112px;height:112px;font-size:48px;margin:6px 0 14px}
+.ppl{margin:12px 16px 0;padding:18px;border-radius:0 var(--cut) 0 0;background:rgba(255,243,176,.08);color:var(--cream)}
+.ppl h5{margin:0;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:26px;line-height:.95;text-transform:uppercase}
+.ppl p{margin:6px 0 0;font-size:14.5px;line-height:1.4;opacity:.9}
+.ppl+.ppl{margin-top:10px}
+.ppl .why{font-family:var(--serif);font-style:italic;font-size:17px;opacity:.85}
+.sesl{margin:8px 16px 0;padding:6px 18px 8px;background:var(--cream);color:var(--ox);border-radius:0 0 var(--cut) 0}
+.sesl .srow:first-child{border-top:0}
+.srow i.now{background:var(--red)}
 .hostcta{margin:16px 16px 0;width:calc(100% - 32px);padding:16px;border-radius:999px;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.5);color:var(--cream);font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
 .minis{display:flex;gap:6px;margin:6px 0 4px}.minis i{flex:1;aspect-ratio:1;background:var(--b)}
 .scard{padding:14px;margin-bottom:10px;border-left:6px solid var(--ox);background:rgba(84,11,14,.07)}
@@ -1256,7 +1270,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <!-- Collectors -->
     <section class="screen" data-screen="scene" id="scene">
       <div class="scroll">
-        <div class="hd sm"><h2 class="disp">Community</h2><p>Find your people, music, and gatherings through the records you love.</p></div>
+        <div class="hd sm"><h2 class="disp">Community</h2><p>Your sessions, rooms to listen together, and the people whose records you follow.</p></div>
         <div id="sceneBody"></div>
       </div>
     </section>
@@ -1384,6 +1398,8 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     </div>
 
     <div class="sheet" id="sheet-hear" role="dialog" aria-label="Name what’s playing"><div id="hearBody"></div></div>
+    <div class="sheet" id="sheet-me" role="dialog" aria-label="Your name and photo"><div id="meBody"></div></div>
+    <input type="file" id="meIn" accept="image/*" hidden>
     <div class="sheet" id="sheet-sit" role="dialog" aria-label="Your listening session"><div id="sitBody"></div></div>
     <div class="sheet" id="sheet-year" role="dialog" aria-label="Your year on the turntable"><div id="yearBody"></div></div>
     <div class="sheet" id="sheet-listen" role="dialog" aria-label="Listen">
@@ -1514,11 +1530,11 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 
     <div class="sheet" id="sheet-saved" role="dialog" aria-label="Saved"><div id="savedBody"></div></div>
 
-    <div class="sheet" id="sheet-host" role="dialog" aria-label="Host a listening session"><div id="hostBody"></div></div>
+    <div class="sheet" id="sheet-host" role="dialog" aria-label="Host a room"><div id="hostBody"></div></div>
 
-    <div class="sheet" id="sheet-session" role="dialog" aria-label="Listening session"><div id="sessBody"></div></div>
+    <div class="sheet" id="sheet-session" role="dialog" aria-label="Your room"><div id="sessBody"></div></div>
 
-    <div class="sheet" id="sheet-room" role="dialog" aria-label="Listening session room"><div id="roomBody"></div></div>
+    <div class="sheet" id="sheet-room" role="dialog" aria-label="Listening room"><div id="roomBody"></div></div>
 
     <div class="sheet" id="sheet-lab" role="dialog" aria-label="Phase 0 test lab"><div id="labBody"></div></div>
 
@@ -1757,7 +1773,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.30.4 · session card';
+const BUILD='0.31.0 · community';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2087,13 +2103,13 @@ async function sitPlaylist(mode){
   const name=sitName(S);
   const items=[];S.items.forEach(x=>{if(x.t&&!items.some(y=>nz(y.title)===nz(x.t)&&nz(y.artist)===nz(x.a)))items.push({title:x.t,artist:x.a,am:x.am||''})});
   if(!items.length){toast('No songs in this one yet.');return}
-  const plain=()=>`${name}. What I played on the turntable:\n\n`+items.map((x,i)=>`${i+1}. ${x.title} · ${x.artist}`).join('\n')+'\n\nMade with Memory Wax';
+  const plain=()=>`${name}. What I played on the turntable:\n\n`+items.map((x,i)=>`${i+1}. ${x.title} · ${x.artist}`).join('\n')+'\n\n'+byLine();
   if(!amNativeOK()){if(mode==='share')shareText(name,plain());else toast('Saving playlists works in the Memory Wax app on iPhone and iPad.');return}
   toast(mode==='save'?'Saving to Apple Music…':'Finding the songs in Apple Music…');
   try{
-    const r=await amRace(Capacitor.nativePromise('AppleMusic','songPlaylist',{name,note:`${X.recs.length} record${X.recs.length===1?'':'s'} on the turntable`,items,save:mode==='save'}),90000);
+    const r=await amRace(Capacitor.nativePromise('AppleMusic','songPlaylist',{name,note:`${meName()?'Played by '+meName()+' · ':''}${X.recs.length} record${X.recs.length===1?'':'s'} on the turntable`,items,save:mode==='save'}),90000);
     if(mode==='save'){st.lastSave={svc:'am',name,n:r.n,miss:r.missed||[],url:'https://music.apple.com/library/playlists',tip:'To share it, open the playlist in Music, tap ••• and choose Share Playlist.'};showSaved();haptic('success')}
-    else shareText(name,`${name}. What I played on the turntable:\n\n`+(r.songs||[]).map((x,i)=>`${i+1}. ${x.title} · ${x.artist}${x.url?'\n'+x.url:''}`).join('\n')+((r.missed||[]).length?`\n\nNot on Apple Music: ${r.missed.join(', ')}`:'')+'\n\nMade with Memory Wax');
+    else shareText(name,`${name}. What I played on the turntable:\n\n`+(r.songs||[]).map((x,i)=>`${i+1}. ${x.title} · ${x.artist}${x.url?'\n'+x.url:''}`).join('\n')+((r.missed||[]).length?`\n\nNot on Apple Music: ${r.missed.join(', ')}`:'')+'\n\n'+byLine());
   }catch(e){if(mode==='share'&&/slow|other/.test(String(e&&e.message))){shareText(name,plain());return}toast(amErr(e))}
 }
 /* what Apple Music says on this device, shown in Connected music services */
@@ -2111,6 +2127,15 @@ async function cardLogo(x,W,H,bg,lh){
     else{const im=await loadImg('assets/memory-wax-wordmark-ox.png'),w=230,hh=w*844/1643;x.drawImage(im,W-72-w,H-62-hh,w,hh)}
   }catch(e){x.save();x.font='500 26px "DM Mono",monospace';x.globalAlpha=.85;x.textAlign='right';x.fillText('MADE WITH MEMORY WAX',W-72,H-70);x.restore()}
 }
+/* your photo and name, bottom left of a card, when you've added them */
+async function cardByline(x,H,bg){
+  const n=meName(),ph=(st.me||{}).photo;if(!n&&!ph)return;
+  const dark=String(bg||'#540B0E')!=='#FFF3B0',y=H-56-62;let tx=72;
+  if(ph){try{const im=await loadImg(ph);x.save();x.beginPath();x.arc(72+31,y+31,31,0,7);x.clip();x.drawImage(im,72,y,62,62);x.restore();tx=72+62+18}catch(e){}}
+  if(n){x.save();x.fillStyle=dark?'#FFF3B0':'#540B0E';x.font='500 22px "DM Mono",monospace';if('letterSpacing' in x)x.letterSpacing='4px';x.globalAlpha=.7;x.fillText('PLAYED BY',tx,y+24);x.globalAlpha=1;
+    x.font='900 40px Archivo,sans-serif';if('fontStretch' in x)x.fontStretch='ultra-condensed';if('letterSpacing' in x)x.letterSpacing='0px';x.fillText(fitText(x,n.toUpperCase(),520),tx,y+62);x.restore()}
+}
+const byLine=()=>meName()?meName()+' · Made with Memory Wax':'Made with Memory Wax';
 async function cardFonts(){try{await document.fonts.load('900 100px Archivo');await document.fonts.load('italic 40px "Instrument Serif"');await document.fonts.load('20px "DM Mono"')}catch(_){}}
 function cardShare(b,name,text){const f=new File([b],name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share(text?{files:[f],title:'Memory Wax',text}:{files:[f],title:'Memory Wax'}).catch(()=>{});else saveBlob(b)}
 const sitName=S=>sitTitle(S).replace(/^./,c=>c.toUpperCase())+', '+new Date(S.s).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
@@ -2129,7 +2154,7 @@ async function cardDraw(o){
     x.font='700 44px Archivo,sans-serif';x.fillText(r[0].length>24?r[0].slice(0,23)+'…':r[0],150,y);
     x.font='400 32px Archivo,sans-serif';x.textAlign='right';x.globalAlpha=.75;x.fillText(r[1].length>20?r[1].slice(0,19)+'…':r[1],W-72,y);x.textAlign='left';x.globalAlpha=1;y+=92});
   if(o.quote){x.fillStyle='#E09F3E';x.font='italic 62px "Instrument Serif",Georgia,serif';wrapText(x,o.quote,72,Math.max(y+70,1020),W-144-330,70,3);x.fillStyle='#FFF3B0'}
-  await cardLogo(x,W,H,'#540B0E');
+  await cardLogo(x,W,H,'#540B0E');await cardByline(x,H,'#540B0E');
   return new Promise(res=>c.toBlob(res,'image/png'));
 }
 /* the session card: every song, in the order it played. Rows size themselves to the space; long sessions go to two columns. */
@@ -2167,11 +2192,11 @@ async function sitCard(S){
     x.font=AF;x.globalAlpha=.7;x.textAlign='right';x.fillText(fitText(x,artist,aw),cx+cw,y);x.textAlign='left';x.globalAlpha=1;
   });
   if(more){const i=shown.length,col=two?Math.floor(i/rows):0,row=two?i%rows:i;x.font=`500 ${Math.round(fs*.7)}px "DM Mono",monospace`;x.globalAlpha=.75;x.fillText(`+ ${more} MORE`,L+col*(cw+gap)+fs*1.55,top+row*rh+rh*.72);x.globalAlpha=1}
-  await cardLogo(x,W,H,'#540B0E',LOGO_H);
+  await cardLogo(x,W,H,'#540B0E',LOGO_H);await cardByline(x,H,'#540B0E');
   return new Promise(res=>c.toBlob(res,'image/png'));
 }
 async function sitShare(){const S=(st.sits||[])[st.sitI];if(!S)return;const X=sitStats(S),n=new Set((S.items||[]).map(i=>nz(i.t)+'|'+nz(i.a))).size;
-  cardShare(await sitCard(S),'memory-wax-session.png',`${sitName(S)}. What I played on the turntable: ${n} song${n===1?'':'s'} from ${X.recs.length} record${X.recs.length===1?'':'s'}.\n\nMade with Memory Wax`)}
+  cardShare(await sitCard(S),'memory-wax-session.png',`${sitName(S)}. What I played on the turntable: ${n} song${n===1?'':'s'} from ${X.recs.length} record${X.recs.length===1?'':'s'}.\n\n${byLine()}`)}
 
 /* ---------- Your year on the turntable: counted from spins Listen heard and spins you logged ---------- */
 function yearData(Y){
@@ -2214,7 +2239,7 @@ function renderYear(){
 async function yearShare(){
   const D=yearData(st.yearY),P=D.ppl[0];
   const b=await cardDraw({kicker:D.Y+' on the turntable',big:D.total+' spin'+(D.total===1?'':'s'),sub:D.per.length+' record'+(D.per.length===1?'':'s')+' · '+D.nights.length+' listening session'+(D.nights.length===1?'':'s'),rows:D.per.map(x=>[x.r.t,x.n+'×']),quote:P?`Heard most: ${P.n}${P.role?' on '+P.role:''}, ${P.n2} spins.`:''});
-  cardShare(b,'memory-wax-'+D.Y+'.png',`${D.Y} on the turntable: ${D.total} spin${D.total===1?'':'s'} across ${D.per.length} record${D.per.length===1?'':'s'}${P?`. The player I heard most: ${P.n}`:''}.\n\nMade with Memory Wax`);
+  cardShare(b,'memory-wax-'+D.Y+'.png',`${D.Y} on the turntable: ${D.total} spin${D.total===1?'':'s'} across ${D.per.length} record${D.per.length===1?'':'s'}${P?`. The player I heard most: ${P.n}`:''}.\n\n${byLine()}`);
 }
 
 /* ---------- Which version is this? Listening checks the songs against the pressing you picked ---------- */
@@ -2317,6 +2342,7 @@ function renderHear(){
 }
 function go(name){
   const from=st.screen;st.screen=name;
+  if(name==='scene'){try{renderScene()}catch(e){}}
   if(name!=='scan'&&name!=='reveal')camOff();
   if(name==='scan'&&st.camPref&&!camStream)camOn();
   if(name==='reveal'){st.cameFromScan=(from==='scan');if(from==='scan'&&!st.keepRec)st.rec=1;st.keepRec=false}
@@ -3458,7 +3484,7 @@ async function cardBlob(){
     x.font='700 44px Archivo,sans-serif';x.fillText(r[0].length>26?r[0].slice(0,25)+'…':r[0],150,y);
     x.font='400 34px Archivo,sans-serif';x.textAlign='right';x.globalAlpha=.75;x.fillText(r[1].length>22?r[1].slice(0,21)+'…':r[1],W-72,y);x.textAlign='left';x.globalAlpha=1;y+=96});
   if(q){x.font='italic 68px "Instrument Serif",Georgia,serif';wrapText(x,q,72,Math.max(y+80,1000),W-144-330,76,4)}
-  x.font='500 26px "DM Mono",monospace';x.globalAlpha=.85;x.fillText(n.guests?n.guests+' GUESTS':'',72,H-70);x.globalAlpha=1;await cardLogo(x,W,H,T.b);
+  x.font='500 26px "DM Mono",monospace';x.globalAlpha=.85;x.fillText(n.guests?n.guests+' GUESTS':'',72,H-70);x.globalAlpha=1;await cardLogo(x,W,H,T.b);if(!n.guests)await cardByline(x,H,T.b);
   return new Promise(res=>c.toBlob(res,'image/png'));
 }
 function openNight(si){
@@ -3505,7 +3531,7 @@ function whenText(x){
 function openHost(){gate(()=>{st.host={step:1,mode:'person',name:'',date:'',time:'',where:'',line:'',recs:[],notes:{},vis:2};renderHost();openSheet('host')})}
 function hostCard(H,slug){
   const rs=H.recs.map(id=>recOf(id));
-  return `<div class="webcard"><div class="wbar"><i></i><i></i><i></i><span>memorywax.app/night/${slug}</span></div><div class="wbody"><div class="wk">A listening session</div><div class="wt disp">${esc(H.name||'Untitled night')}</div>
+  return `<div class="webcard"><div class="wbar"><i></i><i></i><i></i><span>memorywax.app/night/${slug}</span></div><div class="wbody"><div class="wk">A listening room</div><div class="wt disp">${esc(H.name||'Untitled night')}</div>
    <p style="margin:0 0 8px;font-weight:700;font-size:14px">${[whenText(H),H.mode==='online'?'Online':H.where&&esc(H.where)].filter(Boolean).join(' · ')}</p>
    ${H.line?`<p class="quote" style="margin:0 0 10px">“${esc(H.line)}”</p>`:''}
    <div class="wgrid">${rs.map(r=>{const c=cov(r);return `<div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}><span class="tt">${r.t}</span></div>`}).join('')}</div>
@@ -3514,7 +3540,7 @@ function hostCard(H,slug){
 function renderHost(){
   const H=st.host,s=H.step;
   const prog=`<div class="steps">${[1,2,3].map(n=>`<span class="${n===s?'on':n<s?'done':''}">${n<s?'✓':n}</span>`).join('')}<em>Step ${s} of 3 · ${HSTEPS[s-1]}</em></div>`;
-  let h=`<h4 class="disp">Host a listening session</h4>${prog}`;
+  let h=`<h4 class="disp">Host a room</h4>${prog}`;
   if(s===1){
     h+=`<p class="sub">Name the night and say when and where. Three short steps, then it’s listed and ready to share.</p>
      <div class="hf"><label for="hName">Name of the night</label><input class="txt sm" id="hName" data-hf="name" maxlength="50" placeholder="Spiritual Jazz Sunday" value="${esc(H.name)}"></div>
@@ -3535,7 +3561,7 @@ function renderHost(){
      ${hostCard(H,(H.name||'night').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''))}
      <div class="opts">${[2,1].map(v=>`<button class="pb" aria-pressed="${H.vis===v}" data-hvis="${v}">${HVIS[v]}</button>`).join('')}</div>
      <p class="vnote" style="margin:0 0 6px">${H.vis===2?'Anyone with the link can open it, even without the app. It shows the name, time, place you typed, and the records. Never your username unless you add it.':'Only your mutual Friends see it on their Community page. There’s no public link.'}</p>
-     <div class="hbtns"><button class="ghost" data-hback="1">Back</button><button class="go press" data-hpub="1">List my session</button></div>`;
+     <div class="hbtns"><button class="ghost" data-hback="1">Back</button><button class="go press" data-hpub="1">List my room</button></div>`;
   }
   $('#hostBody').innerHTML=h;
 }
@@ -3548,19 +3574,38 @@ function hostNext(){
 function publishSession(){
   const H=st.host,x={id:st.nextSess++,mode:H.mode,name:H.name.trim(),date:H.date,time:H.time,where:H.mode==='online'?'Online':H.where.trim(),line:H.line.trim(),recs:H.recs.slice(),notes:{...H.notes},vis:H.vis};
   st.sessions.push(x);st.host=null;closeSheets();renderScene();renderSession(x.id);openSheet('session');
-  toast('Your session is listed. Share it when you’re ready.');
+  toast('Your room is listed. Share it when you’re ready.');
 }
 function renderSession(id){
   const x=st.sessions.find(q=>q.id===id);if(!x)return;st.sessId=id;
   const slug=x.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');st.shareUrl='https://memorywax.app/night/'+slug;
-  $('#sessBody').innerHTML=`<h4 class="disp">Your session is listed</h4><p class="sub">${HVIS[x.vis]}.${x.vis===2?' Share the link with your guests.':' Friends can see it on their Community page.'}</p>
+  $('#sessBody').innerHTML=`<h4 class="disp">Your room is listed</h4><p class="sub">${HVIS[x.vis]}.${x.vis===2?' Share the link with your guests.':(DEMO?' Friends can see it on their Community page.':' Friends will see it here once profiles arrive. Until then it stays on this phone.')}</p>
    ${hostCard(x,slug)}
-   ${x.mode==='online'?`<button class="go press" style="margin-top:0;margin-bottom:10px" data-nroom="s${x.id}">Open the session room</button>`:''}
+   ${x.mode==='online'?`<button class="go press" style="margin-top:0;margin-bottom:10px" data-nroom="s${x.id}">Open the room</button>`:''}
    ${x.vis===2?`<div class="shbtns"><button class="go press" style="flex:1;margin-top:0" data-copy="sess">Copy link</button><button class="go press" style="flex:1;margin-top:0;background:var(--teal)" data-nshare="sess">Share</button></div>`:''}
    <button class="ghost" data-sessplay="${x.id}">Play the records</button>
-   <button class="ghost" data-sessdel="${x.id}">Cancel this session</button>`;
+   <button class="ghost" data-sessdel="${x.id}">Cancel this room</button>`;
 }
 
+/* ---------- you: a name and photo for your cards. Visible profiles come with accounts. ---------- */
+const meName=()=>(st.me&&st.me.name)||'';
+function meAv(big){const m=st.me||{},n=meName();return `<span class="meav${big?' big':''}"${m.photo?` style="background-image:url('${m.photo}')"`:''} aria-hidden="true">${m.photo?'':esc((n||'?').trim()[0]||'?').toUpperCase()}</span>`}
+function openMe(){renderMe();openSheet('me')}
+function renderMe(){
+  const m=st.me||{};
+  $('#meBody').innerHTML=`<h4 class="disp">You</h4><p class="sub">Your name and photo go on the cards you share, your playlists, and the rooms you host.</p>
+   ${meAv(true)}
+   <input class="mc-in" id="meName" data-mename="1" value="${esc(m.name||'')}" placeholder="Your name or DJ name" aria-label="Your name or DJ name" maxlength="40" style="width:100%">
+   <button class="go press" data-me="photo">${m.photo?'Change the photo':'Add a photo'}</button>
+   ${m.photo?'<button class="ghost" data-me="nophoto">Remove the photo</button>':''}
+   <p class="fine2" style="margin-top:10px">Kept on your devices and in your private iCloud. A profile other people can visit comes with accounts, and you’ll choose then what it shows.</p>`;
+}
+async function mePhoto(file){
+  try{const cv=await fileToCanvas(file,640),d=Math.min(cv.width,cv.height),c=document.createElement('canvas');c.width=c.height=320;
+    c.getContext('2d').drawImage(cv,(cv.width-d)/2,(cv.height-d)/2,d,d,0,0,320,320);
+    st.me={...(st.me||{}),photo:c.toDataURL('image/jpeg',.85)};saveState();renderMe();renderScene();toast('Photo saved.')}
+  catch(e){toast('That photo didn’t open. Try another.')}
+}
 /* ---------- scene ---------- */
 const CURS=[
  {id:'ns',n:'Nightshift Selector',tag:'Late-night house and boogie.',m:2,kind:'Curator',shelves:[['Boogie Basement',6,[0,1,2],[5,9,10]],['After Hours',4,[3,5,2],[8,12,5]]]},
@@ -3575,26 +3620,33 @@ const NIGHTS=[
 const SPINNOTE=['Only you can see this.','Friends you’ve approved can see this.','Anyone can see the record and its story. Prices and places never show.'];
 function renderScene(){
   const el=$('#sceneBody');if(!el)return;
-  const sp=st.spin?RECS.find(r=>r.id===st.spin.id):null,fr=st.fr;
+  const fr=st.fr,n=meName(),S=st.sits||[],cur=curSit(),recent=S.map((x,i)=>({x,i})).filter(o=>o.x.items&&o.x.items.length).reverse().slice(0,5);
+  const sesRow=({x,i})=>{const X=sitStats(x),live=x===cur;return `<button class="srow" data-sit="${i}"><div><b>${esc(sitTitle(x))}</b><span>${new Date(x.s).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${X.songs} song${X.songs===1?'':'s'} · ${X.recs.length} record${X.recs.length===1?'':'s'}</span></div><i${live?' class="now"':''}>${live?'Now':'Open'}</i></button>`};
   el.innerHTML=`
-  <div class="sh"><span>Curators</span><em>${DEMO?st.follow.size+' following':'None yet'}</em></div>
-  ${DEMO?`<p class="shnote">People and places whose shelves you can follow. They aren’t your friends, and they never see who follows them. These three are samples.</p>
-  <div class="curs">${[...CURS].sort((a,b)=>st.follow.has(b.id)-st.follow.has(a.id)).map(c=>`<div class="cur"><button class="open" data-cur="${c.id}"><div class="av m${c.m}" aria-hidden="true">${c.n[0]}</div><div class="nm">${c.n}</div><div class="tg">${c.tag}</div><div class="kd">${c.kind} · sample · ${c.shelves.length} ${c.shelves.length>1?'shelves':'shelf'} shared</div></button><button class="follow" data-follow="${c.id}" aria-pressed="${st.follow.has(c.id)}">${st.follow.has(c.id)?'Following':'Follow'}</button></div>`).join('')}</div>`
-  :`<div class="emptyc"><b>No curators yet</b><span>People and places whose shelves you can follow will appear here. They never see who follows them.</span></div>`}
-  <div class="sh"><span>Listening sessions</span><em>${DEMO?new Date(nextNightAt()).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'None scheduled'}</em></div>
-  ${DEMO?`<button class="nightcard press" data-nroom="sitk"><div class="nk">Thursday · 8:00 PM Pacific</div><b>Songs in the Key of Life</b><span>Stevie Wonder, side by side with the world. Play your own copy or stream it. Live chat the whole time.</span><span style="opacity:.75;margin-top:6px">Sample session · your time: ${esc(localWhen(nextNightAt()))}</span><i>Open the room</i></button>`
-  :`<div class="emptyc"><b>No sessions scheduled</b><span>Host one with your own records or a streaming album, and invite people in.</span></div>`}
-  <div class="sh"><span>Hosted nights</span><em>${st.sessions.length?st.sessions.length+' listed':'Anyone can host'}</em></div>
-  <button class="hostcta press" data-host="start" style="margin-top:0">Host a listening session</button>
-  ${st.sessions.length?`<div class="ser" style="margin-top:12px"><h4 class="disp">Your sessions</h4><p class="sub">Listed by you.</p>${st.sessions.map(x=>`<button class="srow" data-sess="${x.id}"><div><b>${esc(x.name)}</b><span>${[whenText(x),x.recs.length+' record'+(x.recs.length===1?'':'s'),HVIS[x.vis]].filter(Boolean).join(' · ')}</span></div><i>Open</i></button>`).join('')}</div>`:''}
-  ${DEMO?`<div class="ser"><h4 class="disp">Words On Wax</h4><p class="sub">An example from a hand-run series: six nights so far. Every night keeps its records, its stories, and its recap.</p>
-    ${NIGHTS.map(n=>`<button class="srow" data-recap="w${n.id}"><div><b>${n.t}</b><span>${n.n} · ${n.recs.length} records · ${n.guests} guests</span></div><i>Recap</i></button>`).join('')}</div>`:''}
-  <div class="sh"><span>Friends</span><em>${fr.list.length} friend${fr.list.length===1?'':'s'}</em></div>
-  <div class="frs"><h4 class="disp">Friends are mutual</h4><p>You both say yes, or nothing is shared. Friends see only the shelves you set to Friends.</p>
-    ${fr.req.map((n,i)=>`<div class="frow"><div><b>${n}</b><span>Wants to be friends</span></div><div style="display:flex;gap:6px"><button class="pb" data-frok="${i}">Accept</button><button class="pb o" data-frno="${i}">Not now</button></div></div>`).join('')}
-    ${fr.list.map(n=>`<div class="frow"><div><b>${n}</b><span>Friends · both approved</span></div></div>`).join('')}
-    ${!fr.req.length&&!fr.list.length?'<div class="frow"><div><span>No friends yet. Invite someone from their profile.</span></div></div>':''}
-  </div>`;
+  <button class="mestrip" data-me="edit">${meAv()}<div><b>${n?esc(n):'Add your name'}</b><span>${n?'Tap to change your name or photo':'And a photo. They go on the cards you share.'}</span></div></button>
+
+  <div class="sh"><span>Your sessions</span><em>${S.filter(x=>x.items&&x.items.length).length||'None yet'}</em></div>
+  <p class="shnote">Every record Listen follows becomes a session. Name it, share its card, or save it as an Apple Music playlist.</p>
+  ${recent.length?`<div class="sesl">${recent.map(sesRow).join('')}</div>${S.length>5?'<button class="hostcta press" data-year="open">All your sessions and your year</button>':''}`
+   :`<div class="emptyc"><b>Your first session starts with a record</b><span>Put one on, tap Listen, and turn on Follow along. Each song lands here.</span></div><button class="hostcta press" data-hear="open">Start listening</button>`}
+
+  <div class="sh"><span>Rooms</span><em>${DEMO?new Date(nextNightAt()).toLocaleDateString(undefined,{month:'short',day:'numeric'}):(st.sessions.length?st.sessions.length+' yours':'None scheduled')}</em></div>
+  <p class="shnote">The same album at the same time, from anywhere, with live chat. Bring your copy or stream it.</p>
+  ${DEMO?`<button class="nightcard press" data-nroom="sitk"><div class="nk">Thursday · 8:00 PM Pacific</div><b>Songs in the Key of Life</b><span>Stevie Wonder, side by side with the world. Play your own copy or stream it. Live chat the whole time.</span><span style="opacity:.75;margin-top:6px">Sample room · your time: ${esc(localWhen(nextNightAt()))}</span><i>Open the room</i></button>`:''}
+  <button class="hostcta press" data-host="start"${DEMO?'':' style="margin-top:4px"'}>Host a room</button>
+  ${st.sessions.length?`<div class="ser" style="margin-top:12px"><h4 class="disp">Your rooms</h4><p class="sub">Hosted by ${n?esc(n):'you'}.</p>${st.sessions.map(x=>`<button class="srow" data-sess="${x.id}"><div><b>${esc(x.name)}</b><span>${[whenText(x),x.recs.length+' record'+(x.recs.length===1?'':'s'),HVIS[x.vis]].filter(Boolean).join(' · ')}</span></div><i>Open</i></button>`).join('')}</div>`:''}
+  ${DEMO?`<div class="ser"><h4 class="disp">Words On Wax</h4><p class="sub">An example of a hand-run series: six nights so far. Every night keeps its records, its stories, and its recap.</p>
+    ${NIGHTS.map(x=>`<button class="srow" data-recap="w${x.id}"><div><b>${x.t}</b><span>${x.n} · ${x.recs.length} records · ${x.guests} guests</span></div><i>Recap</i></button>`).join('')}</div>`:''}
+
+  <div class="sh"><span>People</span><em>${DEMO?fr.list.length+' friends · '+st.follow.size+' following':'With profiles'}</em></div>
+  <p class="shnote">Two ways to connect, because sharing with people you know is different from following taste you admire.</p>
+  <div class="ppl"><h5>Friends</h5><p>People you know. You both say yes, then they see the shelves you set to Friends and what you’re spinning.</p><p class="why">For your own collection, with people you trust.</p>
+    ${DEMO?fr.req.map((q,i)=>`<div class="frow"><div><b>${q}</b><span>Wants to be friends</span></div><div style="display:flex;gap:6px"><button class="pb" data-frok="${i}">Accept</button><button class="pb o" data-frno="${i}">Not now</button></div></div>`).join('')+fr.list.map(q=>`<div class="frow"><div><b>${q}</b><span>Friends · both approved</span></div></div>`).join(''):''}
+  </div>
+  <div class="ppl"><h5>Curators</h5><p>Selectors, shops and listening bars whose taste you admire. Follow with one tap, no approval needed. You see only the shelves they share with everyone, and they never see who follows them.</p><p class="why">For discovering records, from people you don’t have to know.</p>
+    ${DEMO?`<div class="curs" style="margin:10px 0 0">${[...CURS].sort((a,b)=>st.follow.has(b.id)-st.follow.has(a.id)).map(c=>`<div class="cur"><button class="open" data-cur="${c.id}"><div class="av m${c.m}" aria-hidden="true">${c.n[0]}</div><div class="nm">${c.n}</div><div class="tg">${c.tag}</div><div class="kd">${c.kind} · sample · ${c.shelves.length} ${c.shelves.length>1?'shelves':'shelf'} shared</div></button><button class="follow" data-follow="${c.id}" aria-pressed="${st.follow.has(c.id)}">${st.follow.has(c.id)?'Following':'Follow'}</button></div>`).join('')}</div>`:''}
+  </div>
+  ${DEMO?'':`<div class="emptyc" style="margin-top:12px"><b>Friends and curators arrive with profiles</b><span>Until then, nothing you keep here leaves your devices, except what you choose to share.</span></div>`}`;
 }
 function openCur(id){
   const c=CURS.find(x=>x.id===id),f=st.follow.has(id);
@@ -3799,7 +3851,7 @@ function renderNight(){
   const pb=(on,attr,label)=>`<button class="pb" aria-pressed="${on}" ${attr}>${label}</button>`;
   const cur=N.phase==='before'?(N.at===D.at?'before':'count'):N.phase;
   const proto=`<div class="nproto"><span>Prototype</span>${[['before','Before'],['count','Countdown'],['live','Live'],['after','After']].map(([k,l])=>pb(cur===k,`data-nphase="${k}"`,l)).join('')}${pb(N.asHost,'data-nhost="1"','View as host')}<em class="nsmall" style="flex-basis:100%;text-transform:none;letter-spacing:0;font-style:normal;margin-top:2px">Tip: open this page in a second browser tab. Chat and host controls sync between tabs.</em></div><div class="nlink" id="nLink"></div>`;
-  let h=`${proto}<span class="nkick">Listening session${D.sample?' · sample':''}</span><h4 class="disp" style="font-size:38px;margin-top:6px">${esc(D.title)}</h4>
+  let h=`${proto}<span class="nkick">Listening room${D.sample?' · sample':''}</span><h4 class="disp" style="font-size:38px;margin-top:6px">${esc(D.title)}</h4>
    ${(D.line||D.artist)?`<p class="sub" style="margin:8px 0 6px">${esc(D.line||D.artist)}</p>`:''}
    <div class="nmeta"><b>${esc(when)}</b><span>${N.phase==='before'?'Your time: '+esc(localWhen(D.at)):''}</span><span>Hosted by ${esc(D.host)}${D.sample?' (sample)':''}${D.artist?' · '+esc(D.artist):''}</span></div>`;
   if(N.phase==='before'){
@@ -3818,7 +3870,7 @@ function renderNight(){
     else h+=`<div id="nEmbed">${N.phase==='before'?'<p class="fine2" style="margin:-4px 0 12px">Your player appears here when the needle drops.</p>':''}</div>`;
   }
   if(N.asHost&&N.phase!=='after')h+=`<div class="nhost"><div class="nkick">Host tools</div>
-    <div class="opts" style="margin:8px 0 0">${N.phase==='live'?`<button class="pb" data-nnext="1">Next track</button>`:''}${[[0,'Slow mode off'],[5,'Slow 5s'],[30,'Slow 30s']].map(([s,l])=>pb(N.slow===s,`data-nslow="${s}"`,l)).join('')}${pb(N.locked,'data-nlock="1"','Pause chat')}${N.phase==='live'?`<button class="pb o" data-nend="1">End session</button>`:''}</div></div>`;
+    <div class="opts" style="margin:8px 0 0">${N.phase==='live'?`<button class="pb" data-nnext="1">Next track</button>`:''}${[[0,'Slow mode off'],[5,'Slow 5s'],[30,'Slow 30s']].map(([s,l])=>pb(N.slow===s,`data-nslow="${s}"`,l)).join('')}${pb(N.locked,'data-nlock="1"','Pause chat')}${N.phase==='live'?`<button class="pb o" data-nend="1">End the room</button>`:''}</div></div>`;
   h+=`<div class="sethead">Live chat <em class="nsmall" id="nLbl" style="text-transform:none;letter-spacing:0">· not open yet</em></div>
    <div class="nchat"><div id="nMsgs" class="nmsgs" role="log" aria-live="polite"></div>
    ${N.phase==='after'?'<p class="fine2" style="margin:8px 0 0">The chat has closed. Thanks for listening.</p>':`<div class="ncomp"><input class="txt sm" id="nIn" maxlength="140" placeholder="${N.locked&&!N.asHost?'Chat is paused by the host':'Say something kind'}" aria-label="Chat message" autocomplete="off" ${N.locked&&!N.asHost?'disabled':''}><button class="pb" data-nsend="1">Send</button></div>
@@ -3847,8 +3899,8 @@ function nSend(){
 }
 function nCal(){
   const N=st.nt,D=N.def,z=n=>new Date(n).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),e=x=>String(x).replace(/([,;\\])/g,'\\$1');
-  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Memory Wax//Listening session//EN','BEGIN:VEVENT','UID:'+D.key+'-'+D.at+'@memorywax.app','DTSTAMP:'+z(Date.now()),'DTSTART:'+z(D.at),'DTEND:'+z(D.at+(D.sample?120:90)*60000),'SUMMARY:'+e(D.title+' · Memory Wax listening session'),'DESCRIPTION:'+e('Play your own record or stream it. Live chat opens in Memory Wax. '+st.shareUrl),'URL:'+st.shareUrl,'BEGIN:VALARM','TRIGGER:-PT15M','ACTION:DISPLAY','DESCRIPTION:Starts in 15 minutes','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='memory-wax-listening-session.ics';document.body.appendChild(a);a.click();a.remove();
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Memory Wax//Listening session//EN','BEGIN:VEVENT','UID:'+D.key+'-'+D.at+'@memorywax.app','DTSTAMP:'+z(Date.now()),'DTSTART:'+z(D.at),'DTEND:'+z(D.at+(D.sample?120:90)*60000),'SUMMARY:'+e(D.title+' · Memory Wax listening room'),'DESCRIPTION:'+e('Play your own record or stream it. Live chat opens in Memory Wax. '+st.shareUrl),'URL:'+st.shareUrl,'BEGIN:VALARM','TRIGGER:-PT15M','ACTION:DISPLAY','DESCRIPTION:Starts in 15 minutes','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='memory-wax-listening-room.ics';document.body.appendChild(a);a.click();a.remove();
   toast('Saved to your downloads. Open it to add the night, with a 15-minute reminder.');
 }
 addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='nIn'){e.preventDefault();nSend()}});
@@ -5064,7 +5116,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-sitend],[data-sitdel],[data-sitpl],[data-amconnect],[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-me],[data-sitend],[data-sitdel],[data-sitpl],[data-amconnect],[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
@@ -5129,6 +5181,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.dgtest){dgTest();return}
   if(t.dataset.hear){const a=t.dataset.hear;if(a==='open')openHear();else if(a==='go')hearGo();else if(a==='stop'){hearStop();renderHear()}return}
   if(t.dataset.hearadd){hearAdd(t.dataset.hearadd);return}
+  if(t.dataset.me){const a=t.dataset.me;if(a==='edit')openMe();else if(a==='photo')$('#meIn').click();else if(a==='nophoto'){if(st.me)delete st.me.photo;saveState();renderMe();renderScene()}return}
   if(t.dataset.sitend){sitEnd();return}
   if(t.dataset.sitdel){const S=(st.sits||[])[st.sitI];if(!S)return;askSure({title:'Delete this session?',body:`“${sitTitle(S)}” and its ${S.items.length} song${S.items.length===1?'':'s'} come off your listening log. Spins counted on your records stay.`,yes:'Delete',go:()=>{st.sits.splice(st.sitI,1);saveState();closeSheets();toast('Session deleted.')}});return}
   if(t.dataset.sitpl){sitPlaylist(t.dataset.sitpl);return}
@@ -5290,7 +5343,7 @@ document.addEventListener('click',e=>{
 });
 $('#search').addEventListener('input',e=>{st.q=e.target.value;renderCollection()});
 document.addEventListener('input',e=>{const f=e.target.closest('[data-hf]');if(f&&st.host){st.host[f.dataset.hf]=f.value;return}const n=e.target.closest('[data-hnote]');if(n&&st.host)st.host.notes[n.dataset.hnote]=n.value});
-document.addEventListener('change',e=>{const n=e.target.closest('[data-sitname]');if(n){const S=(st.sits||[])[st.sitI];if(S){const v=n.value.trim().slice(0,60);if(v)S.name=v;else delete S.name;saveState();renderSit()}return}const t=e.target.closest('[data-pltr]');if(t&&st.plDraft)st.plDraft.items[+t.dataset.pltr].track=+t.value});
+document.addEventListener('change',e=>{if(e.target.id==='meIn'){const f=e.target.files&&e.target.files[0];e.target.value='';if(f)mePhoto(f);return}const mn=e.target.closest('[data-mename]');if(mn){const v=mn.value.trim().slice(0,40);st.me={...(st.me||{}),name:v};if(!v)delete st.me.name;saveState();renderScene();toast(v?'Name saved. It goes on your cards.':'Name removed.');return}const n=e.target.closest('[data-sitname]');if(n){const S=(st.sits||[])[st.sitI];if(S){const v=n.value.trim().slice(0,60);if(v)S.name=v;else delete S.name;saveState();renderSit()}return}const t=e.target.closest('[data-pltr]');if(t&&st.plDraft)st.plDraft.items[+t.dataset.pltr].track=+t.value});
 $('#mcAsk').addEventListener('input',e=>{copyOf(st.rec||1).ask=e.target.value});
 $('#mcPaid').addEventListener('input',e=>{copyOf(st.rec||1).paid=e.target.value});
 $('#mcWhere').addEventListener('input',e=>{copyOf(st.rec||1).where=e.target.value});
@@ -5328,7 +5381,7 @@ function snapshot(){
     shelves:st.shelves.map(s=>({...s,recs:s.recs.filter(id=>R.has(id))})),nextShelf:st.nextShelf,
     wants:st.wants,playlists:(st.playlists||[]).map(p=>({...p,items:(p.items||[]).filter(i=>R.has(i.rec))})),
     sessions:st.sessions,nextSess:st.nextSess,series:st.series,spin:st.spin&&R.has(st.spin.id)?st.spin:null,
-    photoKeys:st.photoKeys||{},lastImport:st.lastImport||null,sits:(st.sits||[]).slice(-400)};
+    photoKeys:st.photoKeys||{},lastImport:st.lastImport||null,sits:(st.sits||[]).slice(-400),me:st.me||null};
 }
 let lastSnap='';
 const snapKey=()=>JSON.stringify({...snapshot(),at:0});
@@ -5342,7 +5395,7 @@ function applyState(d){
   if(d.wants)st.wants=d.wants;if(d.playlists){st.playlists=d.playlists;st.nextPl=Math.max(st.nextPl||1,...d.playlists.map(p=>p.id+1));const seen=new Set();st.playlists.forEach(p=>{if(seen.has(p.id))p.id=st.nextPl++;seen.add(p.id)})}
   if(d.sessions){st.sessions=d.sessions;st.nextSess=d.nextSess||st.sessions.length+1}
   if(d.series)st.series=d.series;if(d.spin)st.spin=d.spin;
-  st.photoKeys=d.photoKeys||{};st.lastImport=d.lastImport||null;if(d.sits)st.sits=d.sits;
+  st.photoKeys=d.photoKeys||{};st.lastImport=d.lastImport||null;if(d.sits)st.sits=d.sits;if(d.me)st.me=d.me;
   loadPhotos();return true;
 }
 function restoreState(){if(DEMO)return;try{const d=JSON.parse(localStorage.getItem(DATA_KEY)||'null');if(d){applyState(d);lastSnap=snapKey()}}catch(e){try{const raw=localStorage.getItem(DATA_KEY);if(raw)localStorage.setItem('mw_state_unreadable',raw)}catch(x){}}}
@@ -5412,7 +5465,7 @@ function syNorm(d){
   Object.entries(d.copies||{}).forEach(([id,c])=>{const {plays,...rest}=c||{};copies[id]={...rest,plays:syBy(plays,p=>String(p.at))}});
   (d.sits||[]).forEach(S=>{sits[String(S.s)]={...S,items:syBy(S.items,x=>String(x.at))}});
   (d.owned||[]).forEach(id=>own[id]=1);
-  return {recs:syBy(d.recs),owned:own,copies,shelves:syBy(d.shelves),wants:syBy(d.wants,SYK.wants),playlists:syBy(d.playlists),sessions:syBy(d.sessions),series:syBy(d.series,SYK.series),sits,spin:d.spin||null,lastImport:d.lastImport||null};
+  return {recs:syBy(d.recs),owned:own,copies,shelves:syBy(d.shelves),wants:syBy(d.wants,SYK.wants),playlists:syBy(d.playlists),sessions:syBy(d.sessions),series:syBy(d.series,SYK.series),sits,spin:d.spin||null,lastImport:d.lastImport||null,me:d.me||null};
 }
 function syDenorm(N,L,R){
   const arr=(o,prev,k)=>{const ks=Object.keys(o||{}),ord=(prev||[]).map((x,i)=>k?k(x):(x&&x.id!=null?String(x.id):'i'+i)).filter(x=>x in o);ks.forEach(x=>{if(!ord.includes(x))ord.push(x)});return ord.map(x=>o[x])};
@@ -5421,7 +5474,7 @@ function syDenorm(N,L,R){
     copies:Object.fromEntries(Object.entries(N.copies||{}).map(([id,c])=>{const {plays,...rest}=c||{};const P=Object.values(plays||{}).sort((a,b)=>a.at-b.at);return [id,P.length?{...rest,plays:P}:rest]})),
     shelves:arr(N.shelves,L.shelves),nextShelf:Math.max(L.nextShelf||1,R.nextShelf||1,...arr(N.shelves,L.shelves).map(x=>(x.id||0)+1)),
     wants:arr(N.wants,L.wants,SYK.wants),playlists:arr(N.playlists,L.playlists),sessions:arr(N.sessions,L.sessions),nextSess:Math.max(L.nextSess||1,R.nextSess||1),
-    series:arr(N.series,L.series,SYK.series),spin:N.spin||null,lastImport:N.lastImport||null,photoKeys:L.photoKeys||{},
+    series:arr(N.series,L.series,SYK.series),spin:N.spin||null,me:N.me||null,lastImport:N.lastImport||null,photoKeys:L.photoKeys||{},
     sits:Object.values(N.sits||{}).map(S=>({...S,items:Object.values(S.items||{}).sort((a,b)=>a.at-b.at)})).sort((a,b)=>a.s-b.s)};
 }
 const syIdent=r=>r.mb?'mb:'+r.mb:r.dg?'dg:'+r.dg:r.am?'am:'+r.am:'t:'+nz(r.t||'')+'|'+nz(r.a||'');
@@ -5456,7 +5509,7 @@ function syApply(d){
   Object.keys(st.copies).forEach(k=>{if(realBefore.has(+k))delete st.copies[k]});Object.assign(st.copies,d.copies||{});
   if(d.shelves)st.shelves=d.shelves;st.nextShelf=Math.max(st.nextShelf||1,d.nextShelf||1);
   if(d.wants)st.wants=d.wants;if(d.playlists)st.playlists=d.playlists;if(d.sessions){st.sessions=d.sessions;st.nextSess=Math.max(st.nextSess||1,d.nextSess||1)}
-  if(d.series)st.series=d.series;st.spin=d.spin||null;st.lastImport=d.lastImport||st.lastImport||null;st.sits=d.sits||[];
+  if(d.series)st.series=d.series;st.spin=d.spin||null;st.lastImport=d.lastImport||st.lastImport||null;st.sits=d.sits||[];st.me=d.me||st.me||null;
   saveReal();saveState();
   try{renderCollection()}catch(e){}
   if(st.screen==='reveal'){if(!recIf(st.rec))go('collection');else{try{fillCopy(st.rec)}catch(e){}}}
