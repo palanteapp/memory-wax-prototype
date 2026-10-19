@@ -465,6 +465,14 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .ppl .soon{display:inline-block;margin-top:12px;padding:7px 12px;border-radius:999px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-style:normal;background:rgba(0,0,0,.18)}
 .ppl.cur2 .soon{background:rgba(84,11,14,.12)}
 .mestrip b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:24px;line-height:.95;text-transform:uppercase}
+.mestrip.tall{flex-wrap:wrap;row-gap:0;border-radius:48px 24px 24px 48px;padding:12px 18px 16px 12px}
+.mestrip.tall .meqa{flex:1 1 100%;margin:-10px 0 0 77px}
+.meqa{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin:9px 0 0;align-items:baseline}
+.meqa dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+.meqa dd{margin:0;font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.15;overflow-wrap:anywhere}
+.mequiz{margin:16px 0 4px;padding:14px 14px 4px;border-radius:16px;background:rgba(51,92,103,.1);box-shadow:inset 0 0 0 1.5px rgba(51,92,103,.35)}
+.mequiz>b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:20px;text-transform:uppercase;color:var(--teal)}
+.mequiz>span{display:block;font-family:var(--serif);font-style:italic;font-size:15px;margin:2px 0 6px}
 .mestrip div span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-top:4px}
 .meav{width:56px;height:56px;flex:none;border-radius:50%;background:var(--ox) center/cover no-repeat;color:var(--gold);display:grid;place-items:center;font-family:var(--disp);font-weight:900;font-size:26px;box-shadow:0 0 0 3px var(--cream)}
 #meBody .meav{box-shadow:0 0 0 4px var(--gold)}
@@ -1799,7 +1807,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.31.5 · teal edit';
+const BUILD='0.32.0 · about you';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3617,19 +3625,27 @@ function renderSession(id){
 const meName=()=>(st.me&&st.me.name)||'';
 function meAv(big){const m=st.me||{},n=meName();return `<span class="meav${big?' big':''}"${m.photo?` style="background-image:url('${m.photo}')"`:''} aria-hidden="true">${m.photo?'':esc((n||'?').trim()[0]||'?').toUpperCase()}</span>`}
 function openMe(){renderMe();openSheet('me')}
+/* The three questions show only on your Community page; the name goes on everything you share */
+const MEQ=[['from','Where are you from?','Los Angeles',40],['spin','What do you spin?','Salsa, boogie, deep house',60],['fav','Favorite album?','Songs in the Key of Life',60]];
+function meAbout(){const m=st.me||{};return MEQ.map(([k])=>(m[k]||'').trim()).some(Boolean)}
 function meSaveName(close){
-  const el=$('#meName');if(!el)return;const v=el.value.trim().slice(0,40),was=meName();
-  if(v!==was){st.me={...(st.me||{}),name:v};if(!v)delete st.me.name;saveState();renderScene();if(typeof acctPushProfile==='function')acctPushProfile();toast(v?`Saved. You’re ${v} on your cards.`:'Name removed.')}
-  if(close){el.blur();closeSheets()}else{const h=$('#meBody h4');if(h)h.textContent=v||'Your name'}
+  const el=$('#meName');if(!el)return;const v=el.value.trim().slice(0,40),was=meName(),m={...(st.me||{})};let other=false;
+  MEQ.forEach(([k,,,max])=>{const f=$('#meQ_'+k);if(!f)return;const x=f.value.trim().slice(0,max);if(x!==(m[k]||'')){other=true;if(x)m[k]=x;else delete m[k]}});
+  if(v!==was){if(v)m.name=v;else delete m.name}
+  if(v!==was||other){st.me=m;saveState();renderScene();if(typeof acctPushProfile==='function')acctPushProfile();
+    toast(v!==was?(v?`Saved. You’re ${v} on your cards.`:'Name removed.'):'Saved. It shows on your Community page.')}
+  if(close){document.activeElement&&document.activeElement.blur();closeSheets()}else{const h=$('#meBody h4');if(h)h.textContent=v||'Your name'}
 }
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&(e.target.id==='meName'||e.target.dataset.sitname)){e.preventDefault();e.target.blur()}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&(e.target.dataset.mename||e.target.dataset.sitname)){e.preventDefault();e.target.blur()}});
 function renderMe(){
   const m=st.me||{};
-  $('#meBody').innerHTML=`<h4 class="disp">${esc(m.name||'Your name')}</h4><p class="sub">Your name and photo go on the cards you share, your playlists, and the rooms you host.</p>
+  $('#meBody').innerHTML=`<h4 class="disp">${esc(m.name||'Your name')}</h4><p class="sub">Your name and photo go on the cards you share, your playlists, and the rooms you host. Three short answers sit under your name on the Community page.</p>
    ${meAv(true)}
    <label class="slab" for="meName">Your name or DJ name</label>
    <input class="sin" id="meName" data-mename="1" value="${esc(m.name||'')}" placeholder="DJ Varganessca" maxlength="40" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
-   <button class="go press" data-me="savename">Save name</button>
+   <div class="mequiz"><b>About you</b><span>Shows on your Community page only. Your cards just carry your name.</span>
+   ${MEQ.map(([k,q,ph,max])=>`<label class="slab" for="meQ_${k}">${q}</label><input class="sin" id="meQ_${k}" data-mename="1" value="${esc(m[k]||'')}" placeholder="${ph}" maxlength="${max}" autocomplete="off" autocorrect="off" enterkeyhint="done">`).join('')}</div>
+   <button class="go press" data-me="savename">Save</button>
    <button class="ghost" data-me="photo">${m.photo?'Change the photo':'Add a photo'}</button>
    ${m.photo?'<button class="ghost" data-me="nophoto">Remove the photo</button>':''}
    <p class="fine2" style="margin-top:10px">Kept on your devices and in your private iCloud. A profile other people can visit comes with accounts, and you’ll choose then what it shows.</p>`;
@@ -3657,7 +3673,7 @@ function renderScene(){
   const fr=st.fr,n=meName(),S=st.sits||[],cur=curSit(),recent=S.map((x,i)=>({x,i})).filter(o=>o.x.items&&o.x.items.length).reverse().slice(0,5);
   const sesRow=({x,i})=>{const X=sitStats(x),live=x===cur;return `<button class="srow" data-sit="${i}"><div><b>${esc(sitTitle(x))}</b><span>${new Date(x.s).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${X.songs} song${X.songs===1?'':'s'} · ${X.recs.length} record${X.recs.length===1?'':'s'}</span></div><i${live?' class="now"':''}>${live?'Now':'Open'}</i></button>`};
   el.innerHTML=`
-  <button class="mestrip" data-me="edit">${meAv()}<div><b>${n?esc(n):'Add your name'}</b><span>${n?'On the cards you share':'And a photo, for the cards you share'}</span></div><em class="meedit">${n?'Edit':'Add'}</em></button>
+  <button class="mestrip${meAbout()?' tall':''}" data-me="edit">${meAv()}<div><b>${n?esc(n):'Add your name'}</b>${meAbout()?'':`<span>${n?'Add where you’re from, what you spin, your favorite album':'And a photo, for the cards you share'}</span>`}</div><em class="meedit">${n||meAbout()?'Edit':'Add'}</em>${meAbout()?`<dl class="meqa">${MEQ.map(([k])=>(st.me[k]||'').trim()?`<dt>${{from:'From',spin:'Spins',fav:'Favorite'}[k]}</dt><dd>${esc(st.me[k])}</dd>`:'').join('')}</dl>`:''}</button>
 
   <div class="sh"><span>Your sessions</span><em>${S.filter(x=>x.items&&x.items.length).length||'None yet'}</em></div>
   <p class="shnote">Every record Listen follows becomes a session. Name it, share its card, or save it as an Apple Music playlist.</p>
