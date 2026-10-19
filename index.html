@@ -1688,7 +1688,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.26.2 · story';
+const BUILD='0.27.0 · 45s';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2136,14 +2136,15 @@ function fillReport(r,mode){
 /* ---------- the story of a record: what's known about the album, from sources, each name a way onward ----------
    Wikipedia (CC BY-SA) for the album's own article, MusicBrainz/Discogs for who, where and when. A part is shown only when a source gave it. */
 const WIKIAB=new Map();
-async function wikiAlbum(t,a){
-  const key='mw_wa_'+nz((t||'')+' '+(a||''));
+async function wikiAlbum(t,a,single){
+  const key='mw_wa_'+nz((t||'')+' '+(a||''))+(single?'_7':'');
   if(WIKIAB.has(key))return WIKIAB.get(key);
   try{const o=JSON.parse(localStorage.getItem(key)||'null');if(o&&Date.now()-o.at<(o.v?30:1)*864e5){WIKIAB.set(key,o.v);return o.v}}catch(e){}
   const t0=noParen(t),lead=(a||'').split(/ [&,] /)[0].trim(),various=!lead||isVarious(lead)||/^unknown/i.test(lead),last=nz(lead.split(' ').pop()||'');
-  const ok=x=>x&&/album|\bEP\b|soundtrack|mixtape|compilation|live recording|studio recording/i.test(x.desc+' '+x.text.slice(0,240))&&(various||!last||nz(x.text+' '+x.desc).includes(last));
-  let b=null;
-  for(const q of [!various&&`${t0} (${lead} album)`,`${t0} (album)`,t0].filter(Boolean)){try{const x=await wikiSummary(q);if(ok(x)){b=x;break}}catch(e){}}
+  const kind=single?/\bsong\b|\bsingle\b|\bEP\b/i:/album|\bEP\b|soundtrack|mixtape|compilation|live recording|studio recording/i;
+  const ok=x=>x&&kind.test(x.desc+' '+x.text.slice(0,240))&&(various||!last||nz(x.text+' '+x.desc).includes(last));
+  let b=null;const s0=single?noParen(sidesOf(t)[0]||t):t0;
+  for(const q of (single?[!various&&`${s0} (${lead} song)`,`${s0} (song)`,!various&&`${s0} (${lead} single)`,s0]:[!various&&`${t0} (${lead} album)`,`${t0} (album)`,t0]).filter(Boolean)){try{const x=await wikiSummary(q);if(ok(x)){b=x;break}}catch(e){}}
   if(!b){try{const j=await (await fetch('https://en.wikipedia.org/w/rest.php/v1/search/page?q='+encodeURIComponent(t0+' '+(various?'':lead+' ')+'album')+'&limit=6')).json();
     for(const p of (j.pages||[])){if(nz(noParen(p.title))!==nz(t0))continue;const x=await wikiSummary(p.title);if(ok(x)){b=x;break}}}catch(e){}}
   if(b)b.short=shortBio(b.text,430);
@@ -2159,7 +2160,9 @@ function storyHTML(r,wiki){
   const pr=who(/producer/);add('Produced by',pr.map(c=>nameBtn(c[0],c[1],c[2],c[3])).join(', '));
   const en=who(/engineer|mastering|mixing/);add('Engineered by',en.map(c=>nameBtn(c[0],c[1],c[2],c[3])).join(', '));
   const sty=[...(X.styles||[]),...(X.genres||[])].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4);add('Sound',esc(sty.join(', ')));
-  if(C.tracks&&C.tracks.length)add('Tracks',C.tracks.length+(C.tracks.length===1?' track':' tracks'));
+  if(IS7(r)&&C.tracks&&C.tracks.length){const side=k=>C.tracks.filter(t=>String(t.n||'').toUpperCase().startsWith(k)).map(t=>esc(t.t));const A=side('A'),B=side('B');
+    add('A-side',(A.length?A:[esc(C.tracks[0].t)]).join(', '));add('B-side',(B.length?B:C.tracks.slice(1).map(t=>esc(t.t))).join(', '))}
+  else if(C.tracks&&C.tracks.length)add('Tracks',C.tracks.length+(C.tracks.length===1?' track':' tracks'));
   const lead=(r.a||'').split(/ [&,] /)[0];
   const dig=[];
   if(lead&&!isVarious(lead)&&!/^unknown/i.test(lead))dig.push(`<button class="pb" aria-pressed="true" data-crn="${esc(lead)}" data-crr="Artist">${esc(lead)}</button>`);
@@ -2187,9 +2190,9 @@ function fillStory(r){
     blk.hidden=!(wiki||h);
     $$('.rep .blk:not([hidden]) .num').forEach((n,i)=>n.textContent=String(i+1).padStart(2,'0'));
   };
-  const key='mw_wa_'+nz((r.t||'')+' '+(r.a||''));
+  const key='mw_wa_'+nz((r.t||'')+' '+(r.a||''))+(IS7(r)?'_7':'');
   paint(WIKIAB.has(key)?WIKIAB.get(key):null);
-  if(!WIKIAB.has(key))wikiAlbum(r.t,r.a).then(paint).catch(()=>{});
+  if(!WIKIAB.has(key))wikiAlbum(r.t,r.a,IS7(r)).then(paint).catch(()=>{});
 }
 /* A real (scanned) record has only what the lookup returned. Hide the sections that would otherwise show sample text, and renumber the rest. */
 function tidyReport(r,R){
@@ -2338,7 +2341,7 @@ async function renderDigRec(e){
      <button class="dcbtn" style="margin-top:14px" data-dc="${esc(r.t)}|${esc(r.a)}" aria-pressed="${want}">${want?'In your Dream Crate':'+ Dream Crate'}</button>`;
   };
   paint(null,'load');
-  try{await Promise.all([ensureCredits(r,true),wikiAlbum(r.t,r.a).then(w=>{e.wiki=w})])}catch(_){}
+  try{await Promise.all([ensureCredits(r,true),wikiAlbum(r.t,r.a,IS7(r)).then(w=>{e.wiki=w})])}catch(_){}
   paint(e.wiki||null,'done');
 }
 function buildCredit(c){
@@ -2445,9 +2448,9 @@ function renderCollection(){
   $('#colSub').textContent=empty?'0 records':`${all.length} records · ${conf} confirmed pressings`;
   $('#firstRun').hidden=!empty;$('#allBody').hidden=empty;
   const genres=['All',...new Set(all.map(r=>r.g))];
-  $('#chips').innerHTML=genres.map(g=>`<button class="chip" data-chip="${g}" aria-pressed="${st.filter===g}">${g}</button>`).join('')+`<button class="chip" data-conf aria-pressed="${st.confOnly}">Confirmed only</button>`;
+  $('#chips').innerHTML=genres.map(g=>`<button class="chip" data-chip="${g}" aria-pressed="${st.filter===g}">${g}</button>`).join('')+(RECS.some(r=>st.owned.has(r.id)&&IS7(r))?`<button class="chip" data-chip="45s" aria-pressed="${st.filter==='45s'}">45s</button>`:'')+`<button class="chip" data-conf aria-pressed="${st.confOnly}">Confirmed only</button>`;
   const q=st.q.trim().toLowerCase();
-  let items=all.map(r=>({r,why:q?match(r,q):''})).filter(x=>x.why!==null&&(st.filter==='All'||x.r.g===st.filter)&&(!st.confOnly||x.r.c==='confirmed'));
+  let items=all.map(r=>({r,why:q?match(r,q):''})).filter(x=>x.why!==null&&(st.filter==='All'||(st.filter==='45s'?IS7(x.r):x.r.g===st.filter))&&(!st.confOnly||x.r.c==='confirmed'));
   items.sort(st.sort==='az'?(a,b)=>a.r.t.localeCompare(b.r.t):st.sort==='year'?(a,b)=>a.r.y-b.r.y:(a,b)=>b.r.ord-a.r.ord);
   $('#sortBtn').textContent=`${items.length} shown · ${SORTS[st.sort]}`;$('#sortBtn').setAttribute('aria-label','Change sort order. Now: '+SORTS[st.sort]);
   if(st.colTab!==0||empty)st.sel=null;
@@ -2580,7 +2583,7 @@ async function amWebFind(r,artist,album){
 }
 async function amFindAlbum(r){
   const k=r.id;if(r.am)return String(r.am);if(amKnown(k))return amKnown(k);if(AMC.has(k))return AMC.get(k);
-  const album=String(r.t||'').replace(/\(.*?\)|\[.*?\]/g,' ').trim(),artist=r.a&&!/^unknown/i.test(r.a)?r.a:'';
+  const album=String(IS7(r)?(sidesOf(r.t)[0]||r.t):(r.t||'')).replace(/\(.*?\)|\[.*?\]/g,' ').trim(),artist=r.a&&!/^unknown/i.test(r.a)?r.a:'';
   let id=null;
   if(amNativeOK()){   /* in the iPhone app Apple's own MusicKit does the lookup */
     try{const n=await Capacitor.nativePromise('AppleMusic','findAlbum',{artist,album});id=n&&n.id?String(n.id):null}
@@ -3484,7 +3487,7 @@ function renderFound(){
   if(!hit){
     $('#foundBody').innerHTML=`<h4 class="disp" style="font-size:36px">${err?'Couldn’t look it up':'No match yet'}</h4>
      <p class="sub">${err?esc(err.message):'The barcode <span class="fcode">'+esc(code)+'</span> isn’t in the public database.'}</p>
-     <p class="fine2">${err?'Check your signal and try again.':'Many older pressings have no barcode, and some newer ones aren’t listed. Try the label or the cover, or type the artist and title.'}</p>
+     <p class="fine2">${err?'Check your signal and try again.':'Most 45s and most records before about 1980 have no barcode, and some newer ones aren’t listed. Scan the label or the deadwax, or type the artist and either side’s title.'}</p>
      <button class="go press" data-foundno="1">Scan again</button><button class="ghost" data-catmanual="1">Type the artist and title instead</button>`;return;
   }
   if(hit.all&&hit.all.length>1){
@@ -3531,7 +3534,7 @@ if(/[?&]lab=1/.test(location.search))setTimeout(openLab,400);
 function realReport(r,mode){
   const e=r.ev||{},dw=e.dw;
   const rows=[['Label',r.lab?esc(r.lab):'Not read'],['Catalog',r.cat?esc(r.cat):'Not read'],['Country',r.ctry?esc(r.ctry):'Not confirmed'],
-    ['Matrix',dw&&dw.mx?`<span class="mono-chip">${esc(dw.mx)}</span>`:`<button class="chipbtn press" data-dwscan="${r.id}" style="margin:0;padding:8px 14px">Scan the deadwax</button>`],['Format',r.fmt?esc(r.fmt):'12-inch LP']];
+    ['Matrix',dw&&dw.mx?`<span class="mono-chip">${esc(dw.mx)}</span>`:`<button class="chipbtn press" data-dwscan="${r.id}" style="margin:0;padding:8px 14px">Scan the deadwax</button>`],['Format',r.fmt?esc(r.fmt):'Not read']];
   $('#pressing').innerHTML=rows.map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');
   const steps=[];
   if(e.bc)steps.push(`<b>Barcode</b> ${esc(e.bc.code)} matched a release in ${r.src==='discogs'?'the Discogs catalogue':'MusicBrainz'}${e.bc.n>1?' ('+e.bc.n+' releases share it)':''}.`);
@@ -3641,6 +3644,10 @@ async function mbByCat(cats,lab){
 const VA_MBID='89ad4ac3-39f7-470e-963a-56509c546377';
 const nz=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
 const nzT=s=>nz(s).split(' ').filter(w=>w&&!/^(the|a|an|and|of)$/.test(w)).join(' ');
+/* 7-inch singles: two sides, often no barcode, titled "A-side / B-side" in the databases */
+function IS7(r){return !!r&&(r.size==='7'||/(^|[^0-9])7"|7-inch|7 inch|45 ?rpm|\bsingle\b/i.test(r.fmt||''))}
+function sidesOf(t){return String(t||'').split(/\s+\/\s+/).map(x=>x.trim()).filter(Boolean)}
+var SIZEFMT={'7':'7-inch single','10':'10-inch','12':'12-inch LP'};
 const noParen=s=>String(s||'').replace(/\s*[\(\[].*?[\)\]]\s*/g,' ').replace(/\s+/g,' ').trim();
 const isVarious=a=>/^(various( artists)?|v\.? ?a\.?|multiple artists?|compilation)$/i.test(String(a||'').trim());
 function simText(a,b){
@@ -3659,13 +3666,16 @@ function simArtist(typed,cand){
   return Math.max(simText(typed,cand),(t.length>=4&&c.length>=4&&(c.includes(t)||t.includes(c)))?.85:0);
 }
 function scoreCand(c,q){
-  const one=(T,A)=>{if(!T)return A?(simArtist(A,c.a)||0)*.8:0;const st=Math.max(simText(T,c.t),simText(T,noParen(c.t))),sa=simArtist(A,c.a);return sa===null?st*.9:(st*.62+sa*.38)*(q.strict&&sa<.4&&!isVarious(A)?.7:1)};
+  const one=(T,A)=>{if(!T)return A?(simArtist(A,c.a)||0)*.8:0;const st=Math.max(simText(T,c.t),simText(T,noParen(c.t)),...sidesOf(c.t).map(x=>simText(T,noParen(x)))),sa=simArtist(A,c.a);return sa===null?st*.9:(st*.62+sa*.38)*(q.strict&&sa<.4&&!isVarious(A)?.7:1)};
   let s=Math.max(one(q.title,q.artist),(q.title&&q.artist)?one(q.artist,q.title)*.96:0);
   if(q.label&&c.lab&&simText(q.label,c.lab)>=.8)s+=.05;
   if(q.cat&&c.cat&&fold(q.cat)===fold(c.cat))s+=.1;
   if(q.year&&c.y&&+q.year===+c.y)s+=.04;
   if(c.vinyl)s+=.02;
-  return Math.min(1,s);
+  s=Math.min(1,s);
+  /* the size you picked moves the others down, so the 7-inch beats the album of the same name */
+  if(q.size){const c7=IS7(c),lp=/\bLP\b|12"|album/i.test(c.fmt||'');if(q.size==='7'){if(!c7)s-=lp?.08:.05}else if(c7)s-=.05}
+  return Math.max(0,s);
 }
 const tierOf=c=>c.src==='apple'?'Album only · no pressing details':c.score>=.88?'Matches what you typed':c.score>=.65?'Close':'Possible';
 const withTimeout=(p,ms)=>Promise.race([p,new Promise((_,no)=>setTimeout(()=>no(new Error('timed out')),ms))]);
@@ -3697,7 +3707,7 @@ async function srcApple(q){
   const ac=new AbortController(),t=setTimeout(()=>ac.abort(),8000);
   try{
     const j=await (await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(term)+'&entity=album&media=music&limit=15&country=us',{signal:ac.signal})).json();
-    return (j.results||[]).map(x=>({mbid:'',src:'apple',am:String(x.collectionId),t:String(x.collectionName||'').replace(/\s+-\s+(Single|EP)$/i,''),a:x.artistName||'',y:+String(x.releaseDate||'').slice(0,4)||0,lab:'',cat:'',ctry:'',fmt:'Album on Apple Music',dis:'',pack:'',vinyl:false,via:'name'}));
+    return (j.results||[]).map(x=>({mbid:'',src:'apple',am:String(x.collectionId),t:String(x.collectionName||'').replace(/\s+-\s+(Single|EP)$/i,''),a:x.artistName||'',y:+String(x.releaseDate||'').slice(0,4)||0,lab:'',cat:'',ctry:'',fmt:/\s-\sSingle$/i.test(x.collectionName||'')?'Single on Apple Music':'Album on Apple Music',dis:'',pack:'',vinyl:false,via:'name'}));
   }finally{clearTimeout(t)}
 }
 async function srcDiscogs(q){
@@ -3707,7 +3717,7 @@ async function srcDiscogs(q){
 }
 /* words in, ranked candidates out. Never throws: a source that is busy or offline just doesn't contribute, and the sheet says so. */
 async function wordsFind(q){
-  q={artist:String(q.artist||'').trim(),title:String(q.title||'').trim(),label:String(q.label||'').trim(),cat:String(q.cat||'').trim(),year:String(q.year||'').trim(),strict:!!q.strict};
+  q={artist:String(q.artist||'').trim(),title:String(q.title||'').trim(),label:String(q.label||'').trim(),cat:String(q.cat||'').trim(),year:String(q.year||'').trim(),size:String(q.size||''),strict:!!q.strict};
   const errs=[],run=(name,fn,ms)=>withTimeout(fn(q),ms).catch(e=>{errs.push({src:name,msg:(e&&e.message)||String(e)});return []});
   const [ix,mb,ap,dg]=await Promise.all([run('index',srcIdx,12000),run('MusicBrainz',srcMB,16000),run('Apple Music',srcApple,9000),dgTok()?run('Discogs',srcDiscogs,9000):Promise.resolve([])]);
   let main=[...ix,...mb,...dg].map(c=>({...c,score:scoreCand(c,q)}));
@@ -3882,7 +3892,7 @@ function addRel(hit,ev){
   if(ex){id=ex.id;st.owned.add(id);ex.ev={...(ex.ev||{}),...ev};if(!ex.cat&&hit.cat)ex.cat=hit.cat;if(!ex.lab&&hit.lab)ex.lab=hit.lab;if(!ex.ctry&&hit.ctry)ex.ctry=hit.ctry}
   else{id=Math.max(100,...RECS.map(r=>r.id))+1;const ord=Math.max(...RECS.map(r=>r.ord||0))+1;
     RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid||'',dg:hit.dg||undefined,am:hit.am||undefined,src:hit.src||undefined,rg:hit.rg||'',bc:ev.bc?ev.bc.code:(ev.bcRaw||undefined),cover:hit.mbid?'https://coverartarchive.org/release/'+hit.mbid+'/front-250':'',ev});st.owned.add(id);st.justAdded=id}
-  const r=recOf(id);if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
+  const r=recOf(id);{const qs=st.found&&st.found.q&&st.found.q.size;if(qs&&!r.fmt)r.fmt=SIZEFMT[qs]}if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
   if((r.src==='discogs'||r.src==='apple')&&!r.mb)attachMB(r);
   saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
 }
@@ -4094,18 +4104,19 @@ function renderFoundX(){
 function openCatEntry(pre){
   pre=pre||{};st.fromCode=(st.found&&!st.found.kind&&st.found.code)||(st.found&&st.found.fromCode)||'';
   const v=k=>esc(pre[k]||'');
-  $('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Find it by typing</h4><p class="sub">Artist and album title is enough. Compilations: type Various. Add the label, year or catalog number if you can see them, and they help sort the list.</p>
+  $('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Find it by typing</h4><p class="sub">Artist and title is enough. For a 45, type either side. Compilations: type Various. Label, year or catalog number help sort the list.</p>
    <div class="hf"><label for="catArt">Artist</label><input class="txt sm" id="catArt" placeholder="David Bowie" value="${v('artist')}" autocomplete="off" autocapitalize="words"></div>
-   <div class="hf"><label for="catTitle">Album title</label><input class="txt sm" id="catTitle" placeholder="Scary Monsters" value="${v('title')}" autocomplete="off" autocapitalize="words"></div>
+   <div class="hf"><label for="catTitle">Album or single title</label><input class="txt sm" id="catTitle" placeholder="Scary Monsters" value="${v('title')}" autocomplete="off" autocapitalize="words"></div>
    <div class="hf"><label for="catLab">Label (optional)</label><input class="txt sm" id="catLab" placeholder="RCA" value="${v('label')}" autocomplete="off"></div>
    <div class="hf"><label for="catYear">Year (optional)</label><input class="txt sm" id="catYear" inputmode="numeric" maxlength="4" placeholder="1980" value="${v('year')}" autocomplete="off"></div>
    <div class="hf"><label for="catIn">Catalog number (optional)</label><input class="txt sm" id="catIn" placeholder="AQL1-3647" value="${v('cat')}" autocomplete="off" autocapitalize="characters"></div>
+   <div class="hf"><label>Size (optional)</label><div class="opts sizeopts" role="group" aria-label="Record size">${['12','7','10'].map(k=>`<button class="pb" data-size="${k}" aria-pressed="${(st.typSize||'')===k}">${k==='12'?'12-inch LP':k==='7'?'7-inch single':'10-inch'}</button>`).join('')}</div></div>
    <button class="go press" data-catlook="1">Look it up</button>`;closeSheets();openSheet('barcode');setTimeout(()=>{const i=$(pre.title?'#catLab':'#catArt');i&&i.focus()},400);
 }
 async function catLook(){
   const art=($('#catArt').value||'').trim(),ti=($('#catTitle').value||'').trim(),c=canon($('#catIn').value).replace(/\s+/g,'-'),l=($('#catLab').value||'').trim(),yr=($('#catYear').value||'').replace(/\D/g,'').slice(0,4);
   if(c.length<2&&!art&&!ti){toast('Type an artist and title, or a catalog number.');return}
-  const names=[art,ti].filter(Boolean),q={artist:art,title:ti,label:l,cat:c.length>=2?c:'',year:yr};
+  const names=[art,ti].filter(Boolean),q={artist:art,title:ti,label:l,cat:c.length>=2?c:'',year:yr,size:st.typSize||''};
   closeSheets();setPrompt('Looking it up…');$('#guide').textContent=[...names,l,q.cat].filter(Boolean).join(' · ');
   let cands=[],err=null,via='',errs=[];
   try{
@@ -4122,7 +4133,7 @@ async function catLook(){
 function addTyped(){
   const F=st.found,q=F&&F.q;if(!q)return;
   if(!q.title){toast('Add the album title to keep it as typed.');return}
-  addRel({mbid:'',src:'typed',t:q.title,a:q.artist||'Unknown artist',y:+q.year||0,lab:q.label,cat:q.cat,ctry:'',fmt:''},{typed:{at:Date.now()},bcRaw:F.fromCode||'',...(F.dw?{dw:F.dw}:{})});
+  addRel({mbid:'',src:'typed',t:q.title,a:q.artist||'Unknown artist',y:+q.year||0,lab:q.label,cat:q.cat,ctry:'',fmt:SIZEFMT[q.size]||''},{typed:{at:Date.now()},bcRaw:F.fromCode||'',...(F.dw?{dw:F.dw}:{})});
 }
 function openDgToken(){
   $('#barBody').innerHTML=`<h4 class="disp" style="font-size:36px">Discogs token</h4><p class="sub">Lets the deadwax reader compare your etching with the runouts Discogs lists for each pressing.</p>
@@ -4564,7 +4575,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
@@ -4627,6 +4638,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.dgtoken){openDgToken();return}
   if(t.dataset.imprun){dgImport();return}
   if(t.dataset.dgtest){dgTest();return}
+  if(t.dataset.size){st.typSize=st.typSize===t.dataset.size?'':t.dataset.size;$$('.sizeopts [data-size]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.size===st.typSize)));return}
   if(t.dataset.trailback){digBack();return}
   if(t.dataset.trail!==undefined){digBack(+t.dataset.trail);return}
   if(t.dataset.digrec){const [a,b,y]=t.dataset.digrec.split('|');openDigRec(a,b,y);return}
