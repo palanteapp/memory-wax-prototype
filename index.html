@@ -478,6 +478,13 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .mequiz{margin:16px 0 4px;padding:14px 14px 4px;border-radius:16px;background:rgba(51,92,103,.1);box-shadow:inset 0 0 0 1.5px rgba(51,92,103,.35)}
 .mequiz>b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:20px;text-transform:uppercase;color:var(--teal)}
 .mequiz>span{display:block;font-family:var(--serif);font-style:italic;font-size:15px;margin:2px 0 6px}
+.acor{display:flex;align-items:center;gap:10px;margin:18px 0 6px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+.acor::before,.acor::after{content:"";flex:1;height:1.5px;background:currentColor;opacity:.35}
+.tealbtn{background:var(--teal)!important;color:var(--cream)!important}
+.invban{display:flex;align-items:center;gap:12px;margin:10px 0 6px;padding:12px 14px;border-radius:16px;background:var(--teal);color:var(--cream)}
+.invban b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:22px;line-height:1;text-transform:uppercase}
+.invban span:not(.meav){display:block;font-family:var(--serif);font-style:italic;font-size:15.5px;margin-top:3px}
+.meav.fav.inv{display:grid;width:48px;height:48px;font-family:var(--disp);font-size:20px}
 .applebtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:14px 0 0;padding:15px;border-radius:12px;background:#000;color:#fff;font:600 17px -apple-system,system-ui,sans-serif}
 .applebtn span{font-size:20px;line-height:1;margin-top:-3px}
 .acsrv{margin-top:22px;padding:12px 14px;border-radius:14px;background:rgba(84,11,14,.06)}
@@ -1832,7 +1839,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.33.0 · accounts';
+const BUILD='0.34.0 · email + invites';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3802,6 +3809,67 @@ async function acDelete(){
   try{await sb('/rest/v1/rpc/delete_me',{method:'POST',body:{}});delete AC.s;delete AC.apple;acSave();FR={me:null,inc:[],out:[],list:[],at:0,busy:false,err:''};renderAc();renderScene();toast('Account deleted.')}
   catch(e){toast('Couldn’t delete: '+e.message)}
 }
+/* Email sign-in: a one-time code, no password. Supabase sends it; the code is typed here. */
+let OTP={email:'',sent:0};
+async function acSendCode(){
+  const e=(($('#acEmail')||{}).value||'').trim().toLowerCase();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){toast('That email doesn’t look right.');return}
+  try{await sb('/auth/v1/otp',{method:'POST',auth:false,body:{email:e,create_user:true}});OTP={email:e,sent:Date.now()};renderAc();setTimeout(()=>{const c=$('#acCode');if(c)c.focus()},350);toast('Code sent. Check your email.')}
+  catch(err){toast(err.status===429||/rate|seconds/i.test(err.message)?'Too many codes for now. Wait a minute and try again.':'Couldn’t send the code: '+err.message)}
+}
+async function acVerifyCode(){
+  const c=(($('#acCode')||{}).value||'').replace(/\D/g,'');
+  if(c.length<6){toast('Type the code from the email.');return}
+  try{const j=await sb('/auth/v1/verify',{method:'POST',auth:false,body:{type:'email',email:OTP.email,token:c}});acKeep(j);OTP={email:'',sent:0};
+    await acLoad(true);renderAc();renderScene();toast(FR.me?'Signed in.':'Signed in. Now pick a username.')}
+  catch(err){toast(/expired|invalid/i.test(err.message)?'That code didn’t work. Check it, or send a new one.':'Couldn’t sign in: '+err.message)}
+}
+/* Invites: a one-time link, texted. It opens a small web page with your card and an Open in Memory Wax button. */
+const INVITE_PAGE='https://palanteapp.github.io/memory-wax-prototype/invite.html';
+const b64u=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const unb64u=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
+async function acInvite(){
+  if(!acIn()||!FR.me){openAc();return}
+  const r=new Uint8Array(16);crypto.getRandomValues(r);const t=b64u(String.fromCharCode(...r)).slice(0,22).replace(/[^A-Za-z0-9_-]/g,'x');
+  try{await sb('/rest/v1/invites',{method:'POST',body:{token:t,inviter:AC.s.uid}})}catch(e){toast('Couldn’t make the invite: '+e.message);return}
+  const m=st.me||{},q=new URLSearchParams({i:t,n:m.name||FR.me.name||'',h:FR.me.handle,f:m.from||'',s:m.spin||'',a:m.fav||'',c:b64u(JSON.stringify({u:AC.url,k:AC.key}))});
+  [...q.keys()].forEach(k=>{if(!q.get(k))q.delete(k)});
+  const url=INVITE_PAGE+'#'+q.toString(),who=m.name||'@'+FR.me.handle,text=`${who} wants to be friends on Memory Wax. Tap to accept:`;
+  try{if(navigator.share){await navigator.share({title:'Memory Wax invite',text,url});return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(text+' '+url);toast('Invite link copied. Paste it in a text.')}catch(e){toast('Couldn’t share the link.')}
+}
+function handleInvite(p){
+  if(!p.i||!/^[A-Za-z0-9_-]{20,64}$/.test(p.i))return;
+  if(p.c&&!acReady()){try{const c=JSON.parse(unb64u(p.c));
+    if(/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(c.u)&&typeof c.k==='string'&&c.k.length>=20&&!/service_role|sb_secret_/.test(c.k)){AC.url=c.u;AC.key=c.k}}catch(e){}}
+  AC.inv={t:p.i,n:(p.n||'').slice(0,40),h:(p.h||'').replace(/[^a-z0-9_.]/g,'').slice(0,20)};acSave();
+  closeSheets();go('scene');setTimeout(openAc,350);
+}
+async function linkTake(){
+  if(!NATIVE||!(window.Capacitor&&(Capacitor.PluginHeaders||[]).some(h=>h.name==='Links')))return;
+  let u='';try{u=(await Capacitor.nativePromise('Links','take',{})).url||''}catch(e){}
+  if(!u)return;
+  try{const x=new URL(u);if(x.protocol==='memorywax:'&&(x.host==='invite'||x.pathname.replace(/\//g,'')==='invite'))handleInvite(Object.fromEntries(x.searchParams))}catch(e){console.warn('[links]',e)}
+}
+window.addEventListener('mwlink',linkTake);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(linkTake,250)});
+setTimeout(linkTake,1500);
+async function invPeek(){
+  if(!AC.inv||!acIn()||AC.inv.peeked)return;
+  try{const r=(await sb('/rest/v1/rpc/invite_peek',{method:'POST',body:{t:AC.inv.t}})||[])[0];
+    AC.inv.peeked=1;if(r){AC.inv.state=r.state;if(r.handle){AC.inv.h=r.handle;AC.inv.n=r.name||'';AC.inv.photo=okPhoto(r.photo)}}else AC.inv.state='missing';acSave();renderAc()}catch(e){console.warn('[invite] peek',e)}
+}
+const INVSAY={used:'This invite was already used. Ask them for a new one.',expired:'This invite has expired. Ask them for a new one.',own:'That’s your own invite. Send it to a friend.',missing:'This invite isn’t valid anymore.',done:'You’re already friends through this invite.'};
+async function invAccept(){
+  try{await sb('/rest/v1/rpc/accept_invite',{method:'POST',body:{t:AC.inv.t}});const who=AC.inv.n||'@'+AC.inv.h;delete AC.inv;acSave();await acLoad(true);renderAc();renderScene();toast(`You and ${who} are friends now.`)}
+  catch(e){const k=(e.message||'').trim();if(INVSAY[k]){AC.inv.state=k;acSave();renderAc()}else toast(k==='username'?'Pick a username first.':'That didn’t go through: '+k)}
+}
+function invBanner(){
+  const v=AC.inv;if(!v)return '';const who=v.n||(v.h?'@'+v.h:'A friend');
+  const bad=v.state&&v.state!=='ok';
+  return `<div class="invban">${frAv({name:v.n,handle:v.h,photo:v.photo}).replace('meav fav','meav fav inv')}<div><b>${esc(who)}</b><span>${v.h?'@'+esc(v.h)+' · ':''}${bad?esc(INVSAY[v.state]||'This invite can’t be used.'):'invited you to be friends'}</span></div></div>
+   ${bad?`<button class="ghost" data-ac="invno">Dismiss</button>`:acIn()&&FR.me?`<button class="go press" data-ac="invok">Accept</button><button class="ghost" data-ac="invno">Not now</button>`:`<p class="fine2" style="margin:8px 0 2px">${acIn()?'Pick a username, then accept.':'Sign in below, then accept.'}</p>`}`;
+}
 function openAc(){renderAc();openSheet('ac');if(acIn())acLoad(true).then(()=>{renderAc();renderScene()})}
 function renderAc(){
   const el=$('#acBody');if(!el)return;
@@ -3814,27 +3882,35 @@ function renderAc(){
   if(!acReady())main=`<p class="sub">Connect the server below first.</p>`;
   else if(!acIn())main=`<p class="sub">Sign in to add friends. They’ll see the shelves you set to Friends and what you’re spinning. Your collection stays on this phone and in iCloud.</p>
     <button class="applebtn press" data-ac="apple"><span aria-hidden="true">&#xF8FF;</span> Sign in with Apple</button>
-    <p class="fine2" style="margin-top:10px">No password. Apple confirms it’s you. We don’t ask for your email.</p>`;
+    <div class="acor"><span>or with your email</span></div>
+    ${OTP.email?`<p class="fine2" style="margin:0 0 4px">We sent a code to <b>${esc(OTP.email)}</b>. It can take a minute; check spam too.</p>
+      <label class="slab" for="acCode">Code from the email</label><input class="sin" id="acCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" enterkeyhint="go">
+      <button class="go press" data-ac="code">Sign in</button><button class="ghost" data-ac="resend">Send a new code</button><button class="ghost" data-ac="otheremail">Use a different email</button>`
+    :`<label class="slab" for="acEmail">Email</label><input class="sin" id="acEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@example.com" enterkeyhint="send">
+      <button class="go press" data-ac="email">Email me a code</button>`}
+    <p class="fine2" style="margin-top:10px">No password either way. Your email is only for signing in; it never shows on your profile.</p>`;
   else if(!FR.me)main=`<p class="sub">${FR.busy?'Checking your profile…':'Pick a username so friends can find you. Lowercase letters, numbers, dots and underscores.'}</p>
     <label class="slab" for="acHandle">Username</label><input class="sin" id="acHandle" placeholder="djvarganessca" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
     <button class="go press" data-ac="handle">Save username</button>${FR.err?`<p class="fine2">The server said: ${esc(FR.err)}</p>`:''}`;
   else main=`<p class="sub">Signed in with Apple as <b>@${esc(FR.me.handle)}</b>. Your name, photo and three answers show to people who find you.</p>
-    <button class="go press" data-ac="friends">See your friends</button>
+    <button class="go press tealbtn" data-ac="invite">Invite a friend</button>
+    <button class="ghost" data-ac="friends">See your friends</button>
     <button class="ghost" data-ac="out">Sign out on this device</button>
     <button class="ghost" data-ac="delete">Delete my account</button>`;
-  el.innerHTML=`<h4 class="disp">Community account</h4>${main}${server}`;
+  el.innerHTML=`<h4 class="disp">${AC.inv?'Friend invite':'Community account'}</h4>${invBanner()}${main}${server}`;
+  if(AC.inv&&acIn())invPeek();
 }
 function frCardHTML(){
   if(!acReady()||!acIn())return `<button class="frcta press" data-ac="open">${acReady()?'Sign in to add friends':'Set up accounts'}</button>`;
   if(!FR.me)return `<button class="frcta press" data-ac="open">Pick your username</button>`;
-  return `<div class="frsearch"><label class="slab" for="frQ">Add a friend by username</label><input class="sin" id="frQ" placeholder="@username" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search"><div id="frFound"></div></div>
+  return `<button class="frcta tealbtn press" data-ac="invite">Invite a friend by text</button><div class="frsearch"><label class="slab" for="frQ">Or add someone by username</label><input class="sin" id="frQ" placeholder="@username" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search"><div id="frFound"></div></div>
    ${FR.inc.length?`<div class="frsec">Wants to be friends</div>${FR.inc.map(p=>frRow(p,`<div class="frbtns"><button class="pb" data-fr="ok" data-id="${p.id}">Accept</button><button class="pb o" data-fr="no" data-id="${p.id}">Not now</button></div>`,1)).join('')}`:''}
    ${FR.list.length?`<div class="frsec">Your friends · ${FR.list.length}</div>${FR.list.map(p=>frRow(p,'',1)).join('')}`:`<p class="frnone">${FR.busy?'Loading…':'No friends yet. Ask someone for their username.'}</p>`}
    ${FR.out.length?`<div class="frsec">Asked</div>${FR.out.map(p=>frRow(p,`<button class="pb o" data-fr="cancel" data-id="${p.id}">Take back</button>`,1)).join('')}`:''}
    ${FR.err?`<p class="frnone">Couldn’t reach the server: ${esc(FR.err)}</p>`:''}`;
 }
 document.addEventListener('input',e=>{if(e.target.id==='frQ'){clearTimeout(acFind.t);const v=e.target.value;acFind.t=setTimeout(()=>acFind(v),350)}});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&(e.target.id==='acHandle'||e.target.id==='frQ')){e.preventDefault();e.target.blur();if(e.target.id==='acHandle')acCreate(e.target.value)}});
+document.addEventListener('keydown',e=>{const id=e.target&&e.target.id;if(e.key==='Enter'&&['acHandle','frQ','acEmail','acCode'].includes(id)){e.preventDefault();e.target.blur();if(id==='acHandle')acCreate(e.target.value);else if(id==='acEmail')acSendCode();else if(id==='acCode')acVerifyCode()}});
 function acClick(t){
   const a=t.dataset.ac;
   if(a==='open')openAc();
@@ -3844,6 +3920,12 @@ function acClick(t){
     if(k.length<20){toast('Paste the public key.');return}
     AC.url=u;AC.key=k;acSave();renderAc();renderScene();toast('Server saved on this device.')}
   else if(a==='apple')acSignIn();
+  else if(a==='email'||a==='resend'){if(a==='resend'){const e=OTP.email;OTP={email:'',sent:0};renderAc();const f=$('#acEmail');if(f)f.value=e}acSendCode()}
+  else if(a==='code')acVerifyCode();
+  else if(a==='otheremail'){OTP={email:'',sent:0};renderAc()}
+  else if(a==='invite')acInvite();
+  else if(a==='invok')invAccept();
+  else if(a==='invno'){delete AC.inv;acSave();renderAc()}
   else if(a==='handle')acCreate(($('#acHandle')||{}).value);
   else if(a==='friends'){closeSheets();go('scene');setTimeout(()=>{const f=$('#frQ');if(f)f.scrollIntoView({block:'center',behavior:'smooth'})},400)}
   else if(a==='out')acSignOut();
