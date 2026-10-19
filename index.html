@@ -465,14 +465,36 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .ppl .soon{display:inline-block;margin-top:12px;padding:7px 12px;border-radius:999px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-style:normal;background:rgba(0,0,0,.18)}
 .ppl.cur2 .soon{background:rgba(84,11,14,.12)}
 .mestrip b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:24px;line-height:.95;text-transform:uppercase}
-.mestrip.tall{flex-wrap:wrap;row-gap:0;border-radius:48px 24px 24px 48px;padding:12px 18px 16px 12px}
-.mestrip.tall .meqa{flex:1 1 100%;margin:-10px 0 0 77px}
-.meqa{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin:9px 0 0;align-items:baseline}
-.meqa dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
-.meqa dd{margin:0;font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.15;overflow-wrap:anywhere}
+/* With answers: a card. Header row (photo, name, Edit), a rule, then the answers in equal columns */
+.mestrip.tall{display:block;padding:14px 16px 16px 14px;border-radius:44px 24px 24px 24px}
+.mehead{display:flex;align-items:center;gap:14px}
+.mehead>div{flex:1;min-width:0}
+.meqa{display:flex;margin:14px 0 0;padding-top:13px;border-top:1.5px solid rgba(84,11,14,.2)}
+.meqa>div{flex:1 1 0;min-width:0;padding:0 12px;border-left:1.5px solid rgba(84,11,14,.2)}
+.meqa>div:first-child{padding-left:4px;border-left:0}
+.meqa>div:last-child{padding-right:0}
+.meqa dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+.meqa dd{margin:5px 0 0;font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.1;overflow-wrap:anywhere}
 .mequiz{margin:16px 0 4px;padding:14px 14px 4px;border-radius:16px;background:rgba(51,92,103,.1);box-shadow:inset 0 0 0 1.5px rgba(51,92,103,.35)}
 .mequiz>b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:20px;text-transform:uppercase;color:var(--teal)}
 .mequiz>span{display:block;font-family:var(--serif);font-style:italic;font-size:15px;margin:2px 0 6px}
+.applebtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:14px 0 0;padding:15px;border-radius:12px;background:#000;color:#fff;font:600 17px -apple-system,system-ui,sans-serif}
+.applebtn span{font-size:20px;line-height:1;margin-top:-3px}
+.acsrv{margin-top:22px;padding:12px 14px;border-radius:14px;background:rgba(84,11,14,.06)}
+.acsrv summary{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.frcta{display:block;width:100%;margin-top:14px;padding:13px;border-radius:999px;background:var(--cream);color:var(--ox);font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.frsearch{margin-top:12px}.frsearch .sin{border-color:var(--cream);margin-bottom:4px}
+.frsec{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin:16px 0 0}
+.frwho{display:flex;align-items:center;gap:10px;min-width:0;flex:1;text-align:left;color:inherit}
+.frwho>div{min-width:0}.frwho b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meav.fav,.frow .meav.fav{display:grid;width:40px;height:40px;margin:0;font-family:var(--disp);font-size:18px;letter-spacing:0;opacity:1;box-shadow:0 0 0 2px var(--cream)}
+.frhead .meav.big{display:grid}
+.frbtns{display:flex;gap:6px;flex:none}
+.frst{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.frnone{font-family:var(--serif);font-style:italic;font-size:16px;margin:12px 0 0;opacity:.9}
+.frhead{display:flex;align-items:center;gap:16px;margin-bottom:6px}.frhead h4{margin:0}
+.frqa{margin:10px 0 14px}
+.frrep{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}
 .mestrip div span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-top:4px}
 .meav{width:56px;height:56px;flex:none;border-radius:50%;background:var(--ox) center/cover no-repeat;color:var(--gold);display:grid;place-items:center;font-family:var(--disp);font-weight:900;font-size:26px;box-shadow:0 0 0 3px var(--cream)}
 #meBody .meav{box-shadow:0 0 0 4px var(--gold)}
@@ -1431,6 +1453,8 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 
     <div class="sheet" id="sheet-hear" role="dialog" aria-label="Name what’s playing"><div id="hearBody"></div></div>
     <div class="sheet" id="sheet-me" role="dialog" aria-label="Your name and photo"><div id="meBody"></div></div>
+    <div class="sheet" id="sheet-ac" role="dialog" aria-label="Community account"><div id="acBody"></div></div>
+    <div class="sheet" id="sheet-friend" role="dialog" aria-label="Friend"><div id="friendBody"></div></div>
     <input type="file" id="meIn" accept="image/*" hidden>
     <div class="sheet" id="sheet-sit" role="dialog" aria-label="Your listening session"><div id="sitBody"></div></div>
     <div class="sheet" id="sheet-year" role="dialog" aria-label="Your year on the turntable"><div id="yearBody"></div></div>
@@ -1527,6 +1551,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <h4 class="disp">Settings &amp; data</h4>
       <div class="sethead">You</div>
       <button class="opt-card" data-me="edit"><b>Your name and photo</b><span>Shown on the cards you share, your playlists and your rooms.</span></button>
+      <button class="opt-card" data-ac="open"><b>Community account</b><span>Sign in with Apple to add friends. Also where the server is connected.</span></button>
       <div class="sethead">Add a lot at once</div>
       <button class="opt-card" data-set="import"><b>Import from Discogs</b><span>Your own collection, read with your Discogs token. Nothing is written back.</span></button>
       <button class="opt-card" data-set="csv"><b>Upload a CSV</b><span>Title and Artist columns are enough. Label, catalog number, barcode, matrix, condition and price come along when present.</span></button>
@@ -1807,7 +1832,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.32.0 · about you';
+const BUILD='0.33.0 · accounts';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2376,7 +2401,7 @@ function renderHear(){
 }
 function go(name){
   const from=st.screen;st.screen=name;
-  if(name==='scene'){try{renderScene()}catch(e){}}
+  if(name==='scene'){try{renderScene()}catch(e){}if(typeof acLoad==='function'&&acIn())acLoad().then(()=>{if(st.screen==='scene'&&document.activeElement&&document.activeElement.id!=='frQ')renderScene()})}
   if(name!=='scan'&&name!=='reveal')camOff();
   if(name==='scan'&&st.camPref&&!camStream)camOn();
   if(name==='reveal'){st.cameFromScan=(from==='scan');if(from==='scan'&&!st.keepRec)st.rec=1;st.keepRec=false}
@@ -3656,6 +3681,183 @@ async function mePhoto(file){
     st.me={...(st.me||{}),photo:c.toDataURL('image/jpeg',.85)};saveState();renderMe();renderScene();toast('Photo saved.')}
   catch(e){toast('That photo didn’t open. Try another.')}
 }
+/* ---------- Community account: Sign in with Apple, a username, friends ----------
+   Talks to the Memory Wax server (a Supabase project) over plain HTTPS. The server address and its public key
+   are entered once in the app and kept on this device. Only the profile and friend list live on the server;
+   the collection stays on the phone and in iCloud. */
+const APPLE_OK=()=>{const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&C.nativePromise&&(C.PluginHeaders||[]).some(h=>h.name==='AppleSignIn'))};
+let AC=(()=>{try{return JSON.parse(localStorage.getItem('mw_acct2')||'{}')}catch(e){return {}}})();
+const acSave=()=>{try{localStorage.setItem('mw_acct2',JSON.stringify(AC))}catch(e){}};
+const acReady=()=>!!(AC.url&&AC.key);
+const acIn=()=>!!(AC.s&&AC.s.uid);
+let FR={me:null,inc:[],out:[],list:[],at:0,busy:false,err:''};
+async function sb(path,{method='GET',body,auth=true,prefer}={}){
+  if(auth&&acIn()&&Date.now()>AC.s.exp-60000)await acRefresh();
+  const h={apikey:AC.key,'Content-Type':'application/json',Authorization:'Bearer '+(auth&&acIn()?AC.s.at:AC.key)};
+  if(prefer)h.Prefer=prefer;
+  const r=await fetch(AC.url.replace(/\/+$/,'')+path,{method,headers:h,body:body?JSON.stringify(body):undefined});
+  const txt=await r.text();let j=null;try{j=txt?JSON.parse(txt):null}catch(e){}
+  if(!r.ok){const e=new Error((j&&(j.message||j.msg||j.error_description||j.error))||('HTTP '+r.status));e.status=r.status;e.code=j&&j.code;throw e}
+  return j;
+}
+function acKeep(j){AC.s={at:j.access_token,rt:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,uid:(j.user&&j.user.id)||(AC.s&&AC.s.uid)};acSave()}
+async function acRefresh(){
+  if(acRefresh.p)return acRefresh.p;
+  acRefresh.p=(async()=>{try{const j=await sb('/auth/v1/token?grant_type=refresh_token',{method:'POST',auth:false,body:{refresh_token:AC.s.rt}});acKeep(j)}
+    catch(e){if(e.status===400||e.status===401){delete AC.s;acSave()}throw e}finally{acRefresh.p=null}})();
+  return acRefresh.p;
+}
+async function acSignIn(){
+  if(!APPLE_OK()){toast('Sign in with Apple works in the iPhone and iPad app.');return}
+  let a;try{a=await Capacitor.nativePromise('AppleSignIn','signIn',{})}catch(e){const m=String(e&&e.message||e);if(!/cancel/i.test(m))toast('Apple sign-in didn’t finish. Try again.');return}
+  try{const j=await sb('/auth/v1/token?grant_type=id_token',{method:'POST',auth:false,body:{provider:'apple',id_token:a.idToken,nonce:a.nonce}});
+    acKeep(j);AC.apple=a.user;acSave();
+    if(!meName()&&a.givenName){st.me={...(st.me||{}),name:[a.givenName,a.familyName].filter(Boolean).join(' ')};saveState()}
+    await acLoad(true);renderAc();renderScene();toast(FR.me?'Signed in.':'Signed in. Now pick a username.')}
+  catch(e){console.warn('[acct] sign-in',e);toast(/provider|apple/i.test(e.message)?'The server isn’t set up for Apple yet. See the steps under Server.':'Couldn’t sign in: '+e.message)}
+}
+async function acSignOut(){try{await sb('/auth/v1/logout',{method:'POST'})}catch(e){}delete AC.s;delete AC.apple;acSave();FR={me:null,inc:[],out:[],list:[],at:0,busy:false,err:''};renderAc();renderScene();toast('Signed out. Your collection is still here.')}
+const PCOLS='id,handle,name,photo,hometown,spins,fav_album';
+async function acLoad(force){
+  if(!acReady()||!acIn()||FR.busy)return;
+  if(!force&&Date.now()-FR.at<20000)return;
+  FR.busy=true;FR.err='';
+  try{
+    const uid=AC.s.uid,mine=await sb(`/rest/v1/profiles?id=eq.${uid}&select=${PCOLS}`);FR.me=mine&&mine[0]||null;
+    const rows=await sb('/rest/v1/friendships?select=requester,addressee,status,created_at')||[];
+    const ids=[...new Set(rows.map(r=>r.requester===uid?r.addressee:r.requester))];
+    const ps=ids.length?await sb(`/rest/v1/profiles?id=in.(${ids.join(',')})&select=${PCOLS}`):[];
+    const P=Object.fromEntries((ps||[]).map(p=>[p.id,p]));
+    const pick=r=>P[r.requester===uid?r.addressee:r.requester];
+    FR.inc=rows.filter(r=>r.status==='pending'&&r.addressee===uid).map(pick).filter(Boolean);
+    FR.out=rows.filter(r=>r.status==='pending'&&r.requester===uid).map(pick).filter(Boolean);
+    FR.list=rows.filter(r=>r.status==='accepted').map(pick).filter(Boolean).sort((a,b)=>(a.name||a.handle).localeCompare(b.name||b.handle));
+    FR.at=Date.now();
+  }catch(e){FR.err=e.message;console.warn('[acct] load',e)}
+  finally{FR.busy=false}
+}
+/* A 160px copy of the profile photo keeps the server row small */
+function acPhoto(){const src=(st.me||{}).photo;if(!src)return Promise.resolve(null);
+  return new Promise(ok=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=160;c.getContext('2d').drawImage(im,0,0,160,160);ok(c.toDataURL('image/jpeg',.8))};im.onerror=()=>ok(null);im.src=src})}
+async function acProfileBody(){const m=st.me||{};return {name:(m.name||'').slice(0,40),photo:await acPhoto(),hometown:(m.from||'').slice(0,40),spins:(m.spin||'').slice(0,60),fav_album:(m.fav||'').slice(0,60)}}
+async function acCreate(handle){
+  handle=(handle||'').trim().toLowerCase().replace(/^@/,'');
+  if(!/^[a-z0-9_.]{3,20}$/.test(handle)){toast('3 to 20 letters, numbers, dots or underscores.');return}
+  try{const b=await acProfileBody();const r=await sb('/rest/v1/profiles',{method:'POST',prefer:'return=representation',body:{id:AC.s.uid,handle,...b}});FR.me=r&&r[0];renderAc();renderScene();toast(`You’re @${handle}. Friends can find you now.`)}
+  catch(e){toast(e.code==='23505'?`@${handle} is taken. Try another.`:'Couldn’t save: '+e.message)}
+}
+let acPushT;
+function acctPushProfile(){if(!acReady()||!acIn()||!FR.me)return;clearTimeout(acPushT);acPushT=setTimeout(async()=>{try{const b=await acProfileBody();await sb(`/rest/v1/profiles?id=eq.${AC.s.uid}`,{method:'PATCH',body:b});Object.assign(FR.me,b)}catch(e){console.warn('[acct] push',e)}},1500)}
+async function acFind(q){
+  q=(q||'').trim().toLowerCase().replace(/^@/,'').replace(/[^a-z0-9_.]/g,'');
+  const box=$('#frFound');if(!box)return;
+  if(q.length<2){box.innerHTML='';return}
+  try{const r=(await sb(`/rest/v1/profiles?handle=ilike.${encodeURIComponent(q)}*&select=${PCOLS}&limit=8`)||[]).filter(p=>p.id!==AC.s.uid);
+    const known=new Set([...FR.list,...FR.inc,...FR.out].map(p=>p.id));
+    box.innerHTML=r.length?r.map(p=>frRow(p,known.has(p.id)?`<span class="frst">${FR.list.some(x=>x.id===p.id)?'Friends':'Asked'}</span>`:`<button class="pb" data-fr="ask" data-id="${p.id}">Add</button>`)).join(''):`<p class="frnone">No one with a username starting “${esc(q)}”.</p>`}
+  catch(e){box.innerHTML=`<p class="frnone">Search didn’t work: ${esc(e.message)}</p>`}
+}
+const okPhoto=x=>typeof x==='string'&&/^data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(x)?x:'';
+const frAv=p=>`<span class="meav fav"${okPhoto(p.photo)?` style="background-image:url('${okPhoto(p.photo)}')"`:''} aria-hidden="true">${okPhoto(p.photo)?'':esc(((p.name||p.handle||'?').trim()[0]||'?').toUpperCase())}</span>`;
+const frRow=(p,act,open)=>`<div class="frow">${open?`<button class="frwho" data-fr="open" data-id="${p.id}">`:'<div class="frwho">'}${frAv(p)}<div><b>${esc(p.name||'@'+p.handle)}</b><span>@${esc(p.handle)}${p.hometown?' · '+esc(p.hometown):''}</span></div>${open?'</button>':'</div>'}${act||''}</div>`;
+async function frAct(a,id){
+  const uid=AC.s&&AC.s.uid;if(!uid)return;
+  try{
+    if(a==='ask'){try{await sb('/rest/v1/friendships',{method:'POST',body:{requester:uid,addressee:id}});toast('Asked. They’ll see it next time they open Community.')}
+      catch(e){if(e.code==='23505'&&FR.inc.some(p=>p.id===id)){await frAct('ok',id);return}throw e}}
+    else if(a==='ok'){await sb(`/rest/v1/friendships?requester=eq.${id}&addressee=eq.${uid}`,{method:'PATCH',body:{status:'accepted'}});toast('You’re friends now.')}
+    else if(a==='no'||a==='cancel'||a==='unfriend'){await sb(`/rest/v1/friendships?or=(and(requester.eq.${uid},addressee.eq.${id}),and(requester.eq.${id},addressee.eq.${uid}))`,{method:'DELETE'});toast(a==='unfriend'?'Unfriended. They aren’t told.':a==='cancel'?'Request taken back.':'Declined. They aren’t told.');closeSheets()}
+    else if(a==='block'){await sb('/rest/v1/blocks',{method:'POST',body:{blocker:uid,blocked:id}});toast('Blocked. They can’t find you or ask again.');closeSheets()}
+    const qv=($('#frQ')||{}).value||'';await acLoad(true);renderScene();const q=$('#frQ');if(q&&qv){q.value=qv;acFind(qv)}
+  }catch(e){toast('That didn’t go through: '+e.message)}
+}
+function openFriend(id){
+  const p=[...FR.list,...FR.inc,...FR.out].find(x=>x.id===id);if(!p)return;
+  const isF=FR.list.some(x=>x.id===id),isIn=FR.inc.some(x=>x.id===id);
+  const qa=[['From',p.hometown],['Spins',p.spins],['Favorite',p.fav_album]].filter(x=>x[1]);
+  $('#friendBody').innerHTML=`<div class="frhead">${frAv(p).replace('meav fav','meav big')}<div><h4 class="disp">${esc(p.name||'@'+p.handle)}</h4><p class="sub">@${esc(p.handle)}${isF?' · Friends':isIn?' · Wants to be friends':' · Asked'}</p></div></div>
+   ${qa.length?`<dl class="meqa frqa">${qa.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`:''}
+   ${isIn?`<button class="go press" data-fr="ok" data-id="${id}">Accept</button><button class="ghost" data-fr="no" data-id="${id}">Not now</button>`:''}
+   ${isF?`<p class="fine2" style="margin:14px 0 6px">Shelves you set to Friends are theirs to see, and theirs are yours.</p><button class="ghost" data-fr="unfriend" data-id="${id}">Unfriend</button>`:''}
+   ${!isF&&!isIn?`<button class="ghost" data-fr="cancel" data-id="${id}">Take back the request</button>`:''}
+   <div class="sethead">If something’s wrong</div>
+   <button class="ghost" data-fr="block" data-id="${id}">Block @${esc(p.handle)}</button>
+   <button class="ghost" data-fr="report" data-id="${id}">Report @${esc(p.handle)}</button>`;
+  openSheet('friend');
+}
+function openReport(id){
+  const p=[...FR.list,...FR.inc,...FR.out].find(x=>x.id===id)||{handle:'this person'};
+  $('#friendBody').innerHTML=`<h4 class="disp">Report @${esc(p.handle)}</h4><p class="sub">Tell us what’s wrong. They aren’t told who reported them.</p>
+   <div class="opts frrep">${[['spam','Spam'],['harassment','Harassment'],['impersonation','Pretending to be someone'],['inappropriate','Inappropriate name or photo'],['other','Something else']].map(([k,l])=>`<button class="pb o" data-fr="why" data-id="${id}" data-why="${k}">${l}</button>`).join('')}</div>
+   <label class="slab" for="frNote">Anything else (optional)</label><textarea class="sin" id="frNote" rows="3" maxlength="500"></textarea>
+   <p class="fine2">Pick a reason to send the report. You can also block them.</p>`;
+  openSheet('friend');
+}
+async function sendReport(id,why){
+  try{await sb('/rest/v1/reports',{method:'POST',body:{reporter:AC.s.uid,target:id,reason:why,note:(($('#frNote')||{}).value||'').trim().slice(0,500)}});closeSheets();toast('Report sent. Thank you.')}
+  catch(e){toast('The report didn’t send: '+e.message)}
+}
+async function acDelete(){
+  if(!confirm('Delete your community account? Your username, profile and friends are removed from the server for good. Your collection stays on this device and in iCloud.'))return;
+  try{await sb('/rest/v1/rpc/delete_me',{method:'POST',body:{}});delete AC.s;delete AC.apple;acSave();FR={me:null,inc:[],out:[],list:[],at:0,busy:false,err:''};renderAc();renderScene();toast('Account deleted.')}
+  catch(e){toast('Couldn’t delete: '+e.message)}
+}
+function openAc(){renderAc();openSheet('ac');if(acIn())acLoad(true).then(()=>{renderAc();renderScene()})}
+function renderAc(){
+  const el=$('#acBody');if(!el)return;
+  const server=`<details class="acsrv"${acReady()?'':' open'}><summary>Server${acReady()?' · connected':''}</summary>
+    <p class="fine2">For the app’s owner, once. In your Supabase project: Settings → API. Copy the Project URL and the public (anon or publishable) key. Never the secret or service key.</p>
+    <label class="slab" for="acUrl">Project URL</label><input class="sin" id="acUrl" value="${esc(AC.url||'')}" placeholder="https://xxxx.supabase.co" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="url">
+    <label class="slab" for="acKey">Public key</label><input class="sin" id="acKey" value="${esc(AC.key||'')}" placeholder="eyJ… or sb_publishable_…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <button class="go press" data-ac="server">Save server</button></details>`;
+  let main;
+  if(!acReady())main=`<p class="sub">Connect the server below first.</p>`;
+  else if(!acIn())main=`<p class="sub">Sign in to add friends. They’ll see the shelves you set to Friends and what you’re spinning. Your collection stays on this phone and in iCloud.</p>
+    <button class="applebtn press" data-ac="apple"><span aria-hidden="true">&#xF8FF;</span> Sign in with Apple</button>
+    <p class="fine2" style="margin-top:10px">No password. Apple confirms it’s you. We don’t ask for your email.</p>`;
+  else if(!FR.me)main=`<p class="sub">${FR.busy?'Checking your profile…':'Pick a username so friends can find you. Lowercase letters, numbers, dots and underscores.'}</p>
+    <label class="slab" for="acHandle">Username</label><input class="sin" id="acHandle" placeholder="djvarganessca" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
+    <button class="go press" data-ac="handle">Save username</button>${FR.err?`<p class="fine2">The server said: ${esc(FR.err)}</p>`:''}`;
+  else main=`<p class="sub">Signed in with Apple as <b>@${esc(FR.me.handle)}</b>. Your name, photo and three answers show to people who find you.</p>
+    <button class="go press" data-ac="friends">See your friends</button>
+    <button class="ghost" data-ac="out">Sign out on this device</button>
+    <button class="ghost" data-ac="delete">Delete my account</button>`;
+  el.innerHTML=`<h4 class="disp">Community account</h4>${main}${server}`;
+}
+function frCardHTML(){
+  if(!acReady()||!acIn())return `<button class="frcta press" data-ac="open">${acReady()?'Sign in to add friends':'Set up accounts'}</button>`;
+  if(!FR.me)return `<button class="frcta press" data-ac="open">Pick your username</button>`;
+  return `<div class="frsearch"><label class="slab" for="frQ">Add a friend by username</label><input class="sin" id="frQ" placeholder="@username" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search"><div id="frFound"></div></div>
+   ${FR.inc.length?`<div class="frsec">Wants to be friends</div>${FR.inc.map(p=>frRow(p,`<div class="frbtns"><button class="pb" data-fr="ok" data-id="${p.id}">Accept</button><button class="pb o" data-fr="no" data-id="${p.id}">Not now</button></div>`,1)).join('')}`:''}
+   ${FR.list.length?`<div class="frsec">Your friends · ${FR.list.length}</div>${FR.list.map(p=>frRow(p,'',1)).join('')}`:`<p class="frnone">${FR.busy?'Loading…':'No friends yet. Ask someone for their username.'}</p>`}
+   ${FR.out.length?`<div class="frsec">Asked</div>${FR.out.map(p=>frRow(p,`<button class="pb o" data-fr="cancel" data-id="${p.id}">Take back</button>`,1)).join('')}`:''}
+   ${FR.err?`<p class="frnone">Couldn’t reach the server: ${esc(FR.err)}</p>`:''}`;
+}
+document.addEventListener('input',e=>{if(e.target.id==='frQ'){clearTimeout(acFind.t);const v=e.target.value;acFind.t=setTimeout(()=>acFind(v),350)}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&(e.target.id==='acHandle'||e.target.id==='frQ')){e.preventDefault();e.target.blur();if(e.target.id==='acHandle')acCreate(e.target.value)}});
+function acClick(t){
+  const a=t.dataset.ac;
+  if(a==='open')openAc();
+  else if(a==='server'){const u=($('#acUrl').value||'').trim().replace(/\/+$/,''),k=($('#acKey').value||'').trim();
+    if(!/^https:\/\/[^\s/]+/.test(u)){toast('The Project URL starts with https://');return}
+    if(/service_role|sb_secret_/.test(k)||(()=>{try{return JSON.parse(atob(k.split('.')[1])).role==='service_role'}catch(e){return false}})()){toast('That’s the secret key. Use the public one; the secret must never go in an app.');return}
+    if(k.length<20){toast('Paste the public key.');return}
+    AC.url=u;AC.key=k;acSave();renderAc();renderScene();toast('Server saved on this device.')}
+  else if(a==='apple')acSignIn();
+  else if(a==='handle')acCreate(($('#acHandle')||{}).value);
+  else if(a==='friends'){closeSheets();go('scene');setTimeout(()=>{const f=$('#frQ');if(f)f.scrollIntoView({block:'center',behavior:'smooth'})},400)}
+  else if(a==='out')acSignOut();
+  else if(a==='delete')acDelete();
+}
+function frClick(t){
+  const a=t.dataset.fr,id=t.dataset.id;
+  if(a==='open')openFriend(id);
+  else if(a==='report')openReport(id);
+  else if(a==='why')sendReport(id,t.dataset.why);
+  else if(a==='block'){if(confirm('Block them? This ends any friendship between you, and they can’t find you or ask again.'))frAct('block',id)}
+  else if(a==='unfriend'){if(confirm('Unfriend? They won’t be told, and they stop seeing your Friends shelves.'))frAct('unfriend',id)}
+  else frAct(a,id);
+}
 /* ---------- scene ---------- */
 const CURS=[
  {id:'ns',n:'Nightshift Selector',tag:'Late-night house and boogie.',m:2,kind:'Curator',shelves:[['Boogie Basement',6,[0,1,2],[5,9,10]],['After Hours',4,[3,5,2],[8,12,5]]]},
@@ -3673,7 +3875,8 @@ function renderScene(){
   const fr=st.fr,n=meName(),S=st.sits||[],cur=curSit(),recent=S.map((x,i)=>({x,i})).filter(o=>o.x.items&&o.x.items.length).reverse().slice(0,5);
   const sesRow=({x,i})=>{const X=sitStats(x),live=x===cur;return `<button class="srow" data-sit="${i}"><div><b>${esc(sitTitle(x))}</b><span>${new Date(x.s).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${X.songs} song${X.songs===1?'':'s'} · ${X.recs.length} record${X.recs.length===1?'':'s'}</span></div><i${live?' class="now"':''}>${live?'Now':'Open'}</i></button>`};
   el.innerHTML=`
-  <button class="mestrip${meAbout()?' tall':''}" data-me="edit">${meAv()}<div><b>${n?esc(n):'Add your name'}</b>${meAbout()?'':`<span>${n?'Add where you’re from, what you spin, your favorite album':'And a photo, for the cards you share'}</span>`}</div><em class="meedit">${n||meAbout()?'Edit':'Add'}</em>${meAbout()?`<dl class="meqa">${MEQ.map(([k])=>(st.me[k]||'').trim()?`<dt>${{from:'From',spin:'Spins',fav:'Favorite'}[k]}</dt><dd>${esc(st.me[k])}</dd>`:'').join('')}</dl>`:''}</button>
+  ${meAbout()?`<button class="mestrip tall" data-me="edit"><div class="mehead">${meAv()}<div><b>${n?esc(n):'Add your name'}</b><span>${FR.me?'@'+esc(FR.me.handle)+' · ':''}${n?'On the cards you share':'Add your name for your cards'}</span></div><em class="meedit">Edit</em></div><dl class="meqa">${MEQ.filter(([k])=>(st.me[k]||'').trim()).map(([k])=>`<div><dt>${{from:'From',spin:'Spins',fav:'Favorite'}[k]}</dt><dd>${esc(st.me[k])}</dd></div>`).join('')}</dl></button>`
+  :`<button class="mestrip" data-me="edit">${meAv()}<div><b>${n?esc(n):'Add your name'}</b><span>${n?'Add where you’re from, what you spin, your favorite album':'And a photo, for the cards you share'}</span></div><em class="meedit">${n?'Edit':'Add'}</em></button>`}
 
   <div class="sh"><span>Your sessions</span><em>${S.filter(x=>x.items&&x.items.length).length||'None yet'}</em></div>
   <p class="shnote">Every record Listen follows becomes a session. Name it, share its card, or save it as an Apple Music playlist.</p>
@@ -3688,15 +3891,15 @@ function renderScene(){
   ${DEMO?`<div class="ser"><h4 class="disp">Words On Wax</h4><p class="sub">An example of a hand-run series: six nights so far. Every night keeps its records, its stories, and its recap.</p>
     ${NIGHTS.map(x=>`<button class="srow" data-recap="w${x.id}"><div><b>${x.t}</b><span>${x.n} · ${x.recs.length} records · ${x.guests} guests</span></div><i>Recap</i></button>`).join('')}</div>`:''}
 
-  <div class="sh"><span>People</span><em>${DEMO?fr.list.length+' friends · '+st.follow.size+' following':'With profiles'}</em></div>
+  <div class="sh"><span>People</span><em>${DEMO?fr.list.length+' friends · '+st.follow.size+' following':FR.me?FR.list.length+' friend'+(FR.list.length===1?'':'s'):'Sign in to add'}</em></div>
   <p class="shnote">Two ways to connect, because sharing with people you know is different from following taste you admire.</p>
-  <div class="ppl"><h5>Friends</h5><p>People you know. You both say yes, then they see the shelves you set to Friends and what you’re spinning.</p><p class="why">For your own collection, with people you trust.</p>${DEMO?'':'<span class="soon">Adding friends comes with profiles</span>'}
+  <div class="ppl"><h5>Friends</h5><p>People you know. You both say yes, then they see the shelves you set to Friends and what you’re spinning.</p><p class="why">For your own collection, with people you trust.</p>${DEMO?'':frCardHTML()}
     ${DEMO?fr.req.map((q,i)=>`<div class="frow"><div><b>${q}</b><span>Wants to be friends</span></div><div style="display:flex;gap:6px"><button class="pb" data-frok="${i}">Accept</button><button class="pb o" data-frno="${i}">Not now</button></div></div>`).join('')+fr.list.map(q=>`<div class="frow"><div><b>${q}</b><span>Friends · both approved</span></div></div>`).join(''):''}
   </div>
   <div class="ppl cur2"><h5>Curators</h5><p>Selectors, shops and listening bars whose taste you admire. Follow with one tap, no approval needed. You see only the shelves they share with everyone, and they never see who follows them.</p><p class="why">For discovering records, from people you don’t have to know.</p>${DEMO?'':'<span class="soon">Following comes with profiles</span>'}
     ${DEMO?`<div class="curs" style="margin:10px 0 0">${[...CURS].sort((a,b)=>st.follow.has(b.id)-st.follow.has(a.id)).map(c=>`<div class="cur"><button class="open" data-cur="${c.id}"><div class="av m${c.m}" aria-hidden="true">${c.n[0]}</div><div class="nm">${c.n}</div><div class="tg">${c.tag}</div><div class="kd">${c.kind} · sample · ${c.shelves.length} ${c.shelves.length>1?'shelves':'shelf'} shared</div></button><button class="follow" data-follow="${c.id}" aria-pressed="${st.follow.has(c.id)}">${st.follow.has(c.id)?'Following':'Follow'}</button></div>`).join('')}</div>`:''}
   </div>
-  ${DEMO?'':`<p class="shnote" style="margin-top:14px">Profiles need accounts, which aren’t built yet. Until then, nothing you keep here leaves your devices, except what you choose to share.</p>`}`;
+  ${DEMO?'':`<p class="shnote" style="margin-top:14px">Your collection never leaves your devices and iCloud. Only your profile and your friends list live on the server.</p>`}`;
 }
 function openCur(id){
   const c=CURS.find(x=>x.id===id),f=st.follow.has(id);
@@ -5166,7 +5369,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-me],[data-sitend],[data-sitdel],[data-sitpl],[data-amconnect],[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-me],[data-ac],[data-fr],[data-sitend],[data-sitdel],[data-sitpl],[data-amconnect],[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
@@ -5231,6 +5434,8 @@ document.addEventListener('click',e=>{
   if(t.dataset.dgtest){dgTest();return}
   if(t.dataset.hear){const a=t.dataset.hear;if(a==='open')openHear();else if(a==='go')hearGo();else if(a==='stop'){hearStop();renderHear()}return}
   if(t.dataset.hearadd){hearAdd(t.dataset.hearadd);return}
+  if(t.dataset.ac){acClick(t);return}
+  if(t.dataset.fr){frClick(t);return}
   if(t.dataset.me){const a=t.dataset.me;if(a==='savename'){meSaveName(true);return}if(a==='edit')openMe();else if(a==='photo')$('#meIn').click();else if(a==='nophoto'){if(st.me)delete st.me.photo;saveState();renderMe();renderScene()}return}
   if(t.dataset.sitend){sitEnd();return}
   if(t.dataset.sitdel){const S=(st.sits||[])[st.sitI];if(!S)return;askSure({title:'Delete this session?',body:`“${sitTitle(S)}” and its ${S.items.length} song${S.items.length===1?'':'s'} come off your listening log. Spins counted on your records stay.`,yes:'Delete',go:()=>{st.sits.splice(st.sitI,1);saveState();closeSheets();toast('Session deleted.')}});return}
