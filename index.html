@@ -1839,7 +1839,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.35.0 · memorywax.app';
+const BUILD='0.35.1 · email codes';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3902,9 +3902,10 @@ function renderAc(){
     <button class="applebtn press" data-ac="apple"><span aria-hidden="true">&#xF8FF;</span> Sign in with Apple</button>
     <div class="acor"><span>or with your email</span></div>
     ${OTP.email?`<p class="sub" style="margin:0 0 4px">We emailed <b>${esc(OTP.email)}</b>. Open it <b>on this ${/iPad/.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Mac/.test(navigator.userAgent))?'iPad':'iPhone'}</b> and tap the link. It opens Memory Wax, signed in.</p>
-      <p class="fine2">It can take a minute; check spam too. The link works once.</p>
-      <button class="ghost" data-ac="resend">Send it again</button><button class="ghost" data-ac="otheremail">Use a different email</button>
-      <details class="acsrv" style="margin-top:8px"><summary>Got a code instead?</summary><label class="slab" for="acCode">Code from the email</label><input class="sin" id="acCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" enterkeyhint="go"><button class="go press" data-ac="code">Sign in</button></details>`
+      <p class="fine2">Or type the code from the email. It can take a minute; check spam too.</p>
+      <label class="slab" for="acCode">Code from the email</label><input class="sin" id="acCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" enterkeyhint="go">
+      <button class="go press" data-ac="code">Sign in</button>
+      <button class="ghost" data-ac="resend">Send it again</button><button class="ghost" data-ac="otheremail">Use a different email</button>`
     :`<label class="slab" for="acEmail">Email</label><input class="sin" id="acEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@example.com" enterkeyhint="send">
       <button class="go press" data-ac="email">Email me a sign-in link</button>`}
     <p class="fine2" style="margin-top:10px">No password either way. Your email is only for signing in; it never shows on your profile.</p>`;
