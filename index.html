@@ -1090,10 +1090,12 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 }
 .vf .corner{vector-effect:non-scaling-stroke}
 /* the moment a scan upgrades a record to Confirmed */
-.moment{position:absolute;left:16px;right:16px;top:60px;z-index:95;display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--cream);color:var(--ox);border-radius:0 18px 0 0;box-shadow:8px 8px 0 rgba(0,0,0,.35);text-align:left;transform:translateY(-150%);opacity:0;transition:transform .5s var(--ease-out),opacity .25s ease-out}
+.moment{position:absolute;left:16px;right:16px;top:60px;z-index:95;display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px;padding:14px 16px;background:var(--cream);color:var(--ox);border:2.5px solid var(--ox);border-radius:0 18px 0 0;cursor:pointer;box-shadow:8px 8px 0 rgba(0,0,0,.35);text-align:left;transform:translateY(-150%);opacity:0;transition:transform .5s var(--ease-out),opacity .25s ease-out}
 .moment.on{transform:none;opacity:1}
 .moment[hidden]{display:none}
 .moment .mk{flex:none;width:46px;height:46px;border-radius:50%;background:var(--red);color:var(--cream);display:grid;place-items:center;font-style:normal;font-weight:900;font-size:24px;box-shadow:inset 0 0 0 3px var(--cream),inset 0 0 0 5px var(--red)}
+.moment .mtx{flex:1;min-width:0}
+.moment .mshare{flex-basis:100%;padding:11px 14px;border-radius:999px;background:var(--ox);color:var(--cream);font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:500}
 .moment .mtx b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;text-transform:uppercase;font-size:26px;line-height:.9}
 .moment .mtx span{display:block;margin-top:4px;font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.15}
 .seal.stamp{animation:sealstamp .6s var(--ease-out)}
@@ -1847,7 +1849,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <p class="fine" style="margin-top:12px;font-weight:600">Every claim carries a source. Anything unverified is labeled.</p>
     </div>
 
-    <button class="moment" id="moment" type="button" hidden aria-live="polite"><i class="mk" aria-hidden="true">✓</i><span class="mtx"><b>Pressing confirmed</b><span id="momentTxt"></span></span></button>
+    <div class="moment" id="moment" hidden role="status" aria-live="polite"><i class="mk" aria-hidden="true">✓</i><span class="mtx"><b>Pressing confirmed</b><span id="momentTxt"></span></span><button class="mshare" id="momentShare" type="button">Share this pressing ↗</button></div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <div class="grain" aria-hidden="true"></div>
   </div></div>
@@ -2028,7 +2030,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.46.1 · confirmed tally';
+const BUILD='0.46.2 · pressing card';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3284,6 +3286,35 @@ function askRemoveRecords(ids){
   askSure({title:n===1?'Remove this record?':`Remove ${n} records?`,body:(n===1?`“${rs[0].t}” by ${rs[0].a}. `:nameList(rs.map(r=>r.t))+'. ')+(n===1?RM_BODY:RM_BODY.replace('It leaves','They leave').replace('it is on','they are on').replace('for it','for them').replace('still has it','still has them')),yes:n===1?'Remove record':`Remove ${n} records`,
     go:()=>{const wasReveal=st.screen==='reveal';removeRecords(rs.map(r=>r.id));st.sel=null;if(wasReveal)go('collection');else renderCollection();toast(n===1?`Removed “${rs[0].t}” from your collection.`:`Removed ${n} records from your collection.`)}});
 }
+/* a shareable card for a confirmed pressing */
+async function pressingCard(r){
+  await cardFonts();const R=REP[r.id]||{},W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),L=72,Rr=W-72;
+  const CREAM='#FFF3B0',GOLD='#E09F3E',sp=v=>{if('letterSpacing' in x)x.letterSpacing=v};
+  x.fillStyle='#540B0E';x.fillRect(0,0,W,H);
+  x.fillStyle=GOLD;x.beginPath();x.arc(985,95,215,0,7);x.fill();x.fillStyle='#540B0E';x.beginPath();x.arc(985,95,34,0,7);x.fill();
+  x.fillStyle=CREAM;x.textBaseline='alphabetic';
+  x.font='500 28px "DM Mono",monospace';sp('5px');x.fillText('PRESSING CONFIRMED',L,100);sp('0px');
+  /* the title, as large as fits on up to two lines */
+  const words=String(r.t||'').toUpperCase().split(' ');let fs=190,lines;
+  const wrap=f=>{x.font=`900 ${f}px Archivo,sans-serif`;if('fontStretch' in x)x.fontStretch='ultra-condensed';const out=[];let cur='';words.forEach(w=>{const t=cur?cur+' '+w:w;if(x.measureText(t).width>Rr-L&&cur){out.push(cur);cur=w}else cur=t});out.push(cur);return out};
+  lines=wrap(fs);while((lines.length>2||lines.some(l=>x.measureText(l).width>Rr-L))&&fs>70){fs-=8;lines=wrap(fs)}
+  let y=250;lines.forEach(l=>{x.fillText(l,L-4,y);y+=fs*.86});if('fontStretch' in x)x.fontStretch='normal';
+  y-=fs*.86;x.fillStyle=GOLD;x.font='italic 56px "Instrument Serif",Georgia,serif';x.fillText(fitText(x,r.a||'',Rr-L),L,y+84);y+=84;x.fillStyle=CREAM;
+  /* the seal */
+  const sy=y+300;x.fillStyle='#A22B2B';x.beginPath();x.arc(L+150,sy,150,0,7);x.fill();x.strokeStyle=CREAM;x.lineWidth=9;x.beginPath();x.arc(L+150,sy,150,0,7);x.stroke();
+  x.fillStyle=CREAM;x.textAlign='center';x.font='900 52px Archivo,sans-serif';if('fontStretch' in x)x.fontStretch='condensed';x.fillText('CONFIRMED',L+150,sy+4);if('fontStretch' in x)x.fontStretch='normal';
+  x.font='500 24px "DM Mono",monospace';sp('3px');x.fillText('MATRIX MATCH',L+150,sy+52);sp('0px');x.textAlign='left';
+  /* the facts */
+  const rows=[['LABEL',r.lab||R.lab],['CATALOG',r.cat||R.cat],['COUNTRY · YEAR',[r.ctry||R.ctry,r.y].filter(Boolean).join(' · ')],['FORMAT',r.fmt||R.fmt],['MATRIX',r.mx]].filter(a=>a[1]);
+  let ry=sy-150;const rx=L+370;
+  rows.forEach(([k,v])=>{x.fillStyle=GOLD;x.font='500 24px "DM Mono",monospace';sp('3px');x.fillText(k,rx,ry);sp('0px');x.fillStyle=CREAM;x.font='700 44px Archivo,sans-serif';x.fillText(fitText(x,String(v),Rr-rx),rx,ry+50);ry+=104});
+  await cardLogo(x,W,H,'#540B0E',150);await cardByline(x,H,'#540B0E');
+  return new Promise(res=>c.toBlob(res,'image/png'));
+}
+async function pressingShare(id){
+  const r=recOf(id),R=REP[id]||{},bits=[r.lab||R.lab,[r.ctry||R.ctry,r.y].filter(Boolean).join(' '),r.cat||R.cat,r.fmt||R.fmt].filter(Boolean);
+  try{cardShare(await pressingCard(r),'memory-wax-pressing.png',`${r.t} by ${r.a}. Pressing confirmed${bits.length?': '+bits.join(' · '):''}.\n\n${byLine()}`)}catch(e){toast('Couldn’t make the card.')}
+}
 /* a record that was Likely or Album only has just been confirmed by a deadwax read: stamp the seal and say which pressing it is */
 let momentT=null;
 function hideMoment(){const m=$('#moment');if(!m)return;m.classList.remove('on');clearTimeout(momentT);setTimeout(()=>{m.hidden=true},500)}
@@ -3293,10 +3324,10 @@ function confirmMoment(r){
     if(st.rec!==r.id||st.screen!=='reveal')return;
     const b=$('#badge');b.classList.remove('stamp');void b.offsetWidth;if(!reduce)b.classList.add('stamp');haptic('success');
     $('#momentTxt').textContent=bits.length?bits.join(' · '):'The etching matches a listed pressing.';
-    const m=$('#moment');m.hidden=false;void m.offsetWidth;m.classList.add('on');clearTimeout(momentT);momentT=setTimeout(hideMoment,5600);
+    st.momentRec=r.id;const m=$('#moment');m.hidden=false;void m.offsetWidth;m.classList.add('on');clearTimeout(momentT);momentT=setTimeout(hideMoment,8000);
   },reduce?200:1800);
 }
-$('#moment').addEventListener('click',hideMoment);
+$('#moment').addEventListener('click',e=>{if(e.target.closest('#momentShare')){if(st.momentRec){clearTimeout(momentT);pressingShare(st.momentRec).finally(()=>{momentT=setTimeout(hideMoment,2500)})}return}hideMoment()});
 /* confirming a pressing compares the etched runout with Discogs' listings (or our own index), so it only works when one of them is set up */
 const canConfirm=()=>DEMO||!!(dgTok()||IDX);
 function openConfirm(){
