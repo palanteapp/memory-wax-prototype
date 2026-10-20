@@ -2043,7 +2043,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.48.1 · smooth dots';
+const BUILD='0.48.2 · card layout';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2409,10 +2409,10 @@ async function amConnectNative(){try{const r=await amRace(Capacitor.nativePromis
    on the cream card the transparent wordmark. */
 const IMGC={};
 function loadImg(src){return IMGC[src]||(IMGC[src]=new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=no;im.src=src}))}
-async function cardLogo(x,W,H,bg,lh){
+async function cardLogo(x,W,H,bg,lh,at){
   const h=String(bg||'#000').replace('#',''),lum=(parseInt(h.slice(0,2),16)*.3+parseInt(h.slice(2,4),16)*.59+parseInt(h.slice(4,6),16)*.11)/255;
   try{
-    if(lum<.5){const im=await loadImg('assets/memory-wax-logo.png'),sx=80,sy=225,sw=1100,sh=800,hh=lh||218,w=hh*sw/sh;x.save();x.globalCompositeOperation='lighten';x.drawImage(im,sx,sy,sw,sh,W-64-w,H-50-hh,w,hh);x.restore()}
+    if(lum<.5){const im=await loadImg('assets/memory-wax-logo.png'),sx=80,sy=225,sw=1100,sh=800,hh=lh||218,w=hh*sw/sh;x.save();x.globalCompositeOperation='lighten';x.drawImage(im,sx,sy,sw,sh,at?at.x:W-64-w,at?at.y:H-50-hh,w,hh);x.restore()}
     else{const im=await loadImg('assets/memory-wax-logo.png'),sx=80,sy=225,sw=1100,sh=800,hh=lh||218,w=hh*sw/sh,px=W-64-w,py=H-50-hh,pad=22;
       x.save();x.fillStyle='#540B0E';x.beginPath();(x.roundRect?x.roundRect(px-pad,py-pad,w+pad*2,hh+pad*2,26):x.rect(px-pad,py-pad,w+pad*2,hh+pad*2));x.fill();
       x.globalCompositeOperation='lighten';x.drawImage(im,sx,sy,sw,sh,px,py,w,hh);x.restore()}
@@ -3356,25 +3356,31 @@ async function pressingCard(r){
   x.fillStyle=GOLD;x.beginPath();x.arc(985,95,215,0,7);x.fill();cardDots(x,'#540B0E',.8,830,250,340,22,W,H,[985,95,215]);x.fillStyle='#540B0E';x.beginPath();x.arc(985,95,34,0,7);x.fill();
   x.fillStyle=CREAM;x.textBaseline='alphabetic';
   const mode=r.real?realModeOf(r):(MODEOF[r.c]||'confirmed'),m=MODES[mode]||MODES.confirmed,okc=r.c==='confirmed'||mode==='confirmed';
-  x.font='500 28px "DM Mono",monospace';sp('5px');x.fillText(okc?'PRESSING CONFIRMED':'FROM MY COLLECTION',L,100);sp('0px');
+  /* the logo, top left and flush with the text; the kicker sits just above the title */
+  await cardLogo(x,W,H,'#540B0E',100,{x:L-8,y:38});
+  const KY=196;x.font='500 28px "DM Mono",monospace';sp('5px');x.fillText(okc?'PRESSING CONFIRMED':'FROM MY COLLECTION',L,KY);sp('0px');
   /* the title, as large as fits on up to two lines */
   const words=String(r.t||'').toUpperCase().split(' ');let fs=190,lines;
   const wrap=f=>{x.font=`900 ${f}px Archivo,sans-serif`;if('fontStretch' in x)x.fontStretch='ultra-condensed';const out=[];let cur='';words.forEach(w=>{const t=cur?cur+' '+w:w;if(x.measureText(t).width>Rr-L&&cur){out.push(cur);cur=w}else cur=t});out.push(cur);return out};
   lines=wrap(fs);while((lines.length>2||lines.some(l=>x.measureText(l).width>Rr-L))&&fs>70){fs-=8;lines=wrap(fs)}
-  let y=250;lines.forEach(l=>{x.fillText(l,L-4,y);y+=fs*.86});if('fontStretch' in x)x.fontStretch='normal';
+  let y=KY+26+fs*.74;lines.forEach(l=>{x.fillText(l,L-4,y);y+=fs*.86});if('fontStretch' in x)x.fontStretch='normal';
   y-=fs*.86;x.fillStyle=GOLD;x.font='italic 56px "Instrument Serif",Georgia,serif';x.fillText(fitText(x,r.a||'',Rr-L),L,y+84);y+=84;x.fillStyle=CREAM;
-  /* the cover, with the seal stuck across its lower corner and the facts beside it */
-  const S=lines.length>1?440:500,cy=y+60;await cardCover(x,r,L,cy,S);
-  const sr=108,scx=L+S-72,scy=cy+S-72,sealBg=m.cls==='likely'?CREAM:m.cls==='cover'?'#2F5D6B':'#A22B2B',sealInk=m.cls==='likely'?'#540B0E':CREAM;
-  x.save();x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=24;x.shadowOffsetY=8;x.fillStyle=sealBg;x.beginPath();x.arc(scx,scy,sr,0,7);x.fill();x.restore();
-  x.strokeStyle=m.cls==='likely'?'#540B0E':CREAM;x.lineWidth=6;x.beginPath();x.arc(scx,scy,sr,0,7);x.stroke();
-  x.fillStyle=sealInk;x.textAlign='center';let sf=38;x.font=`900 ${sf}px Archivo,sans-serif`;while(x.measureText(m.a.toUpperCase()).width>182&&sf>18){sf-=2;x.font=`900 ${sf}px Archivo,sans-serif`}
-  x.fillText(m.a.toUpperCase(),scx,scy+4);x.font='500 16px "DM Mono",monospace';sp('2px');x.fillText(fitText(x,m.b.toUpperCase(),182),scx,scy+36);sp('0px');x.textAlign='left';
+  /* the cover stays clean: nothing is ever laid over it. The facts sit beside it. */
+  const cy=y+56,S=Math.max(300,Math.min(500,996-cy));await cardCover(x,r,L,cy,S);
   const rows=[['LABEL',r.lab||R.lab],['CATALOG',r.cat||R.cat],['COUNTRY · YEAR',(c0=>[c0,c0&&String(c0).includes(r.y)?'':r.y].filter(Boolean).join(' · '))(r.ctry||R.ctry)],['FORMAT',r.fmt||R.fmt],['MATRIX',okc?r.mx:'']].filter(a=>a[1]);
   const rx=L+S+52,pitch=Math.min(104,(S-30)/Math.max(rows.length,1));let ry=cy+34;
   rows.forEach(([k,v])=>{x.fillStyle=GOLD;x.font='500 22px "DM Mono",monospace';sp('3px');x.fillText(k,rx,ry);sp('0px');x.fillStyle=CREAM;x.font='700 40px Archivo,sans-serif';x.fillText(fitText(x,String(v),Rr-rx),rx,ry+44);ry+=pitch});
-  const fact=recFact(r);if(fact){x.fillStyle=GOLD;x.font='italic 58px "Instrument Serif",Georgia,serif';wrapText(x,fact,L,cy+S+120,Rr-L,68,2)}
-  await cardLogo(x,W,H,'#540B0E',150);await cardByline(x,H,'#540B0E');
+  /* the one-line fact, in the pale gold */
+  const fact=recFact(r);if(fact){x.fillStyle=CREAM;x.font='italic 50px "Instrument Serif",Georgia,serif';wrapText(x,fact,L,cy+S+78,680,58,3)}
+  /* the seal, bottom right, clear of the cover */
+  const sr=120,scx=Rr-sr,scy=H-58-sr,sealBg=m.cls==='likely'?CREAM:m.cls==='cover'?'#2F5D6B':'#A22B2B',sealInk=m.cls==='likely'?'#540B0E':CREAM;
+  x.save();x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=24;x.shadowOffsetY=8;x.fillStyle=sealBg;x.beginPath();x.arc(scx,scy,sr,0,7);x.fill();x.restore();
+  x.strokeStyle=m.cls==='likely'?'#540B0E':CREAM;x.lineWidth=6;x.beginPath();x.arc(scx,scy,sr,0,7);x.stroke();
+  x.fillStyle=sealInk;x.textAlign='center';let sf=44;x.font=`900 ${sf}px Archivo,sans-serif`;while(x.measureText(m.a.toUpperCase()).width>206&&sf>18){sf-=2;x.font=`900 ${sf}px Archivo,sans-serif`}
+  x.fillText(m.a.toUpperCase(),scx,scy+4);x.font='500 15px "DM Mono",monospace';sp('1px');x.fillText(fitText(x,m.b.toUpperCase(),206),scx,scy+40);sp('0px');x.textAlign='left';
+  /* lower left: where it came from */
+  x.fillStyle=CREAM;x.font='500 22px "DM Mono",monospace';sp('4px');x.globalAlpha=.7;x.fillText('STRAIGHT FROM MY',L,H-56-62+24);x.globalAlpha=1;sp('0px');
+  x.font='900 40px Archivo,sans-serif';x.fillText('MEMORY WAX',L,H-56-62+62);
   return new Promise(res=>c.toBlob(res,'image/png'));
 }
 function shareRecord(id){
