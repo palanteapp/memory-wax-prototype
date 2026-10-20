@@ -2043,7 +2043,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.48.2 · card layout';
+const BUILD='0.48.3 · rubber stamp';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2418,13 +2418,11 @@ async function cardLogo(x,W,H,bg,lh,at){
       x.globalCompositeOperation='lighten';x.drawImage(im,sx,sy,sw,sh,px,py,w,hh);x.restore()}
   }catch(e){x.save();x.font='500 26px "DM Mono",monospace';x.globalAlpha=.85;x.textAlign='right';x.fillText('MADE WITH MEMORY WAX',W-72,H-70);x.restore()}
 }
-/* your photo and name, bottom left of a card, when you've added them */
+/* lower left of every card: where it came from */
 async function cardByline(x,H,bg){
-  const n=meName(),ph=(st.me||{}).photo;if(!n&&!ph)return;
-  const dark=String(bg||'#540B0E')!=='#FFF3B0',y=H-56-62;let tx=72;
-  if(ph){try{const im=await loadImg(ph);x.save();x.beginPath();x.arc(72+31,y+31,31,0,7);x.clip();x.drawImage(im,72,y,62,62);x.restore();tx=72+62+18}catch(e){}}
-  if(n){x.save();x.fillStyle=dark?'#FFF3B0':'#540B0E';x.font='500 22px "DM Mono",monospace';if('letterSpacing' in x)x.letterSpacing='4px';x.globalAlpha=.7;x.fillText('PLAYED BY',tx,y+24);x.globalAlpha=1;
-    x.font='900 40px Archivo,sans-serif';if('fontStretch' in x)x.fontStretch='ultra-condensed';if('letterSpacing' in x)x.letterSpacing='0px';x.fillText(fitText(x,n.toUpperCase(),520),tx,y+62);x.restore()}
+  const dark=String(bg||'#540B0E')!=='#FFF3B0',y=H-56-62;
+  x.save();x.fillStyle=dark?'#FFF3B0':'#540B0E';x.font='500 22px "DM Mono",monospace';if('letterSpacing' in x)x.letterSpacing='4px';x.globalAlpha=.7;x.fillText('STRAIGHT FROM MY',72,y+24);x.globalAlpha=1;
+  if('letterSpacing' in x)x.letterSpacing='0px';x.font='900 40px Archivo,sans-serif';x.fillText('MEMORY WAX',72,y+62);x.restore();
 }
 const byLine=()=>meName()?meName()+' · Made with Memory Wax':'Made with Memory Wax';
 async function cardFonts(){try{await document.fonts.load('900 100px Archivo');await document.fonts.load('italic 40px "Instrument Serif"');await document.fonts.load('20px "DM Mono"')}catch(_){}}
@@ -3348,6 +3346,20 @@ function recFact(r){
   if(yr>1900&&yr<=new Date().getFullYear())return yr===new Date().getFullYear()?'Pressed this year.':`This record is ${new Date().getFullYear()-yr} years old.`;
   return '';
 }
+/* the seal as a rubber stamp: tilted, a double ring, and worn ink (specks of the card show through; the same record always wears the same way) */
+function cardStamp(x,cx,cy,r,o){
+  const S=Math.ceil(r*2+60),c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d'),m=S/2;
+  g.fillStyle=o.bg;g.beginPath();g.arc(m,m,r,0,7);g.fill();
+  g.strokeStyle=o.ink;g.lineWidth=6;g.beginPath();g.arc(m,m,r-7,0,7);g.stroke();
+  g.lineWidth=2.5;g.setLineDash([2,9]);g.beginPath();g.arc(m,m,r-28,0,7);g.stroke();g.setLineDash([]);
+  g.fillStyle=o.ink;g.textAlign='center';let sf=44;g.font=`900 ${sf}px Archivo,sans-serif`;
+  while(g.measureText(o.main).width>r*1.72&&sf>18){sf-=2;g.font=`900 ${sf}px Archivo,sans-serif`}
+  g.fillText(o.main,m,m+4);g.font='500 15px "DM Mono",monospace';if('letterSpacing' in g)g.letterSpacing='1px';g.fillText(fitText(g,o.sub,r*1.72),m,m+40);
+  let a=(o.seed|0)||7;const rnd=()=>((a=Math.imul(a,1664525)+1013904223)>>>0)/4294967296;
+  g.globalCompositeOperation='destination-out';g.fillStyle='#000';
+  for(let i=0;i<300;i++){const t=rnd()*6.283,d=Math.sqrt(rnd())*r;g.globalAlpha=.22+rnd()*.5;g.beginPath();g.arc(m+Math.cos(t)*d,m+Math.sin(t)*d,.7+rnd()*2.4,0,7);g.fill()}
+  x.save();x.shadowColor='rgba(0,0,0,.4)';x.shadowBlur=22;x.shadowOffsetY=8;x.translate(cx,cy);x.rotate(-.17);x.drawImage(c,-m,-m);x.restore();
+}
 /* a shareable card for a confirmed pressing */
 async function pressingCard(r){
   await cardFonts();const R=REP[r.id]||{},W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),L=72,Rr=W-72;
@@ -3372,15 +3384,9 @@ async function pressingCard(r){
   rows.forEach(([k,v])=>{x.fillStyle=GOLD;x.font='500 22px "DM Mono",monospace';sp('3px');x.fillText(k,rx,ry);sp('0px');x.fillStyle=CREAM;x.font='700 40px Archivo,sans-serif';x.fillText(fitText(x,String(v),Rr-rx),rx,ry+44);ry+=pitch});
   /* the one-line fact, in the pale gold */
   const fact=recFact(r);if(fact){x.fillStyle=CREAM;x.font='italic 50px "Instrument Serif",Georgia,serif';wrapText(x,fact,L,cy+S+78,680,58,3)}
-  /* the seal, bottom right, clear of the cover */
-  const sr=120,scx=Rr-sr,scy=H-58-sr,sealBg=m.cls==='likely'?CREAM:m.cls==='cover'?'#2F5D6B':'#A22B2B',sealInk=m.cls==='likely'?'#540B0E':CREAM;
-  x.save();x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=24;x.shadowOffsetY=8;x.fillStyle=sealBg;x.beginPath();x.arc(scx,scy,sr,0,7);x.fill();x.restore();
-  x.strokeStyle=m.cls==='likely'?'#540B0E':CREAM;x.lineWidth=6;x.beginPath();x.arc(scx,scy,sr,0,7);x.stroke();
-  x.fillStyle=sealInk;x.textAlign='center';let sf=44;x.font=`900 ${sf}px Archivo,sans-serif`;while(x.measureText(m.a.toUpperCase()).width>206&&sf>18){sf-=2;x.font=`900 ${sf}px Archivo,sans-serif`}
-  x.fillText(m.a.toUpperCase(),scx,scy+4);x.font='500 15px "DM Mono",monospace';sp('1px');x.fillText(fitText(x,m.b.toUpperCase(),206),scx,scy+40);sp('0px');x.textAlign='left';
-  /* lower left: where it came from */
-  x.fillStyle=CREAM;x.font='500 22px "DM Mono",monospace';sp('4px');x.globalAlpha=.7;x.fillText('STRAIGHT FROM MY',L,H-56-62+24);x.globalAlpha=1;sp('0px');
-  x.font='900 40px Archivo,sans-serif';x.fillText('MEMORY WAX',L,H-56-62+62);
+  /* the seal, stamped bottom right, clear of the cover */
+  cardStamp(x,Rr-120-6,H-58-120,120,{bg:m.cls==='likely'?CREAM:m.cls==='cover'?'#2F5D6B':'#A22B2B',ink:m.cls==='likely'?'#540B0E':CREAM,main:m.a.toUpperCase(),sub:m.b.toUpperCase(),seed:[...String(r.t||'')].reduce((h,ch)=>(h*31+ch.charCodeAt(0))|0,r.id||1)});
+  await cardByline(x,H,'#540B0E');
   return new Promise(res=>c.toBlob(res,'image/png'));
 }
 function shareRecord(id){
@@ -3974,7 +3980,7 @@ async function cardBlob(){
     x.font='700 44px Archivo,sans-serif';x.fillText(r[0].length>26?r[0].slice(0,25)+'…':r[0],150,y);
     x.font='400 34px Archivo,sans-serif';x.textAlign='right';x.globalAlpha=.75;x.fillText(r[1].length>22?r[1].slice(0,21)+'…':r[1],W-72,y);x.textAlign='left';x.globalAlpha=1;y+=96});
   if(q){x.font='italic 68px "Instrument Serif",Georgia,serif';wrapText(x,q,72,Math.max(y+80,1000),W-144-330,76,4)}
-  x.font='500 26px "DM Mono",monospace';x.globalAlpha=.85;x.fillText(n.guests?n.guests+' GUESTS':'',72,H-70);x.globalAlpha=1;await cardLogo(x,W,H,T.b);if(!n.guests)await cardByline(x,H,T.b);
+  x.font='500 26px "DM Mono",monospace';x.globalAlpha=.85;x.fillText(n.guests?n.guests+' GUESTS':'',72,H-160);x.globalAlpha=1;await cardLogo(x,W,H,T.b);await cardByline(x,H,T.b);
   return new Promise(res=>c.toBlob(res,'image/png'));
 }
 function openNight(si){
