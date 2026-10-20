@@ -2043,7 +2043,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.48.3 · rubber stamp';
+const BUILD='0.48.4 · clean seal';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3346,19 +3346,14 @@ function recFact(r){
   if(yr>1900&&yr<=new Date().getFullYear())return yr===new Date().getFullYear()?'Pressed this year.':`This record is ${new Date().getFullYear()-yr} years old.`;
   return '';
 }
-/* the seal as a rubber stamp: tilted, a double ring, and worn ink (specks of the card show through; the same record always wears the same way) */
-function cardStamp(x,cx,cy,r,o){
-  const S=Math.ceil(r*2+60),c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d'),m=S/2;
-  g.fillStyle=o.bg;g.beginPath();g.arc(m,m,r,0,7);g.fill();
-  g.strokeStyle=o.ink;g.lineWidth=6;g.beginPath();g.arc(m,m,r-7,0,7);g.stroke();
-  g.lineWidth=2.5;g.setLineDash([2,9]);g.beginPath();g.arc(m,m,r-28,0,7);g.stroke();g.setLineDash([]);
-  g.fillStyle=o.ink;g.textAlign='center';let sf=44;g.font=`900 ${sf}px Archivo,sans-serif`;
-  while(g.measureText(o.main).width>r*1.72&&sf>18){sf-=2;g.font=`900 ${sf}px Archivo,sans-serif`}
-  g.fillText(o.main,m,m+4);g.font='500 15px "DM Mono",monospace';if('letterSpacing' in g)g.letterSpacing='1px';g.fillText(fitText(g,o.sub,r*1.72),m,m+40);
-  let a=(o.seed|0)||7;const rnd=()=>((a=Math.imul(a,1664525)+1013904223)>>>0)/4294967296;
-  g.globalCompositeOperation='destination-out';g.fillStyle='#000';
-  for(let i=0;i<300;i++){const t=rnd()*6.283,d=Math.sqrt(rnd())*r;g.globalAlpha=.22+rnd()*.5;g.beginPath();g.arc(m+Math.cos(t)*d,m+Math.sin(t)*d,.7+rnd()*2.4,0,7);g.fill()}
-  x.save();x.shadowColor='rgba(0,0,0,.4)';x.shadowBlur=22;x.shadowOffsetY=8;x.translate(cx,cy);x.rotate(-.17);x.drawImage(c,-m,-m);x.restore();
+/* the state seal on a record card: a clean circle */
+function cardSeal(x,cx,cy,r,o){
+  x.save();x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=24;x.shadowOffsetY=8;x.fillStyle=o.bg;x.beginPath();x.arc(cx,cy,r,0,7);x.fill();x.restore();
+  x.strokeStyle=o.ink;x.lineWidth=6;x.beginPath();x.arc(cx,cy,r,0,7);x.stroke();
+  x.fillStyle=o.ink;x.textAlign='center';let sf=44;x.font=`900 ${sf}px Archivo,sans-serif`;
+  while(x.measureText(o.main).width>r*1.72&&sf>18){sf-=2;x.font=`900 ${sf}px Archivo,sans-serif`}
+  x.fillText(o.main,cx,cy+4);x.font='500 15px "DM Mono",monospace';if('letterSpacing' in x)x.letterSpacing='1px';x.fillText(fitText(x,o.sub,r*1.72),cx,cy+40);
+  if('letterSpacing' in x)x.letterSpacing='0px';x.textAlign='left';
 }
 /* a shareable card for a confirmed pressing */
 async function pressingCard(r){
@@ -3384,8 +3379,8 @@ async function pressingCard(r){
   rows.forEach(([k,v])=>{x.fillStyle=GOLD;x.font='500 22px "DM Mono",monospace';sp('3px');x.fillText(k,rx,ry);sp('0px');x.fillStyle=CREAM;x.font='700 40px Archivo,sans-serif';x.fillText(fitText(x,String(v),Rr-rx),rx,ry+44);ry+=pitch});
   /* the one-line fact, in the pale gold */
   const fact=recFact(r);if(fact){x.fillStyle=CREAM;x.font='italic 50px "Instrument Serif",Georgia,serif';wrapText(x,fact,L,cy+S+78,680,58,3)}
-  /* the seal, stamped bottom right, clear of the cover */
-  cardStamp(x,Rr-120-6,H-58-120,120,{bg:m.cls==='likely'?CREAM:m.cls==='cover'?'#2F5D6B':'#A22B2B',ink:m.cls==='likely'?'#540B0E':CREAM,main:m.a.toUpperCase(),sub:m.b.toUpperCase(),seed:[...String(r.t||'')].reduce((h,ch)=>(h*31+ch.charCodeAt(0))|0,r.id||1)});
+  /* the seal, bottom right, clear of the cover */
+  cardSeal(x,Rr-120,H-58-120,120,{bg:m.cls==='likely'?CREAM:m.cls==='cover'?'#2F5D6B':'#A22B2B',ink:m.cls==='likely'?'#540B0E':CREAM,main:m.a.toUpperCase(),sub:m.b.toUpperCase()});
   await cardByline(x,H,'#540B0E');
   return new Promise(res=>c.toBlob(res,'image/png'));
 }
