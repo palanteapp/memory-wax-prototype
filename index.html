@@ -1500,6 +1500,12 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 
     <div class="backdrop" id="backdrop"></div>
 
+    <div class="sheet" id="sheet-confirm" role="dialog" aria-label="Confirm a pressing">
+      <h4 class="disp">Confirm a pressing</h4>
+      <p class="sub">Pick a record, then shoot its deadwax. The etching names the exact pressing.</p>
+      <div id="confirmList"></div>
+    </div>
+
     <div class="sheet" id="sheet-view" role="dialog" aria-label="Sort, filter and layout">
       <h4 class="disp">View</h4>
       <div class="vrow"><span>Sort</span><button class="sortb" id="sortBtn"></button></div>
@@ -2011,7 +2017,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.44.2 · no zoom';
+const BUILD='0.45.0 · confirm list';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3267,10 +3273,17 @@ function askRemoveRecords(ids){
   askSure({title:n===1?'Remove this record?':`Remove ${n} records?`,body:(n===1?`“${rs[0].t}” by ${rs[0].a}. `:nameList(rs.map(r=>r.t))+'. ')+(n===1?RM_BODY:RM_BODY.replace('It leaves','They leave').replace('it is on','they are on').replace('for it','for them').replace('still has it','still has them')),yes:n===1?'Remove record':`Remove ${n} records`,
     go:()=>{const wasReveal=st.screen==='reveal';removeRecords(rs.map(r=>r.id));st.sel=null;if(wasReveal)go('collection');else renderCollection();toast(n===1?`Removed “${rs[0].t}” from your collection.`:`Removed ${n} records from your collection.`)}});
 }
+/* confirming a pressing compares the etched runout with Discogs' listings (or our own index), so it only works when one of them is set up */
+const canConfirm=()=>DEMO||!!(dgTok()||IDX);
+function openConfirm(){
+  const rs=own().filter(r=>r.c!=='confirmed').sort((a,b)=>(a.c==='likely'?0:1)-(b.c==='likely'?0:1)||(b.ord||0)-(a.ord||0));
+  $('#confirmList').innerHTML=rs.slice(0,30).map(r=>`<button class="opt-card" data-dwscan="${r.id}"><b>${esc(r.t)}</b><span>${esc(r.a)} · ${stLabel[r.c]||''}</span></button>`).join('')+(rs.length>30?`<p class="fine2">And ${rs.length-30} more. Confirm these first.</p>`:'')||'<p class="empty" style="padding:0">Every record is confirmed.</p>';
+  openSheet('confirm');
+}
 /* the count line carries one small fact about your shelf, a different one each day */
 function colStory(all,conf){
   const base=`${all.length} record${all.length===1?'':'s'}`,loose=all.length-conf,F=[`${base} · ${conf} confirmed`];
-  if(loose>0)F.push(`${base} · ${loose} left to confirm`);
+  if(loose>0&&canConfirm())F.push(`${base} · ${loose} left to confirm`);
   const nw=all.slice().sort((a,b)=>(b.ord||0)-(a.ord||0))[0];if(nw&&all.length>1)F.push(`${base} · newest: ${nw.t.length>15?nw.t.slice(0,14)+'…':nw.t}`);
   const wk=Date.now()-7*864e5;let sp=0;all.forEach(r=>((st.copies[r.id]||{}).plays||[]).forEach(x=>{if(x.at>wk)sp++}));if(sp>0)F.push(`${base} · ${sp} spin${sp===1?'':'s'} this week`);
   const ys=all.map(r=>+r.y).filter(y=>y>1900);if(ys.length>1){const o=Math.min(...ys);F.push(`${base} · oldest from ${o}`);const dc={};ys.forEach(y=>{const d=Math.floor(y/10)*10;dc[d]=(dc[d]||0)+1});const top=Object.entries(dc).sort((a,b)=>b[1]-a[1])[0];if(top&&top[1]>1)F.push(`${base} · most from the ${top[0]}s`)}
@@ -3296,8 +3309,8 @@ function renderCollection(){
   g.innerHTML=!items.length?'<p class="empty">Nothing matches. Try another word or filter.</p>':!asList?items.map(x=>tileHTML(x.r)).join(''):
     items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${esc(r.t)}</b><span>${esc(r.a)} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${esc(r.t)} to a shelf">+</button></div>`).join('');
   const loose=all.filter(r=>r.c!=='confirmed').length;
-  $('#nudge').innerHTML=st.nudgeOff?'':`<div class="nudgew">${backupStale()?`<button class="nudge n2" data-set="backup"><span>${lastBackupAt()?'Time for a backup':'Back up your collection'}</span><i>Back up ›</i></button>`:loose?`<button class="nudge" data-nudge="1"><span>${loose} could be confirmed</span><i>Scan ›</i></button>`:''}<button class="nx" data-nudgex="1" aria-label="Hide this for now">×</button></div>`;
-  if(!backupStale()&&!loose||st.colTab!==0||st.sel||empty)$('#nudge').innerHTML='';
+  $('#nudge').innerHTML=st.nudgeOff?'':`<div class="nudgew">${backupStale()?`<button class="nudge n2" data-set="backup"><span>${lastBackupAt()?'Time for a backup':'Back up your collection'}</span><i>Back up ›</i></button>`:loose&&canConfirm()?`<button class="nudge" data-nudge="1"><span>${loose} could be confirmed</span><i>Choose ›</i></button>`:''}<button class="nx" data-nudgex="1" aria-label="Hide this for now">×</button></div>`;
+  if(!backupStale()&&!(loose&&canConfirm())||st.colTab!==0||st.sel||empty)$('#nudge').innerHTML='';
   renderShelves();renderWants();
   $$('#colTabs button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.t===st.colTab)));
   $('#colTabs').style.setProperty('--i',st.colTab);
@@ -5918,7 +5931,7 @@ document.addEventListener('click',e=>{
     st.account=true;closeSheets();renderCollection();toast('You’re in. Everything you’ve scanned is backed up.');
     const f=pendAct;pendAct=null;if(f)setTimeout(f,450);return}
   if(t.dataset.acctopen){if(DEMO)gate(()=>{});else renderYourData().then(()=>openSheet('yourdata'));return}
-  if(t.dataset.nudge){closeSheets();setScanMode('deadwax');go('scan');return}
+  if(t.dataset.nudge){closeSheets();openConfirm();return}
   if(t.dataset.segtog){const id=+t.dataset.segtog;st.segOpen.has(id)?st.segOpen.delete(id):st.segOpen.add(id);renderCollection();return}
   if(t.dataset.presh){
     const k=t.dataset.presh,sid=+t.dataset.sid,sh=st.shelves.find(x=>x.id===sid);
