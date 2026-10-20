@@ -108,8 +108,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 .helpb.colh{top:112px;right:22px}
 .helpb.sceneh{top:66px;right:22px}
 .hero .helpb.lt{position:absolute;top:8px;right:16px;background:var(--cream);box-shadow:0 0 0 1.5px var(--ox);z-index:30}
+.hero .helpb.lt.shr{right:62px}
 .helpb.lt svg{stroke:var(--ox)}
-.hero .r-top{padding-right:50px}
+.hero .r-top{padding-right:96px;gap:10px}
+.hero .r-top span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hlp .hnow{background:rgba(84,11,14,.07);border-left:6px solid var(--ox);padding:12px 16px;margin:6px 0 18px}
 .hlp .hnow b{display:block;font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
 .hlp .hnow ul{margin:0;padding-left:18px}.hlp .hnow li{margin:5px 0;font-size:15.5px;line-height:1.3}
@@ -1371,6 +1373,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <section class="screen reveal" data-screen="reveal" id="reveal">
       <div class="scroll" id="repScroll">
         <div class="hero">
+          <button class="helpb lt shr" data-recshare="1" aria-label="Share this record"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M6 12v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6"/></svg></button>
           <button class="helpb lt" data-help="1" aria-label="How to use Memory Wax"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="3.6"/><path d="M5.9 5.9l3.5 3.5M14.6 14.6l3.5 3.5M18.1 5.9l-3.5 3.5M9.4 14.6l-3.5 3.5"/></svg></button>
           <div class="dup" id="dup" hidden><b>You already own this pressing.</b><span>Is this a second copy?</span><div class="btnrow"><button id="dupSecond">Yes, second copy</button><button class="alt" id="dupSame">Same one</button></div></div>
           <div class="dup" id="notown" hidden><b>Not in your collection yet.</b><span>Add it to start tracking it.</span><div class="btnrow"><button id="addOwn">Add to collection</button></div></div>
@@ -2030,7 +2033,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.46.2 · pressing card';
+const BUILD='0.47.0 · share a record';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3293,7 +3296,8 @@ async function pressingCard(r){
   x.fillStyle='#540B0E';x.fillRect(0,0,W,H);
   x.fillStyle=GOLD;x.beginPath();x.arc(985,95,215,0,7);x.fill();x.fillStyle='#540B0E';x.beginPath();x.arc(985,95,34,0,7);x.fill();
   x.fillStyle=CREAM;x.textBaseline='alphabetic';
-  x.font='500 28px "DM Mono",monospace';sp('5px');x.fillText('PRESSING CONFIRMED',L,100);sp('0px');
+  const mode=r.real?realModeOf(r):(MODEOF[r.c]||'confirmed'),m=MODES[mode]||MODES.confirmed,okc=r.c==='confirmed'||mode==='confirmed';
+  x.font='500 28px "DM Mono",monospace';sp('5px');x.fillText(okc?'PRESSING CONFIRMED':'FROM MY COLLECTION',L,100);sp('0px');
   /* the title, as large as fits on up to two lines */
   const words=String(r.t||'').toUpperCase().split(' ');let fs=190,lines;
   const wrap=f=>{x.font=`900 ${f}px Archivo,sans-serif`;if('fontStretch' in x)x.fontStretch='ultra-condensed';const out=[];let cur='';words.forEach(w=>{const t=cur?cur+' '+w:w;if(x.measureText(t).width>Rr-L&&cur){out.push(cur);cur=w}else cur=t});out.push(cur);return out};
@@ -3301,25 +3305,32 @@ async function pressingCard(r){
   let y=250;lines.forEach(l=>{x.fillText(l,L-4,y);y+=fs*.86});if('fontStretch' in x)x.fontStretch='normal';
   y-=fs*.86;x.fillStyle=GOLD;x.font='italic 56px "Instrument Serif",Georgia,serif';x.fillText(fitText(x,r.a||'',Rr-L),L,y+84);y+=84;x.fillStyle=CREAM;
   /* the seal */
-  const sy=y+300;x.fillStyle='#A22B2B';x.beginPath();x.arc(L+150,sy,150,0,7);x.fill();x.strokeStyle=CREAM;x.lineWidth=9;x.beginPath();x.arc(L+150,sy,150,0,7);x.stroke();
-  x.fillStyle=CREAM;x.textAlign='center';x.font='900 52px Archivo,sans-serif';if('fontStretch' in x)x.fontStretch='condensed';x.fillText('CONFIRMED',L+150,sy+4);if('fontStretch' in x)x.fontStretch='normal';
-  x.font='500 24px "DM Mono",monospace';sp('3px');x.fillText('MATRIX MATCH',L+150,sy+52);sp('0px');x.textAlign='left';
+  const sy=y+300,sealBg=m.cls==='likely'?CREAM:m.cls==='cover'?'#2F5D6B':'#A22B2B',sealInk=m.cls==='likely'?'#540B0E':CREAM;
+  x.fillStyle=sealBg;x.beginPath();x.arc(L+150,sy,150,0,7);x.fill();x.strokeStyle=m.cls==='likely'?'#540B0E':CREAM;x.lineWidth=9;x.beginPath();x.arc(L+150,sy,150,0,7);x.stroke();
+  x.fillStyle=sealInk;x.textAlign='center';let sf=52;x.font=`900 ${sf}px Archivo,sans-serif`;while(x.measureText(m.a.toUpperCase()).width>250&&sf>26){sf-=2;x.font=`900 ${sf}px Archivo,sans-serif`}
+  x.fillText(m.a.toUpperCase(),L+150,sy+4);x.font='500 22px "DM Mono",monospace';sp('3px');x.fillText(fitText(x,m.b.toUpperCase(),250),L+150,sy+52);sp('0px');x.textAlign='left';
   /* the facts */
-  const rows=[['LABEL',r.lab||R.lab],['CATALOG',r.cat||R.cat],['COUNTRY · YEAR',[r.ctry||R.ctry,r.y].filter(Boolean).join(' · ')],['FORMAT',r.fmt||R.fmt],['MATRIX',r.mx]].filter(a=>a[1]);
+  const rows=[['LABEL',r.lab||R.lab],['CATALOG',r.cat||R.cat],['COUNTRY · YEAR',(c0=>[c0,c0&&String(c0).includes(r.y)?'':r.y].filter(Boolean).join(' · '))(r.ctry||R.ctry)],['FORMAT',r.fmt||R.fmt],['MATRIX',okc?r.mx:'']].filter(a=>a[1]);
   let ry=sy-150;const rx=L+370;
   rows.forEach(([k,v])=>{x.fillStyle=GOLD;x.font='500 24px "DM Mono",monospace';sp('3px');x.fillText(k,rx,ry);sp('0px');x.fillStyle=CREAM;x.font='700 44px Archivo,sans-serif';x.fillText(fitText(x,String(v),Rr-rx),rx,ry+50);ry+=104});
   await cardLogo(x,W,H,'#540B0E',150);await cardByline(x,H,'#540B0E');
   return new Promise(res=>c.toBlob(res,'image/png'));
 }
-async function pressingShare(id){
-  const r=recOf(id),R=REP[id]||{},bits=[r.lab||R.lab,[r.ctry||R.ctry,r.y].filter(Boolean).join(' '),r.cat||R.cat,r.fmt||R.fmt].filter(Boolean);
-  try{cardShare(await pressingCard(r),'memory-wax-pressing.png',`${r.t} by ${r.a}. Pressing confirmed${bits.length?': '+bits.join(' · '):''}.\n\n${byLine()}`)}catch(e){toast('Couldn’t make the card.')}
+function shareRecord(id){
+  const r=recOf(id);if(!r)return;
+  if(r.c==='confirmed')return pressingShare(id);
+  const mode=r.real?realModeOf(r):(MODEOF[r.c]||'cover'),m=MODES[mode]||MODES.cover;
+  return pressingShare(id,`${r.t} by ${r.a}${r.y?' ('+r.y+')':''}. ${m.a}.\n\n${byLine()}`);
+}
+async function pressingShare(id,msg){
+  const r=recOf(id),R=REP[id]||{},bits=[r.lab||R.lab,(c0=>[c0,c0&&String(c0).includes(r.y)?'':r.y].filter(Boolean).join(' '))(r.ctry||R.ctry),r.cat||R.cat,r.fmt||R.fmt].filter(Boolean);
+  try{cardShare(await pressingCard(r),'memory-wax-pressing.png',msg||`${r.t} by ${r.a}. Pressing confirmed${bits.length?': '+bits.join(' · '):''}.\n\n${byLine()}`)}catch(e){toast('Couldn’t make the card.')}
 }
 /* a record that was Likely or Album only has just been confirmed by a deadwax read: stamp the seal and say which pressing it is */
 let momentT=null;
 function hideMoment(){const m=$('#moment');if(!m)return;m.classList.remove('on');clearTimeout(momentT);setTimeout(()=>{m.hidden=true},500)}
 function confirmMoment(r){
-  const R=REP[r.id]||{},bits=[r.lab||R.lab,[r.ctry||R.ctry,r.y].filter(Boolean).join(' '),r.cat||R.cat,r.fmt||R.fmt].filter(Boolean);
+  const R=REP[r.id]||{},bits=[r.lab||R.lab,(c0=>[c0,c0&&String(c0).includes(r.y)?'':r.y].filter(Boolean).join(' '))(r.ctry||R.ctry),r.cat||R.cat,r.fmt||R.fmt].filter(Boolean);
   setTimeout(()=>{
     if(st.rec!==r.id||st.screen!=='reveal')return;
     const b=$('#badge');b.classList.remove('stamp');void b.offsetWidth;if(!reduce)b.classList.add('stamp');haptic('success');
@@ -5841,7 +5852,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-colsearch],[data-colview],[data-clearf],[data-nudgex],[data-help],[data-door],[data-welcome],[data-me],[data-ac],[data-fr],[data-sitend],[data-sitdel],[data-sitpl],[data-amconnect],[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-recshare],[data-colsearch],[data-colview],[data-clearf],[data-nudgex],[data-help],[data-door],[data-welcome],[data-me],[data-ac],[data-fr],[data-sitend],[data-sitdel],[data-sitpl],[data-amconnect],[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
@@ -6011,6 +6022,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.addwant){const r=recOf(st.rec||1);if(!st.wants.some(w=>w.t===r.t&&w.a===r.a)){st.wants.push({t:r.t,a:r.a,note:[r.lab,r.y].filter(Boolean).join(' · ')||'Added from the record page',list:'None listed yet',alert:false,m:r.m||0});saveState();renderCollection();toast(`${r.t} added to your Dream Crate.`)}else toast('Already in your Dream Crate.');closeSheets();return}
   if(t.dataset.plus){gate(()=>openShelfSheet(+t.dataset.plus));return}
   if(t.dataset.open&&st.sel){const id=+t.dataset.open;if(st.sel.has(id))st.sel.delete(id);else st.sel.add(id);renderCollection();return}
+  if(t.dataset.recshare){shareRecord(st.rec||1);return}
   if(t.dataset.colsearch){if(st.searchOpen&&!st.q){st.searchOpen=false;renderCollection()}else openColSearch();return}
   if(t.dataset.colview){openSheet('view');return}
   if(t.dataset.clearf){st.filter='All';st.confOnly=false;st.q='';$('#search').value='';st.searchOpen=false;renderCollection();return}
@@ -6546,7 +6558,7 @@ const HELP_NOW={
     HI('add','The Add tab controls: the scan modes along the top, and Type it, the round button and Listen below')],
   collection:['How to use your collection',['The magnifier searches by title, artist, label, matrix or who played on it. You can also pull the list down. The ⋯ button sorts, filters and switches between grid and list. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones on your wish list.','Your year shows your listening so far. To name a song that’s playing, use Listen on the Add tab. The gear is Settings: backup, import and sync.'],
     HI('collection','The top of the Collection tab: search, the ⋯ menu, How to use, the gear, the count with Your year, and the three tabs')],
-  reveal:['How to read a record page',['The seal shows how sure we are. Tap How we know to see the evidence.','Tap any name in The Session to see what else they played on.','My Copy is private: grade, price, photos, memory. Add to shelf, Dream Crate and Memory are in the bar at the bottom.'],
+  reveal:['How to read a record page',['The seal shows how sure we are. Tap How we know to see the evidence.','Tap any name in The Session to see what else they played on.','My Copy is private: grade, price, photos, memory. Add to shelf, Dream Crate and Memory are in the bar at the bottom. The share button at the top makes a card of the record to send to a friend.'],
     HI('record','A record page with the cover and the Confirmed seal')+HI('actions','The bar at the bottom: Add to shelf, Dream Crate and Memory')],
   scene:['How to use Community',['Your name and photo go on the cards you share. Tap Edit to add three short answers about you.','Your sessions list every night Listen followed along. Rooms are plans for listening together. Live chat is coming.','To add friends, sign in, then invite someone with a link or find them by username.'],
     HI('community','The Community page: your profile strip, your sessions and Start listening')]
