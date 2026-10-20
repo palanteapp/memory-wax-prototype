@@ -1089,6 +1089,32 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .scan.roomy .vf[data-m=barcode] ~ .guide{top:596px}
 }
 .vf .corner{vector-effect:non-scaling-stroke}
+/* Collection: a calm header. Tools live behind the search and ⋯ buttons; the nudge floats low and slim. */
+#collection .gear,#collection .helpb.colh{top:62px;width:34px;height:34px}
+#collection .gear svg,#collection .helpb.colh svg{width:18px;height:18px}
+#collection .gear{right:22px}
+#collection .helpb.colh{right:64px}
+#collection .gear.colv{right:106px}
+#collection .gear.cols{right:148px}
+.fdot{position:absolute;top:2px;right:2px;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--ox)}
+#collection .hd.sm{padding-top:44px}
+.colline{display:flex;justify-content:space-between;align-items:baseline;gap:12px;max-width:none!important}
+.yrlink,.colline .yrlink{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
+.search[hidden]{display:none}
+#nudge{position:absolute;left:0;right:0;bottom:98px;z-index:30;pointer-events:none;padding:0 16px}
+#nudge .nudgew{pointer-events:auto;display:flex;align-items:center;margin-top:8px;border-radius:999px;background:rgba(42,5,8,.96);box-shadow:inset 0 0 0 1.5px rgba(224,159,62,.6)}
+.nudge,.nudge.n2{margin:0;width:auto;flex:1;min-width:0;background:none;color:var(--cream);padding:11px 6px 11px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-align:left}
+.nudge i,.nudge:not(.n2) i{background:none;color:var(--gold);padding:0;font-weight:500;font-size:11px;letter-spacing:.12em}
+.nx{width:34px;height:34px;flex:none;color:var(--cream);opacity:.7;font-size:20px;line-height:1}
+.sheet .vrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1.5px solid rgba(84,11,14,.18);font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.sheet .vrow .sortb{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ox)}
+.sheet .vlab{padding:14px 0 6px;border-top:1.5px solid rgba(84,11,14,.18);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+.sheet .chips{padding:2px 0 12px;flex-wrap:wrap;overflow:visible}
+.sheet .chip{color:var(--ox);box-shadow:inset 0 0 0 1.5px rgba(84,11,14,.4)}
+.sheet .chip[aria-pressed=true]{background:var(--ox);color:var(--cream)}
+.sheet .legend{padding:2px 0 16px;opacity:1;flex-wrap:wrap}
+.sheet .legend i{border-color:var(--ox)}.sheet .legend i.c{background:var(--ox)}.sheet .legend i.l{background:linear-gradient(90deg,var(--ox) 50%,transparent 50%)}
+
 
 .shutter{bottom:110px;width:64px;height:64px;box-shadow:0 0 0 4px var(--ox),0 0 0 7px var(--cream)}
 .shutter::after{inset:14px;border-width:3px}
@@ -1424,21 +1450,18 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <!-- Collection -->
     <section class="screen" data-screen="collection" id="collection">
       <div class="scroll" id="colScroll">
+        <button class="gear cols" id="colSearchBtn" data-colsearch="1" aria-label="Search your collection"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>
+        <button class="gear colv" id="colViewBtn" data-colview="1" aria-label="Sort, filter and layout"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18.5" cy="12" r="1.4"/></svg><u class="fdot" id="colDot" hidden></u></button>
         <button class="helpb colh" data-help="1" aria-label="How to use Memory Wax"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="3.6"/><path d="M5.9 5.9l3.5 3.5M14.6 14.6l3.5 3.5M18.1 5.9l-3.5 3.5M9.4 14.6l-3.5 3.5"/></svg></button>
         <button class="gear" data-set="settings" aria-label="Settings and data"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
-        <div class="hd sm"><h2 class="disp">Collection</h2><p id="colSub"></p><div class="hearrow"><button class="hearpill press" data-hear="open">What’s playing?</button><button class="hearpill yr press" data-year="open">Your year</button></div></div>
+        <div class="hd sm"><h2 class="disp">Collection</h2><p class="colline"><span id="colSub"></span><button class="yrlink" data-year="open">Your year ›</button></p></div>
         <div class="colbar"><div class="seg" id="colTabs" style="--i:0" role="group" aria-label="Collection view">
           <i class="thumb"></i><button aria-pressed="true" data-t="0">All records</button><button aria-pressed="false" data-t="1">Shelves</button><button aria-pressed="false" data-t="2">Dream Crate</button></div></div>
 
         <div id="v-all">
           <div id="firstRun" class="firstrun" hidden><span class="kick">Start here</span><h3 class="disp">Add your first album</h3><p>Scan it, type it in, or bring a list you already keep. We’ll do the rest.</p><button class="pill press" id="goScan">Scan an album</button><button class="pill press" id="goType" style="background:transparent;color:var(--cream);box-shadow:inset 0 0 0 1.5px var(--cream)">Type it in</button><button class="pill press" data-set="import" style="background:transparent;color:var(--cream);box-shadow:inset 0 0 0 1.5px var(--cream)">Import from Discogs</button></div>
           <div id="allBody">
-          <div id="nudge"></div>
-          <input class="search" id="search" type="search" placeholder="Search credits, labels, matrix, memories" aria-label="Search your collection" autocomplete="off">
-          <div class="chips" id="chips"></div>
-          <div class="ctrl"><button class="sortb" id="sortBtn"></button><button class="sortb" id="selBtn">Select</button>
-            <div class="seg" id="viewSeg" style="--i:0;--n:2" role="group" aria-label="Layout"><i class="thumb"></i><button aria-pressed="true" data-v="grid">Grid</button><button aria-pressed="false" data-v="list">List</button></div></div>
-          <div class="legend"><span><i class="c"></i>Confirmed</span><span><i class="l"></i>Likely</span><span><i></i>Album only</span><button class="legq" data-confhelp="1" aria-label="What do Confirmed, Likely and Album only mean?">?</button></div>
+          <input class="search" id="search" type="search" placeholder="Search credits, labels, matrix, memories" aria-label="Search your collection" autocomplete="off" hidden>
           <div class="rgrid" id="rgrid"></div>
           </div>
         </div>
@@ -1453,6 +1476,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
           <div id="wants" style="padding:4px 20px 0"></div>
         </div>
       </div>
+      <div id="nudge"></div>
     </section>
 
     <!-- Collectors -->
@@ -1474,6 +1498,18 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <div class="mini" id="miniNP" hidden><button class="mopen" data-npa="open" aria-label="Open the player"><span class="mart" id="miniArt"></span><span style="min-width:0"><b id="miniT"></b><em id="miniA"></em></span></button><button class="mtog" id="miniTog" data-npa="toggle" aria-label="Pause"></button></div>
 
     <div class="backdrop" id="backdrop"></div>
+
+    <div class="sheet" id="sheet-view" role="dialog" aria-label="Sort, filter and layout">
+      <h4 class="disp">View</h4>
+      <div class="vrow"><span>Sort</span><button class="sortb" id="sortBtn"></button></div>
+      <div class="vrow"><span>Layout</span><div class="seg sheetseg" id="viewSeg" style="--i:0;--n:2;width:150px;margin:0" role="group" aria-label="Layout"><i class="thumb"></i><button aria-pressed="true" data-v="grid">Grid</button><button aria-pressed="false" data-v="list">List</button></div></div>
+      <div class="vlab">Show</div>
+      <div class="chips" id="chips"></div>
+      <div class="vrow"><span>Pick several records</span><button class="sortb" id="selBtn">Select</button></div>
+      <div class="vlab">What the dots mean</div>
+      <div class="legend"><span><i class="c"></i>Confirmed</span><span><i class="l"></i>Likely</span><span><i></i>Album only</span><button class="legq" data-confhelp="1" aria-label="What do Confirmed, Likely and Album only mean?">?</button></div>
+      <button class="go press" data-close="1">Done</button>
+    </div>
 
     <div class="sheet" id="sheet-cands" role="dialog" aria-label="Which pressing do you have">
       <h4 class="disp">Which one do you have?</h4>
@@ -1974,7 +2010,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.43.1 · keyboard fit';
+const BUILD='0.44.0 · quiet collection';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2014,6 +2050,16 @@ function openSheet(id){
   if(id==='credit'){if(stack)st.ret='listen';else if(!$('#sheet-credit').classList.contains('on'))st.ret=null}else if(id!=='listen')st.ret=null;
   if(id==='credit')$('#sheet-credit').classList.toggle('stk',stack);
   $$('.sheet.on').forEach(x=>{if(x.id!=='sheet-'+id&&!(stack&&x.id==='sheet-listen'))x.classList.remove('on')});$('#backdrop').classList.add('on');$('#sheet-'+id).classList.add('on')}
+/* search sits behind the magnifier, or a pull down at the top of the list */
+function openColSearch(){
+  if(st.colTab!==0){st.colTab=0}
+  st.searchOpen=true;renderCollection();const sc=$('#colScroll');if(sc)sc.scrollTop=0;
+  setTimeout(()=>{const i=$('#search');i&&i.focus()},60);
+}
+{const sc=$('#colScroll');let y0=null;
+ sc.addEventListener('touchstart',e=>{y0=sc.scrollTop<=0?e.touches[0].clientY:null},{passive:true});
+ sc.addEventListener('touchmove',e=>{if(y0==null||st.searchOpen||st.screen!=='collection'||!own().length)return;if(e.touches[0].clientY-y0>80&&sc.scrollTop<=0){y0=null;haptic&&haptic('tick');openColSearch()}},{passive:true});
+ $('#search').addEventListener('blur',()=>setTimeout(()=>{if(!$('#search').value.trim()&&st.searchOpen){st.searchOpen=false;renderCollection()}},200))}
 /* when the keyboard opens, iOS shifts the view; keep any open sheet inside the part of the screen that is still visible, so its title never slides under the status bar */
 function kbFit(vv){
   vv=vv||window.visualViewport;if(!vv)return;
@@ -3221,14 +3267,17 @@ function askRemoveRecords(ids){
 }
 function renderCollection(){
   const all=own(),conf=all.filter(r=>r.c==='confirmed').length,empty=!all.length;
-  $('#colSub').textContent=empty?'0 records':`${all.length} records · ${conf} confirmed pressings`;
+  $('#colSearchBtn').hidden=$('#colViewBtn').hidden=empty;
   $('#firstRun').hidden=!empty;$('#allBody').hidden=empty;
   const genres=['All',...new Set(all.map(r=>r.g).filter(Boolean))];
   $('#chips').innerHTML=genres.map(g=>`<button class="chip" data-chip="${g}" aria-pressed="${st.filter===g}">${g}</button>`).join('')+(RECS.some(r=>st.owned.has(r.id)&&IS7(r))?`<button class="chip" data-chip="45s" aria-pressed="${st.filter==='45s'}">45s</button>`:'')+`<button class="chip" data-conf aria-pressed="${st.confOnly}">Confirmed only</button>`;
   const q=st.q.trim().toLowerCase();
   let items=all.map(r=>({r,why:q?match(r,q):''})).filter(x=>x.why!==null&&(st.filter==='All'||(st.filter==='45s'?IS7(x.r):x.r.g===st.filter))&&(!st.confOnly||x.r.c==='confirmed'));
   items.sort(st.sort==='az'?(a,b)=>a.r.t.localeCompare(b.r.t):st.sort==='year'?(a,b)=>a.r.y-b.r.y:(a,b)=>b.r.ord-a.r.ord);
-  $('#sortBtn').textContent=`${items.length} shown · ${SORTS[st.sort]}`;$('#sortBtn').setAttribute('aria-label','Change sort order. Now: '+SORTS[st.sort]);
+  $('#sortBtn').textContent=SORTS[st.sort];
+  {const fil=st.filter!=='All'||st.confOnly||!!q;$('#colDot').hidden=!(st.filter!=='All'||st.confOnly||st.view==='list'||st.sort!=='recent');
+   $('#colSub').innerHTML=empty?'0 records':fil?`${items.length} of ${all.length} shown · <button class="yrlink" data-clearf="1">Clear</button>`:`${all.length} records · ${conf} confirmed`;
+   $('#search').hidden=!(st.searchOpen||q);}$('#sortBtn').setAttribute('aria-label','Change sort order. Now: '+SORTS[st.sort]);
   if(st.colTab!==0||empty)st.sel=null;
   $('#selBtn').textContent=st.sel?'Cancel':'Select';$('#selBtn').hidden=!all.length;
   $('#selBar').hidden=!(st.sel&&st.screen==='collection');$('#selN').textContent=st.sel?`${st.sel.size} selected`:'';
@@ -3236,7 +3285,8 @@ function renderCollection(){
   g.innerHTML=!items.length?'<p class="empty">Nothing matches. Try another word or filter.</p>':!asList?items.map(x=>tileHTML(x.r)).join(''):
     items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${esc(r.t)}</b><span>${esc(r.a)} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${esc(r.t)} to a shelf">+</button></div>`).join('');
   const loose=all.filter(r=>r.c!=='confirmed').length;
-  $('#nudge').innerHTML=(backupStale()?`<button class="nudge n2" data-set="backup"><div><b>${lastBackupAt()?'It’s been a while since your last backup':'Your collection lives on this phone'}</b><span>Save a backup file. It takes a few seconds.</span></div><i>Back up</i></button>`:'')+(loose?`<button class="nudge" data-nudge="1"><div><b>${loose} could be confirmed</b><span>Scan their deadwax to name the exact pressing.</span></div><i>Scan</i></button>`:'');
+  $('#nudge').innerHTML=st.nudgeOff?'':`<div class="nudgew">${backupStale()?`<button class="nudge n2" data-set="backup"><span>${lastBackupAt()?'Time for a backup':'Back up your collection'}</span><i>Back up ›</i></button>`:loose?`<button class="nudge" data-nudge="1"><span>${loose} could be confirmed</span><i>Scan ›</i></button>`:''}<button class="nx" data-nudgex="1" aria-label="Hide this for now">×</button></div>`;
+  if(!backupStale()&&!loose||st.colTab!==0||st.sel||empty)$('#nudge').innerHTML='';
   renderShelves();renderWants();
   $$('#colTabs button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.t===st.colTab)));
   $('#colTabs').style.setProperty('--i',st.colTab);
@@ -5710,7 +5760,7 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-help],[data-door],[data-welcome],[data-me],[data-ac],[data-fr],[data-sitend],[data-sitdel],[data-sitpl],[data-amconnect],[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-colsearch],[data-colview],[data-clearf],[data-nudgex],[data-help],[data-door],[data-welcome],[data-me],[data-ac],[data-fr],[data-sitend],[data-sitdel],[data-sitpl],[data-amconnect],[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
@@ -5880,7 +5930,11 @@ document.addEventListener('click',e=>{
   if(t.dataset.addwant){const r=recOf(st.rec||1);if(!st.wants.some(w=>w.t===r.t&&w.a===r.a)){st.wants.push({t:r.t,a:r.a,note:[r.lab,r.y].filter(Boolean).join(' · ')||'Added from the record page',list:'None listed yet',alert:false,m:r.m||0});saveState();renderCollection();toast(`${r.t} added to your Dream Crate.`)}else toast('Already in your Dream Crate.');closeSheets();return}
   if(t.dataset.plus){gate(()=>openShelfSheet(+t.dataset.plus));return}
   if(t.dataset.open&&st.sel){const id=+t.dataset.open;if(st.sel.has(id))st.sel.delete(id);else st.sel.add(id);renderCollection();return}
-  if(t.id==='selBtn'){st.sel=st.sel?null:new Set();renderCollection();return}
+  if(t.dataset.colsearch){if(st.searchOpen&&!st.q){st.searchOpen=false;renderCollection()}else openColSearch();return}
+  if(t.dataset.colview){openSheet('view');return}
+  if(t.dataset.clearf){st.filter='All';st.confOnly=false;st.q='';$('#search').value='';st.searchOpen=false;renderCollection();return}
+  if(t.dataset.nudgex){st.nudgeOff=true;renderCollection();return}
+  if(t.id==='selBtn'){const on=!st.sel;st.sel=st.sel?null:new Set();renderCollection();if(on)closeSheets();return}
   if(t.dataset.selcancel){st.sel=null;renderCollection();return}
   if(t.dataset.selrm){if(!st.sel||!st.sel.size){toast('Tap the records you want to remove.');return}askRemoveRecords([...st.sel]);return}
   if(t.dataset.rmrec){askRemoveRecords([st.rec]);return}
@@ -6409,8 +6463,8 @@ const HI=(n,alt)=>`<img class="hvimg" src="assets/help/${n}.jpg" alt="${alt}" lo
 const HELP_NOW={
   scan:['How to add a record',['Pick Barcode, Label, Deadwax or Cover along the top, then tap the round button. Barcode, Label and Cover can start reading on their own.','No barcode? Tap Type it. An artist and a title is enough. Already keep a list? Settings has Import from Discogs and Upload a CSV.','The ? under the viewfinder shows how to shoot the deadwax. Listen names a song playing in the room.'],
     HI('add','The Add tab controls: the scan modes along the top, and Type it, the round button and Listen below')],
-  collection:['How to use your collection',['All records: search by title, artist, label, matrix or who played on it. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones on your wish list.','What’s playing? names a song. Your year shows your listening so far. The gear is Settings: backup, import and sync.'],
-    HI('collection','The top of the Collection tab: the gear, the How to use button, What’s playing, Your year and the three tabs')],
+  collection:['How to use your collection',['The magnifier searches by title, artist, label, matrix or who played on it. You can also pull the list down. The ⋯ button sorts, filters and switches between grid and list. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones on your wish list.','Your year shows your listening so far. To name a song that’s playing, use Listen on the Add tab. The gear is Settings: backup, import and sync.'],
+    HI('collection','The top of the Collection tab: search, the ⋯ menu, How to use, the gear, the count with Your year, and the three tabs')],
   reveal:['How to read a record page',['The seal shows how sure we are. Tap How we know to see the evidence.','Tap any name in The Session to see what else they played on.','My Copy is private: grade, price, photos, memory. Add to shelf, Dream Crate and Memory are in the bar at the bottom.'],
     HI('record','A record page with the cover and the Confirmed seal')+HI('actions','The bar at the bottom: Add to shelf, Dream Crate and Memory')],
   scene:['How to use Community',['Your name and photo go on the cards you share. Tap Edit to add three short answers about you.','Your sessions list every night Listen followed along. Rooms are plans for listening together. Live chat is coming.','To add friends, sign in, then invite someone with a link or find them by username.'],
