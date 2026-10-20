@@ -1061,7 +1061,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .hd>*{position:relative}
 .colbar,#v-all,#v-shelves,#v-wants,#sceneBody{position:relative;z-index:1}
 .arrive::before{content:"";position:absolute;left:0;right:0;bottom:150px;height:360px;background:var(--red);opacity:.55;
-  -webkit-mask-image:var(--ht-bc);mask-image:var(--ht-bc);-webkit-mask-size:390px 360px;mask-size:390px 360px;-webkit-mask-position:center bottom;mask-position:center bottom;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+  -webkit-mask-image:var(--ht-bc);mask-image:var(--ht-bc);-webkit-mask-size:1100px 360px;mask-size:1100px 360px;-webkit-mask-position:center bottom;mask-position:center bottom;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
 .vf::after{content:"";position:absolute;left:50%;top:50%;width:304px;height:304px;margin:-152px 0 0 -152px;border-radius:50%;background:var(--ox);opacity:.5;z-index:-1;
   -webkit-mask-image:var(--ht-br);mask-image:var(--ht-br);-webkit-mask-size:304px 304px;mask-size:304px 304px;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
 .vf[data-m=cover]::after,.vf[data-m=barcode]::after{opacity:0}
@@ -1094,8 +1094,8 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 /* the splash's dotted gradient, on the surfaces that felt flat */
 .sheet{background-image:var(--hts-sheet);background-repeat:no-repeat;background-position:left bottom;background-size:300px 240px}
 .welcome::before{content:"";position:absolute;left:0;right:0;bottom:150px;height:360px;background:var(--red);opacity:.55;pointer-events:none;
-  -webkit-mask-image:var(--ht-bc);mask-image:var(--ht-bc);-webkit-mask-size:390px 360px;mask-size:390px 360px;-webkit-mask-position:center bottom;mask-position:center bottom;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
-#collection,#scene{background-image:var(--hts-dark);background-repeat:no-repeat;background-position:center bottom;background-size:390px 380px}
+  -webkit-mask-image:var(--ht-bc);mask-image:var(--ht-bc);-webkit-mask-size:1100px 360px;mask-size:1100px 360px;-webkit-mask-position:center bottom;mask-position:center bottom;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+#collection,#scene{background-image:var(--hts-dark);background-repeat:no-repeat;background-position:center bottom;background-size:1100px 380px}
 
 /* the moment a scan upgrades a record to Confirmed */
 .moment{position:absolute;left:16px;right:16px;top:60px;z-index:95;display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px;padding:14px 16px;background:var(--cream);color:var(--ox);border:2.5px solid var(--ox);border-radius:0 18px 0 0;cursor:pointer;box-shadow:8px 8px 0 rgba(0,0,0,.35);text-align:left;transform:translateY(-150%);opacity:0;transition:transform .5s var(--ease-out),opacity .25s ease-out}
@@ -1241,9 +1241,10 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .art .covbtn{position:absolute;left:8px;bottom:8px;z-index:4;padding:6px 10px;border-radius:999px;background:var(--ox);color:var(--cream);font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transform:rotate(3deg)}
 .art .covbtn[hidden]{display:none}
 /* glass chrome: the collection's view switcher stays put and the list scrolls under it */
-#collection .colbar{position:sticky;top:30px;z-index:22;padding:10px 20px 10px;background:rgba(84,11,14,.5);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 1px 0 rgba(255,243,176,.1)}
+#collection .colbar{position:sticky;top:30px;z-index:22;padding:10px 20px 34px;margin-bottom:-24px}
+#collection .colbar::before{content:"";position:absolute;left:0;right:0;top:-90px;bottom:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .2s ease-out;background:linear-gradient(180deg,rgba(42,5,8,.94) 0,rgba(42,5,8,.94) 70%,rgba(42,5,8,0) 100%)}
+#collection .colbar.stuck::before{opacity:1}
 @media (prefers-reduced-transparency:reduce){
-  #collection .colbar{background:var(--ox);-webkit-backdrop-filter:none;backdrop-filter:none}
   .screen:not(.arrive):not(.scan)::before{-webkit-backdrop-filter:none;backdrop-filter:none;background:linear-gradient(var(--ox) 45%,rgba(84,11,14,.6) 70%,transparent)}
   .screen.reveal::before{background:linear-gradient(var(--cream) 62%,transparent)!important}
 }
@@ -1905,12 +1906,12 @@ function halftone(w,h,ox,oy,maxD,step=9,pow=1.1,fill='#000'){
   const R=document.documentElement.style;
   R.setProperty('--ht-tr',halftone(390,360,390,0,340));
   R.setProperty('--ht-bl',halftone(300,240,0,240,250));
-  R.setProperty('--ht-bc',halftone(390,360,195,360,330,10));
+  R.setProperty('--ht-bc',halftone(1100,360,550,360,330,10));
   R.setProperty('--ht-br',halftone(304,304,304,304,260));
   R.setProperty('--ht-sun',halftone(196,196,20,178,185,8));
   /* coloured fields for surfaces that are flat: cream sheets get faint oxblood dots, the dark screens get red ones rising from the bottom */
   R.setProperty('--hts-sheet',halftone(300,240,0,240,260,9,1.1,'rgba(84,11,14,.1)'));
-  R.setProperty('--hts-dark',halftone(390,380,195,380,340,10,1.1,'rgba(158,42,43,.5)'));
+  R.setProperty('--hts-dark',halftone(1100,380,550,380,340,10,1.1,'rgba(158,42,43,.5)'));
 })();
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -2042,7 +2043,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.48.0 · dots, covers, facts';
+const BUILD='0.48.1 · smooth dots';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3398,6 +3399,8 @@ function confirmMoment(r){
     st.momentRec=r.id;const m=$('#moment');m.hidden=false;void m.offsetWidth;m.classList.add('on');clearTimeout(momentT);momentT=setTimeout(hideMoment,8000);
   },reduce?200:1800);
 }
+/* the collection's tab row gets its soft backing only once the list is scrolling under it */
+{const sc=$('#collection .scroll'),cb=$('#collection .colbar');if(sc&&cb){let q=0;sc.addEventListener('scroll',()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;cb.classList.toggle('stuck',cb.getBoundingClientRect().top-(cb.previousElementSibling||cb).getBoundingClientRect().bottom>1)})},{passive:true})}}
 $('#moment').addEventListener('click',e=>{if(e.target.closest('#momentShare')){if(st.momentRec){clearTimeout(momentT);pressingShare(st.momentRec).finally(()=>{momentT=setTimeout(hideMoment,2500)})}return}hideMoment()});
 /* confirming a pressing compares the etched runout with Discogs' listings (or our own index), so it only works when one of them is set up */
 const canConfirm=()=>DEMO||!!(dgTok()||IDX);
