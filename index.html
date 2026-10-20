@@ -1494,9 +1494,9 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     </div>
 
     <div class="sheet" id="sheet-tips" role="dialog" aria-label="How to shoot the deadwax">
-      <h4 class="disp">How to shoot the deadwax</h4>
-      <p class="sub">It’s the smooth ring between the last groove and the label. The matrix is etched into it.</p>
-      <svg class="diag" viewBox="0 0 340 150" role="img" aria-label="Left: a record with the smooth ring near the label highlighted. Right: a phone tilted about 30 degrees over a record, with a lamp lighting it from the side.">
+      <h4 class="disp" id="tipH">How to shoot the deadwax</h4>
+      <p class="sub" id="tipSub">It’s the smooth ring between the last groove and the label. The matrix is etched into it.</p>
+      <div id="tipDiag"><svg class="diag" viewBox="0 0 340 150" role="img" aria-label="Left: a record with the smooth ring near the label highlighted. Right: a phone tilted about 30 degrees over a record, with a lamp lighting it from the side.">
         <circle cx="76" cy="75" r="62" fill="#2A0508"/>
         <circle cx="76" cy="75" r="52" fill="none" stroke="rgba(255,243,176,.18)"/>
         <circle cx="76" cy="75" r="44" fill="none" stroke="rgba(255,243,176,.18)"/>
@@ -1513,9 +1513,9 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
         <text x="300" y="104" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1">6–8 IN</text>
         <text x="186" y="104" font-family="DM Mono,monospace" font-size="9" fill="#E09F3E" letter-spacing="1">LAMP</text>
         <text x="204" y="144" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1">TILT ≈ 30°</text>
-      </svg>
-      <div class="cap2"><div><b>1</b>Find the smooth ring</div><div><b>2</b>Light from the side</div></div>
-      <ol class="tips"><li>Hold the phone 6 to 8 inches away.</li><li>Tilt about 30° so a lamp or window skims across the etching.</li><li>Keep steady until it locks. Don’t cover the ring with your thumb.</li></ol>
+      </svg></div>
+      <div class="cap2" id="tipCap"><div><b>1</b>Find the smooth ring</div><div><b>2</b>Light from the side</div></div>
+      <ol class="tips" id="tipOl"><li>Hold the phone 6 to 8 inches away.</li><li>Tilt about 30° so a lamp or window skims across the etching.</li><li>Keep steady until it locks. Don’t cover the ring with your thumb.</li></ol>
       <button class="go press" id="tipGo">Got it</button>
     </div>
 
@@ -1974,7 +1974,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.42.1 · wish list';
+const BUILD='0.43.0 · tips per mode';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2621,7 +2621,7 @@ function resetScan(){
   const S=SCAN[st.scanMode];
   camHi(false);maybeAuto();st.scanning=false;$('#shutter').disabled=false;$('#shutter').setAttribute('aria-label',S.aria);
   $('#vf').classList.remove('reading','locked');
-  setPrompt(S.prompt);$('#guide').textContent=S.guide;$('#lab1').textContent=S.lab;
+  $('#helpBtn').setAttribute('aria-label',TIPS&&TIPS[st.scanMode]?TIPS[st.scanMode].h:'How to scan');setPrompt(S.prompt);$('#guide').textContent=S.guide;$('#lab1').textContent=S.lab;
   $('#mx').textContent='· · ·';$('#ringtxt').textContent='· · · · · · · · · · · · · ·';setConf(0);updatePills();
 }
 function shake(){if(reduce)return;phone.classList.remove('shake');void phone.offsetWidth;phone.classList.add('shake')}
@@ -2681,16 +2681,49 @@ function finish(res){
   st.mode=dw?'confirmed':st.scanMode;
   setTimeout(()=>go('reveal'),reduce?250:1000);
 }
+/* one instruction sheet, filled for the scan mode you are on */
+var TIPS={
+  deadwax:{h:'How to shoot the deadwax',sub:'It’s the smooth ring between the last groove and the label. The matrix is etched into it.',svg:null,cap:['Find the smooth ring','Light from the side'],tips:['Hold the phone 6 to 8 inches away.','Tilt about 30° so a lamp or window skims across the etching.','Keep steady until it locks. Don’t cover the ring with your thumb.']},
+  barcode:{h:'How to scan the barcode',sub:'Look on the back cover or the inner sleeve. Most records after 1980 have one.',svg:`<svg class="diag" viewBox="0 0 340 150" role="img" aria-label="Left: the back of a record sleeve with the barcode highlighted. Right: a phone held level about six inches above a record.">
+<rect x="14" y="18" width="124" height="124" fill="#2A0508"/><rect x="22" y="28" width="60" height="7" fill="rgba(255,243,176,.22)"/><rect x="22" y="42" width="84" height="5" fill="rgba(255,243,176,.14)"/><rect x="22" y="53" width="72" height="5" fill="rgba(255,243,176,.14)"/>
+<rect x="62" y="78" width="66" height="38" fill="#FFF3B0"/><g fill="#540B0E"><rect x="68" y="86" width="2" height="22"/><rect x="74" y="86" width="1" height="22"/><rect x="78" y="86" width="3" height="22"/><rect x="82" y="86" width="1" height="22"/><rect x="86" y="86" width="2" height="22"/><rect x="90" y="86" width="3" height="22"/><rect x="94" y="86" width="1" height="22"/><rect x="98" y="86" width="2" height="22"/><rect x="102" y="86" width="1" height="22"/><rect x="106" y="86" width="3" height="22"/><rect x="110" y="86" width="2" height="22"/></g>
+<rect x="58" y="74" width="74" height="46" fill="none" stroke="#E09F3E" stroke-width="2.2" stroke-dasharray="5 3"/>
+<path d="M95 74 L95 52 L150 30" stroke="#E09F3E" stroke-width="1.8" fill="none"/><text x="152" y="28" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1.2">BARCODE</text>
+<rect x="196" y="117" width="132" height="5" fill="#FFF3B0"/><rect x="190" y="122" width="144" height="3" fill="rgba(255,243,176,.3)"/><g transform="translate(262 62) rotate(0)"><rect x="-32" y="-5" width="64" height="10" rx="3" fill="#9E2A2B" stroke="#FFF3B0" stroke-width="2"/><circle cx="-24" cy="0" r="2.4" fill="#FFF3B0"/></g><path d="M262 117 L262 84" stroke="#FFF3B0" stroke-width="1.5" stroke-dasharray="3 3"/><text x="272" y="104" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1.2">6 IN</text><text x="196" y="104" font-family="DM Mono,monospace" font-size="9" fill="#E09F3E" letter-spacing="1.2">LEVEL</text><text x="204" y="144" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1.2">GOOD LIGHT</text>
+</svg>`,cap:['Find the barcode','Hold it level'],tips:['Hold the phone about 6 inches away, level with the barcode.','Line the bars up inside the frame. It reads on its own.','Dim light? Move near a window or lamp. No barcode? Tap Type it.']},
+  label:{h:'How to read the label',sub:'It’s the paper circle in the middle of the record, with the label name and a catalog number.',svg:`<svg class="diag" viewBox="0 0 340 150" role="img" aria-label="Left: a record with the center label circled. Right: a phone held flat about six inches above a record.">
+<circle cx="76" cy="75" r="62" fill="#2A0508"/><circle cx="76" cy="75" r="50" fill="none" stroke="rgba(255,243,176,.18)"/><circle cx="76" cy="75" r="40" fill="none" stroke="rgba(255,243,176,.18)"/>
+<circle cx="76" cy="75" r="26" fill="#E09F3E"/><rect x="62" y="68" width="28" height="3" fill="#540B0E"/><rect x="66" y="75" width="20" height="3" fill="#540B0E"/><circle cx="76" cy="75" r="3" fill="#FFF3B0"/>
+<circle cx="76" cy="75" r="32" fill="none" stroke="#FFF3B0" stroke-width="2.4" stroke-dasharray="5 3"/>
+<path d="M98 53 L128 24" stroke="#E09F3E" stroke-width="1.8" fill="none"/><text x="131" y="26" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1.2">CENTER LABEL</text>
+<rect x="196" y="117" width="132" height="5" fill="#FFF3B0"/><rect x="190" y="122" width="144" height="3" fill="rgba(255,243,176,.3)"/><g transform="translate(262 62) rotate(0)"><rect x="-32" y="-5" width="64" height="10" rx="3" fill="#9E2A2B" stroke="#FFF3B0" stroke-width="2"/><circle cx="-24" cy="0" r="2.4" fill="#FFF3B0"/></g><path d="M262 117 L262 84" stroke="#FFF3B0" stroke-width="1.5" stroke-dasharray="3 3"/><text x="272" y="104" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1.2">6 IN</text><text x="196" y="104" font-family="DM Mono,monospace" font-size="9" fill="#E09F3E" letter-spacing="1.2">FLAT</text><text x="204" y="144" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1.2">NO GLARE</text>
+</svg>`,cap:['Find the label','Keep it flat'],tips:['Fill the circle in the frame and keep the phone flat above it.','Look for a catalog number, like BLP 1577, printed on the label.','Turn the record to avoid glare on the paper. Keep steady until it locks.']},
+  cover:{h:'How to frame the cover',sub:'The front of the sleeve, with the album title and artist.',svg:`<svg class="diag" viewBox="0 0 340 150" role="img" aria-label="Left: the front cover of a record framed by corner marks. Right: a phone held square-on above a record, with a lamp off to the side to avoid glare.">
+<rect x="26" y="22" width="112" height="112" fill="#1b2b46"/><rect x="40" y="36" width="60" height="8" fill="#FFF3B0" opacity=".9"/><rect x="40" y="50" width="40" height="5" fill="#E09F3E"/><circle cx="104" cy="98" r="18" fill="#E09F3E" opacity=".85"/>
+<g stroke="#FFF3B0" stroke-width="3" fill="none"><path d="M16 38V12H42"/><path d="M148 38V12H122"/><path d="M16 118V144H42"/><path d="M148 118V144H122"/></g>
+<path d="M120 22 L150 8" stroke="#E09F3E" stroke-width="1.8" fill="none"/><text x="154" y="12" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1.2">FRONT COVER</text>
+<rect x="196" y="117" width="132" height="5" fill="#FFF3B0"/><rect x="190" y="122" width="144" height="3" fill="rgba(255,243,176,.3)"/><g transform="translate(262 62) rotate(0)"><rect x="-32" y="-5" width="64" height="10" rx="3" fill="#9E2A2B" stroke="#FFF3B0" stroke-width="2"/><circle cx="-24" cy="0" r="2.4" fill="#FFF3B0"/></g><path d="M262 117 L262 84" stroke="#FFF3B0" stroke-width="1.5" stroke-dasharray="3 3"/><text x="272" y="104" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1.2">6 IN</text>
+<circle cx="206" cy="40" r="9" fill="#E09F3E"/><g stroke="#9E2A2B" stroke-width="3"><path d="M198 32 L214 48"/><path d="M214 32 L198 48"/></g><text x="186" y="66" font-family="DM Mono,monospace" font-size="9" fill="#E09F3E" letter-spacing="1.2">LAMP</text><text x="204" y="144" font-family="DM Mono,monospace" font-size="9" fill="#FFF3B0" letter-spacing="1.2">SQUARE ON</text>
+</svg>`,cap:['Frame the front','Avoid glare'],tips:['Fill the frame with the front cover, square on.','Tilt away from lamps and windows so there’s no glare.','Clear words work best. Plain cover? Try Barcode or Label instead.']}
+};
+TIPS.deadwax.svg=$('#tipDiag').innerHTML;
+function openTips(m){
+  const k=TIPS[m]||TIPS.deadwax;
+  $('#tipH').textContent=k.h;$('#tipSub').textContent=k.sub;$('#tipDiag').innerHTML=k.svg;
+  $('#tipCap').innerHTML=k.cap.map((c,i)=>`<div><b>${i+1}</b>${c}</div>`).join('');
+  $('#tipOl').innerHTML=k.tips.map(t=>`<li>${t}</li>`).join('');
+  $('#sheet-tips').setAttribute('aria-label',k.h);openSheet('tips');
+}
 $('#shutter').addEventListener('click',()=>{haptic('press');
   if(!st.camAsked){st.camAsked=true;camSave();openSheet('cam');return}
   if(st.scanMode==='barcode'){startBarcodeScan();return}
   if(st.scanMode==='label'){startLabelScan();return}
   if(!DEMO&&st.scanMode==='deadwax'){startDeadwaxScan();return}
   if(!DEMO&&st.scanMode==='cover'){startLabelScan('cover');return}
-  if(st.scanMode==='deadwax'&&!st.tipSeen){st.tipSeen=true;st.tipScan=true;$('#tipGo').textContent='Got it. Start scanning';openSheet('tips');return}
+  if(st.scanMode==='deadwax'&&!st.tipSeen){st.tipSeen=true;st.tipScan=true;$('#tipGo').textContent='Got it. Start scanning';openTips('deadwax');return}
   startScan();
 });
-$('#helpBtn').addEventListener('click',()=>{st.tipScan=false;$('#tipGo').textContent='Got it';openSheet('tips')});
+$('#helpBtn').addEventListener('click',()=>{st.tipScan=false;$('#tipGo').textContent='Got it';openTips(st.scanMode)});
 $('#tipGo').addEventListener('click',()=>{closeSheets();if(st.tipScan){st.tipScan=false;setTimeout(startScan,260)}});
 $$('#sheet-cands [data-pick]').forEach(b=>b.addEventListener('click',()=>{
   toast(b.dataset.pick==='B'?'Marked AS-77 stereo. The prototype shows the mono original either way.':'Marked A-77 mono.');
