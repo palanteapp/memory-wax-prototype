@@ -139,7 +139,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 .screen:not(.active){pointer-events:none}
 .scroll{position:absolute;inset:0;overflow-y:auto;padding:60px 0 210px;scrollbar-width:none}
 .scroll::-webkit-scrollbar{display:none}
-.screen:not(.arrive):not(.scan)::before{content:"";position:absolute;top:0;left:0;right:0;height:104px;z-index:20;pointer-events:none;background:linear-gradient(rgba(84,11,14,.8),rgba(84,11,14,.4) 60%,rgba(84,11,14,0));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);-webkit-mask-image:linear-gradient(#000 56%,transparent);mask-image:linear-gradient(#000 56%,transparent)}
+.screen:not(.arrive):not(.scan)::before{content:"";position:absolute;top:0;left:0;right:0;height:52px;z-index:20;pointer-events:none;background:linear-gradient(rgba(84,11,14,.7),rgba(84,11,14,0))}
 .screen.reveal::before{background:linear-gradient(rgba(255,243,176,.86),rgba(255,243,176,.4) 60%,rgba(255,243,176,0))!important}
 
 /* arrival: the record is the sun */
@@ -1974,7 +1974,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.43.0 · tips per mode';
+const BUILD='0.43.1 · keyboard fit';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2014,6 +2014,15 @@ function openSheet(id){
   if(id==='credit'){if(stack)st.ret='listen';else if(!$('#sheet-credit').classList.contains('on'))st.ret=null}else if(id!=='listen')st.ret=null;
   if(id==='credit')$('#sheet-credit').classList.toggle('stk',stack);
   $$('.sheet.on').forEach(x=>{if(x.id!=='sheet-'+id&&!(stack&&x.id==='sheet-listen'))x.classList.remove('on')});$('#backdrop').classList.add('on');$('#sheet-'+id).classList.add('on')}
+/* when the keyboard opens, iOS shifts the view; keep any open sheet inside the part of the screen that is still visible, so its title never slides under the status bar */
+function kbFit(vv){
+  vv=vv||window.visualViewport;if(!vv)return;
+  const lh=window.innerHeight,kb=Math.max(0,lh-(vv.height+vv.offsetTop)),open=vv.height<lh-120;
+  $$('.sheet').forEach(sh=>{if(open){sh.style.maxHeight=`max(260px,calc(${vv.height}px - env(safe-area-inset-top,0px) - 12px))`;sh.style.bottom=kb+'px'}else{sh.style.maxHeight='';sh.style.bottom=''}});
+  if(open){const a=document.activeElement,sh=a&&a.closest&&a.closest('.sheet');if(sh){const r=a.getBoundingClientRect(),t=sh.getBoundingClientRect();if(r.bottom>t.bottom-8||r.top<t.top+8)sh.scrollTop+=r.top-t.top-Math.max(24,(t.height-r.height)/3)}}
+}
+if(window.visualViewport){visualViewport.addEventListener('resize',()=>kbFit());visualViewport.addEventListener('scroll',()=>kbFit())}
+addEventListener('focusout',()=>setTimeout(()=>{if(!document.activeElement||!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){window.scrollTo(0,0);kbFit()}},60));
 function maybeAuto(delay=700){
   clearTimeout(maybeAuto.t);
   maybeAuto.t=setTimeout(()=>{
