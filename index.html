@@ -122,6 +122,68 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 .hlp .hfoot{margin-top:18px;font-size:14px;opacity:.85}
 .hlp .hfoot a{text-decoration:underline}
 
+
+/* mini pictures of the real buttons, inside How to use */
+.hlp .hv{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;padding:14px 14px 16px;margin:4px 0 14px;border-radius:0 22px 0 0;background:var(--ox);color:var(--cream);pointer-events:none;user-select:none}
+.hlp .hv.teal{background:var(--teal)}.hlp .hv.red{background:var(--red)}.hlp .hv.gold{background:var(--gold);color:var(--ox)}
+.hlp .hv>small{flex:0 0 100%;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;opacity:.75;margin-bottom:2px}
+.hlp .hv .seg{flex:1 1 100%}
+.hlp .hv .seg button{padding:8px 2px;font-size:9.5px;letter-spacing:.06em}
+.hlp .hv .hearpill{margin-top:0;padding:8px 12px;font-size:10px;background:var(--teal);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.28),0 3px 0 rgba(0,0,0,.28)}
+.hlp .hv .hearpill.yr{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.45)}
+.hlp .hv.teal .hearpill:not(.yr){background:var(--ox)}
+.hv-btn{display:inline-block;padding:11px 16px;border-radius:999px;font-family:var(--body,inherit);font-weight:800;font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+.hv-btn.gold{background:var(--gold);color:var(--ox)}
+.hv-btn.red{background:var(--red);color:var(--cream)}
+.hv-btn.ox{background:var(--ox);color:var(--gold)}
+.hv-btn.cream{background:var(--cream);color:var(--ox);box-shadow:inset 0 0 0 2.5px var(--ox)}
+.hv-btn.teal{background:var(--teal);color:var(--cream)}
+.hv-btn.line{box-shadow:inset 0 0 0 1.5px currentColor;background:transparent}
+.hv-btn.sm{padding:7px 12px;font-size:10.5px}
+.hv-ic{width:36px;height:36px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.5);display:grid;place-items:center;flex:none}
+.hv-ic svg{width:19px;height:19px;stroke:var(--cream);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hv-ic.fill{background:var(--cream);box-shadow:0 0 0 1.5px var(--ox)}.hv-ic.fill svg{stroke:var(--ox)}
+.hv-plus{width:24px;height:24px;border-radius:50%;background:var(--ox);color:var(--cream);font-weight:800;font-size:17px;line-height:23px;text-align:center;box-shadow:0 0 0 1.5px rgba(255,243,176,.6);flex:none}
+.hv-shutter{width:46px;height:46px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px var(--ox),0 0 0 5px var(--cream);position:relative;flex:none;margin:0 6px}
+.hv-shutter::after{content:"";position:absolute;inset:11px;border-radius:50%;border:2.5px solid var(--cream)}
+.hlp .hv .seal{position:static;width:78px;height:78px;opacity:1;transform:rotate(-8deg);flex:none}
+.hlp .hv .seal b{font-size:14px}.hlp .hv .seal small{font-size:7px;margin-top:3px;max-width:56px}
+.hv-leg{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.hv-leg i{display:inline-block;width:11px;height:11px;border-radius:50%;border:2px solid var(--cream)}
+.hv-leg i.c{background:var(--cream)}.hv-leg i.l{background:linear-gradient(90deg,var(--cream) 50%,transparent 50%)}
+.hv-dock{display:flex;gap:4px;padding:5px;border-radius:999px;background:rgba(42,5,8,.94);border:1.5px solid rgba(255,243,176,.18);flex:1 1 100%}
+.hv-dock span{flex:1;text-align:center;padding:7px 2px;border-radius:999px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,243,176,.75)}
+.hv-dock span.on{background:var(--gold);color:var(--ox)}
+.hv-tile{width:78px;height:78px;position:relative;background:var(--gold);color:var(--ox);padding:8px;font-family:var(--disp);font-weight:900;font-stretch:62%;text-transform:uppercase;font-size:17px;line-height:.9;display:flex;align-items:flex-end;flex:none}
+.hv-tile .hv-plus{position:absolute;right:6px;top:6px}
+.hv-tile .hv-d{position:absolute;left:8px;bottom:6px;width:10px;height:10px;border-radius:50%;border:2px solid var(--ox);background:var(--ox)}
+.hv-tile.t{background:var(--teal);color:var(--cream)}.hv-tile.t .hv-plus{box-shadow:0 0 0 2px var(--cream)}
+.hv-strip{display:flex;align-items:center;gap:10px;flex:1 1 100%;padding:8px 14px 8px 8px;border-radius:999px 20px 20px 999px;background:var(--gold);color:var(--ox)}
+.hv-strip .av{width:38px;height:38px;border-radius:50%;background:var(--ox);color:var(--gold);display:grid;place-items:center;font-weight:900;flex:none}
+.hv-strip b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:19px;line-height:.95;text-transform:uppercase}
+.hv-strip span{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-top:2px}
+.hv-card{flex:1 1 100%;background:var(--cream);color:var(--ox);padding:11px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-radius:0 16px 0 0}
+.hv-card b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:19px;line-height:.95;text-transform:uppercase}
+.hv-card span{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;opacity:.75;margin-top:3px}
+.hv-sw{width:44px;height:26px;border-radius:999px;background:var(--gold);position:relative;flex:none}
+.hv-sw::after{content:"";position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:var(--ox)}
+.hv-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:1 1 100%}
+.hv-row b{font-size:13.5px}
+.hv-cnt{display:flex;gap:8px;flex:1 1 100%}
+.hv-cnt div{flex:1;background:var(--ox);color:var(--gold);text-align:center;padding:8px 2px;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:26px;line-height:1}
+.hv-cnt small{display:block;font-family:var(--mono);font-weight:500;font-size:8.5px;letter-spacing:.14em;color:var(--cream);margin-top:3px}
+.hv-chk{display:inline-flex;align-items:center;gap:8px;font-size:12.5px}
+.hv-chk i{width:18px;height:18px;border:2px solid var(--cream);border-radius:4px;display:grid;place-items:center;font-style:normal;font-size:12px;line-height:1;background:var(--gold);border-color:var(--gold);color:var(--ox)}
+.hv-chip{padding:7px 12px;border-radius:999px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.55)}
+.hv-chip.hot{background:var(--gold);color:var(--ox);box-shadow:none;font-weight:600}
+.hv-name{padding:9px 12px;background:var(--ox);color:var(--cream);font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+.hv-ul{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px}
+.hlp summary::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c,var(--gold));flex:none;margin-right:-2px}
+.hlp summary{justify-content:flex-start}
+.hlp summary::after{margin-left:auto}
+.hlp details:nth-of-type(4n+1){--c:var(--gold)}.hlp details:nth-of-type(4n+2){--c:var(--teal)}.hlp details:nth-of-type(4n+3){--c:var(--red)}.hlp details:nth-of-type(4n){--c:var(--ox)}
+.hlp .hnow .hv{margin:10px 0 4px}
+
 /* ---------- screens ---------- */
 .screen{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .22s ease-out,visibility 0s linear .22s}
 .screen.active{opacity:1;visibility:visible;transition:opacity .22s ease-out}
@@ -1941,7 +2003,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.39.0 · welcome and help';
+const BUILD='0.39.1 · help pictures';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -6288,31 +6350,65 @@ $('#wSkip').addEventListener('click',()=>welcomeShow(WEL.n-1));
  w.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>50)welcomeShow(WEL.i+(dx<0?1:-1))},{passive:true})}
 
 /* ---------- How to use: tips for the screen you're on, then everything else ---------- */
+/* little pictures of the real buttons, so you know what to look for */
+const HV={
+  seg:(items,on)=>`<div class="seg" style="--i:${on};--n:${items.length}"><i class="thumb"></i>${items.map((t,i)=>`<button tabindex="-1" aria-pressed="${i===on}">${t}</button>`).join('')}</div>`,
+  hp:(t,yr)=>`<span class="hearpill${yr?' yr':''}">${t}</span>`,
+  btn:(t,c)=>`<span class="hv-btn ${c||'gold'}">${t}</span>`,
+  ic:(svg,c)=>`<span class="hv-ic ${c||''}">${svg}</span>`,
+  gear:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>`,
+  life:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="3.6"/><path d="M5.9 5.9l3.5 3.5M14.6 14.6l3.5 3.5M18.1 5.9l-3.5 3.5M9.4 14.6l-3.5 3.5"/></svg>`,
+  shutter:'<span class="hv-shutter"></span>',
+  plus:'<span class="hv-plus">+</span>',
+  seal:(b,sm,c)=>`<span class="seal ${c||''}"><b>${b}</b><small>${sm}</small></span>`,
+  leg:(t,c)=>`<span class="hv-leg"><i class="${c||''}"></i>${t}</span>`,
+  dock:on=>`<div class="hv-dock">${['Add','Collection','Community'].map((t,i)=>`<span class="${i===on?'on':''}">${t}</span>`).join('')}</div>`,
+  cap:t=>`<small>${t}</small>`,
+  panel:(c,inner)=>`<div class="hv ${c||''}" aria-hidden="true">${inner}</div>`
+};
 const HELP_NOW={
-  scan:['On the Add tab',['Pick Barcode, Label, Deadwax or Cover along the top, then tap the round button. Barcode, Label and Cover can start reading on their own.','No barcode, or the camera isn’t cooperating? Tap Type it. An artist and a title is enough.','The ? under the viewfinder shows how to shoot the deadwax, the part that names the exact pressing.','Tap Listen to name a song playing in the room.']],
-  collection:['On the Collection tab',['All records: search by title, artist, label, matrix or who played on it. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones you’re hunting.','What’s playing? names a song. Your year shows your listening so far. The gear is Settings: backup, import and sync.']],
-  reveal:['On a record page',['The seal shows how sure we are. Tap How we know to see the evidence.','Tap any name in The Session to see what else they played on.','My Copy is private: your grade, what you paid, photos of your copy, and your own memory.','Add to shelf, Dream Crate and Memory are in the bar at the bottom.']],
-  scene:['On the Community page',['Your name and photo go on the cards you share. Tap Edit to add three short answers about you.','Your sessions list every night Listen followed along. Rooms are plans for listening together. Live chat is coming.','To add friends, sign in, then invite someone with a link or find them by username.']]
+  scan:['On the Add tab',['Pick Barcode, Label, Deadwax or Cover along the top, then tap the round button. Barcode, Label and Cover can start reading on their own.','No barcode? Tap Type it. An artist and a title is enough. Already keep a list? Settings has Import from Discogs and Upload a CSV.','The ? under the viewfinder shows how to shoot the deadwax. Listen names a song playing in the room.'],
+    HV.panel('',HV.cap('What you’ll see')+HV.seg(['Barcode','Label','Deadwax','Cover'],0)+HV.hp('Type it')+HV.shutter+HV.hp('Listen')+HV.ic(HV.life))],
+  collection:['On the Collection tab',['All records: search by title, artist, label, matrix or who played on it. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones you’re hunting.','What’s playing? names a song. Your year shows your listening so far. The gear is Settings: backup, import and sync.'],
+    HV.panel('',HV.cap('What you’ll see')+HV.hp('What’s playing?')+HV.hp('Your year',1)+HV.ic(HV.life)+HV.ic(HV.gear)+HV.seg(['All records','Shelves','Dream Crate'],0))],
+  reveal:['On a record page',['The seal shows how sure we are. Tap How we know to see the evidence.','Tap any name in The Session to see what else they played on.','My Copy is private: grade, price, photos, memory. Add to shelf, Dream Crate and Memory are in the bar at the bottom.'],
+    HV.panel('gold',HV.cap('What you’ll see')+HV.seal('Confirmed','Matrix match')+`<span class="hv-ul">How we know</span>`+HV.btn('Add to shelf','ox')+HV.btn('Dream Crate','red')+HV.btn('Memory','cream'))],
+  scene:['On the Community page',['Your name and photo go on the cards you share. Tap Edit to add three short answers about you.','Your sessions list every night Listen followed along. Rooms are plans for listening together. Live chat is coming.','To add friends, sign in, then invite someone with a link or find them by username.'],
+    HV.panel('teal',HV.cap('What you’ll see')+`<div class="hv-strip"><span class="av" style="display:grid;font-family:var(--disp);font-size:20px;letter-spacing:0">?</span><div><b>Add your name</b><span>And a photo, for the cards you share</span></div></div>`+HV.btn('Start listening','gold')+HV.btn('Host a room','line')+HV.ic(HV.life))]
 };
 const HELP_TOPICS=[
- ['Add a record','Open Add and choose how to read it. Barcode reads the number under the bars. Label reads the printed center label. Deadwax reads the etching by the label and is the one that can name the exact pressing. Cover reads the words on the front. Or tap Type it. Already keep a list? Settings has Import from Discogs and Upload a CSV.'],
- ['What “Confirmed” means','Confirmed: the etched matrix matched the runout listed for one pressing. Likely: the cover or barcode points to one pressing, but nothing rules out another. Album only: we know the album, not which pressing. Tap How we know on any record to see why. To move a record up, scan its deadwax.'],
- ['Name a song (Listen)','Tap Listen, hold your phone near the speaker, and Memory Wax names the song with Apple’s Shazam. If it’s on a record you own, it shows where the needle is. Turn on Follow along and it names each track and tells you when to flip. It listens only while the sheet is open, and keeps no recording.'],
- ['The record page','The pressing, who played on it, the story, and your own copy. Tap any credited name for their page and the other records they played on. Apple Music plays the album with the account on your phone. Full songs need a subscription.'],
- ['Shelves, Dream Crate and playlists','A shelf is a group you make. Tap the + on a record to put it on shelves. Dream Crate is for records you want. Playlists pick tracks from your own records and can be saved to Apple Music. Friends can’t see your shelves yet; that’s coming.'],
- ['Sessions and Your year','Each song Listen names joins the current session. Name it, share it as a card or a song list, or save it as an Apple Music playlist. Your year counts spins on your records from Listen and from I played this, and makes a card you can share.'],
- ['Friends and invites','Sign in with Apple or your email, pick a username, then tap Invite a friend to send a one-time link. They tap it, the app opens, and you’re friends once they accept. You can unfriend, block or report from their profile.'],
- ['Rooms','A room is a night you plan: when, where, and which records in order. You get a card to share, a calendar reminder and the track list to follow. Live chat between phones and public room pages are coming.'],
- ['Backup, sync and your data','Settings has Sync with iCloud (on by default), Download a backup, Restore, and Export as CSV. A copy also lands in the Memory Wax folder in the Files app. Erase everything is at the bottom of Settings.'],
- ['Privacy at a glance','Your collection stays on your devices and in your private iCloud. The camera picture never leaves your phone. Prices and places never go to anyone else. No ads and no tracking.']
+ ['Add a record','Open Add and choose how to read it. Barcode reads the number under the bars. Label reads the printed center label. Deadwax reads the etching by the label and is the one that can name the exact pressing. Cover reads the words on the front. Or tap Type it. Already keep a list? Settings has Import from Discogs and Upload a CSV.',
+   HV.panel('',HV.cap('Along the top of Add')+HV.seg(['Barcode','Label','Deadwax','Cover'],2)+HV.shutter+HV.hp('Type it')+HV.hp('Listen'))],
+ ['What “Confirmed” means','Confirmed: the etched matrix matched the runout listed for one pressing. Likely: the cover or barcode points to one pressing, but nothing rules out another. Album only: we know the album, not which pressing. Tap How we know on any record to see why. To move a record up, scan its deadwax.',
+   HV.panel('',HV.cap('The seal on a record page')+HV.seal('Confirmed','Matrix match')+HV.seal('Likely','Matrix read','likely')+HV.seal('Release found','Barcode match','cover')+`<div style="flex:1 1 100%;display:flex;gap:14px;flex-wrap:wrap;margin-top:4px">${HV.leg('Confirmed','c')}${HV.leg('Likely','l')}${HV.leg('Album only','')}</div>`)],
+ ['Name a song (Listen)','Tap Listen, hold your phone near the speaker, and Memory Wax names the song with Apple’s Shazam. If it’s on a record you own, it shows where the needle is. Turn on Follow along and it names each track and tells you when to flip. It listens only while the sheet is open, and keeps no recording.',
+   HV.panel('teal',HV.cap('On the Listen sheet')+HV.hp('Listen')+HV.btn('Start listening','ox')+`<span class="hv-chk"><i>✓</i>Follow along</span>`)],
+ ['The record page','The pressing, who played on it, the story, and your own copy. Tap any credited name for their page and the other records they played on. Apple Music plays the album with the account on your phone. Full songs need a subscription.',
+   HV.panel('gold',HV.cap('Look for')+`<span class="hv-name">John Coltrane ↗</span><span class="hv-ul">How we know</span>`+HV.btn('Apple Music','ox')+HV.btn('Photograph my copy','ox'))],
+ ['Shelves, Dream Crate and playlists','A shelf is a group you make. Tap the + on a record to put it on shelves. Dream Crate is for records you want. Playlists pick tracks from your own records and can be saved to Apple Music. Friends can’t see your shelves yet; that’s coming.',
+   HV.panel('red',HV.cap('On Collection')+HV.seg(['All records','Shelves','Dream Crate'],1)+`<span class="hv-tile">Kind of Blue${HV.plus}<i class="hv-d"></i></span><span class="hv-tile t">Donuts${HV.plus}<i class="hv-d" style="background:var(--cream);border-color:var(--cream)"></i></span>`+`<div style="flex:1;min-width:130px">${HV.seg(['Just me','Friends','Everyone'],0)}</div>`)],
+ ['Sessions and Your year','Each song Listen names joins the current session. Name it, share it as a card or a song list, or save it as an Apple Music playlist. Your year counts spins on your records from Listen and from I played this, and makes a card you can share.',
+   HV.panel('teal',HV.cap('Under Your sessions')+`<div class="hv-card"><div><b>Friday night with friends</b><span>Oct 10 · 10 songs · 5 records</span></div>${HV.btn('Open','teal sm')}</div>`+`<div class="hv-cnt"><div>11<small>SPINS</small></div><div>3<small>RECORDS</small></div><div>5<small>SESSIONS</small></div></div>`)],
+ ['Friends and invites','Sign in with Apple or your email, pick a username, then tap Invite a friend to send a one-time link. They tap it, the app opens, and you’re friends once they accept. You can unfriend, block or report from their profile.',
+   HV.panel('',HV.cap('On Community → People')+HV.btn('Invite a friend','gold')+HV.btn('Add','teal sm')+HV.btn('Friends','line sm')+HV.btn('Asked','line sm'))],
+ ['Rooms','A room is a night you plan: when, where, and which records in order. You get a card to share, a calendar reminder and the track list to follow. Live chat between phones and public room pages are coming.',
+   HV.panel('red',HV.cap('On Community')+HV.btn('Host a room','gold')+`<div class="hv-cnt" style="flex:1 1 180px"><div>3<small>DAYS</small></div><div>02<small>HRS</small></div><div>36<small>MIN</small></div></div>`)],
+ ['Backup, sync and your data','Settings has Sync with iCloud (on by default), Download a backup, Restore, and Export as CSV. A copy also lands in the Memory Wax folder in the Files app. Erase everything is at the bottom of Settings.',
+   HV.panel('teal',HV.cap('In Settings, behind the gear')+HV.ic(HV.gear)+`<div class="hv-row"><b>Sync with iCloud</b><span class="hv-sw"></span></div>`+HV.btn('Download a backup','cream')+HV.btn('Export as CSV','line'))],
+ ['Privacy at a glance','Your collection stays on your devices and in your private iCloud. The camera picture never leaves your phone. Prices and places never go to anyone else. No ads and no tracking.',
+   HV.panel('',HV.cap('The promise')+`<span class="hv-chip hot">No ads</span><span class="hv-chip">No tracking</span><span class="hv-chip">Stays on your phone</span><span class="hv-chip">Yours to take with you</span>`)]
 ];
-function openHelp(){
-  const scr=st.screen,now=HELP_NOW[scr]||HELP_NOW.collection;
-  $('#helpBody').innerHTML=`<h4 class="disp">How to use</h4><p class="sub">Lost? Start here.</p>
-   <div class="hnow"><b>${now[0]}</b><ul>${now[1].map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
-   ${HELP_TOPICS.map(([t,b])=>`<details><summary>${esc(t)}</summary><p>${esc(b)}</p></details>`).join('')}
-   <button class="opt-card" data-welcome="1" style="margin-top:18px"><b>Replay the welcome</b><span>The short hello you see the first time.</span></button>
+/* which topics matter on which screen; everything else sits behind "All topics" */
+const HELP_FOR={scan:[1,2],collection:[4,5,8],reveal:[1,3],scene:[6,7,5]};
+function openHelp(all){
+  const scr=st.screen,now=HELP_NOW[scr]||HELP_NOW.collection,pick=all===true?HELP_TOPICS.map((_,i)=>i):(HELP_FOR[scr]||HELP_FOR.collection);
+  $('#helpBody').innerHTML=`<h4 class="disp">How to use</h4><p class="sub">${all===true?'Every part of the app.':'Lost? Start here.'}</p>
+   ${all===true?'':`<div class="hnow"><b>${now[0]}</b><ul>${now[1].map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${now[2]}</div>`}
+   ${pick.map(i=>{const [t,b,v]=HELP_TOPICS[i];return `<details><summary>${esc(t)}</summary>${v}<p>${esc(b)}</p></details>`}).join('')}
+   ${all===true?'':`<button class="opt-card" id="helpAll" style="margin-top:18px"><b>All topics</b><span>Every part of the app, in plain words.</span></button>`}
+   <button class="opt-card" data-welcome="1" style="margin-top:${all===true?18:0}px"><b>Replay the welcome</b><span>The short hello you see the first time.</span></button>
    <p class="hfoot">Something not working, or an idea? Write to <a href="mailto:info@memorywax.app">info@memorywax.app</a>.</p>`;
+  const ha=$('#helpAll');if(ha)ha.addEventListener('click',()=>{openHelp(true);$('#sheet-help').scrollTop=0});
   openSheet('help');
 }
 
