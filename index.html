@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Memory Wax"><meta name="theme-color" content="#2A0508"><link rel="apple-touch-icon" href="assets/memory-wax-logo.png">
 <title>Memory Wax · Prototype v0.8</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -970,7 +970,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .gear{position:absolute;top:66px;right:22px;width:40px;height:40px;border-radius:50%;z-index:25;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.45);display:grid;place-items:center;transition:transform 160ms ease-out}
 .gear:active{transform:scale(.92)}
 .gear svg{width:20px;height:20px;stroke:var(--cream);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.search{display:block;width:calc(100% - 40px);margin:12px 20px 0;background:rgba(255,243,176,.08);border:1.5px solid rgba(255,243,176,.35);border-radius:999px;padding:11px 18px;color:var(--cream);font-family:var(--mono);font-size:12px;letter-spacing:.05em}
+.search{display:block;width:calc(100% - 40px);margin:12px 20px 0;background:rgba(255,243,176,.08);border:1.5px solid rgba(255,243,176,.35);border-radius:999px;padding:11px 18px;color:var(--cream);font-family:var(--mono);font-size:16px;letter-spacing:0}
 .search::placeholder{color:rgba(255,243,176,.55)}
 .search:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .firstrun{padding:34px 22px 0}
@@ -993,7 +993,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .cond button{min-width:52px;padding:9px 12px;border-radius:999px;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.5);transition:transform 160ms ease-out,background-color 160ms ease-out}
 .cond button:active{transform:scale(.95)}
 .cond button[aria-pressed=true]{background:var(--gold);color:var(--ox);box-shadow:none}
-.mc-in{width:100%;background:rgba(255,243,176,.12);border:1.5px solid rgba(255,243,176,.45);padding:11px 13px;color:var(--cream);font-family:var(--ui);font-size:15px;font-weight:600}
+.mc-in{width:100%;background:rgba(255,243,176,.12);border:1.5px solid rgba(255,243,176,.45);padding:11px 13px;color:var(--cream);font-family:var(--ui);font-size:16px;font-weight:600}
 .mc-in::placeholder{color:rgba(255,243,176,.55);font-weight:500}
 /* text boxes on the cream sheets */
 .sin{display:block;width:100%;margin:6px 0 10px;padding:13px 14px;border-radius:12px;background:#fff;border:2px solid var(--ox);color:var(--ox);font-family:var(--ui);font-size:17px;font-weight:700}
@@ -1462,7 +1462,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
         <div id="v-all">
           <div id="firstRun" class="firstrun" hidden><span class="kick">Start here</span><h3 class="disp">Add your first album</h3><p>Scan it, type it in, or bring a list you already keep. We’ll do the rest.</p><button class="pill press" id="goScan">Scan an album</button><button class="pill press" id="goType" style="background:transparent;color:var(--cream);box-shadow:inset 0 0 0 1.5px var(--cream)">Type it in</button><button class="pill press" data-set="import" style="background:transparent;color:var(--cream);box-shadow:inset 0 0 0 1.5px var(--cream)">Import from Discogs</button></div>
           <div id="allBody">
-          <input class="search" id="search" type="search" placeholder="Search credits, labels, matrix, memories" aria-label="Search your collection" autocomplete="off" hidden>
+          <input class="search" id="search" type="search" placeholder="Search records, credits, labels" aria-label="Search your collection" autocomplete="off" hidden>
           <div class="rgrid" id="rgrid"></div>
           </div>
         </div>
@@ -2011,7 +2011,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.44.1 · day story';
+const BUILD='0.44.2 · no zoom';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2603,6 +2603,7 @@ function go(name){
   const from=st.screen;st.screen=name;
   if(name==='scene'){try{renderScene()}catch(e){}if(typeof acLoad==='function'&&acIn())acLoad().then(()=>{if(st.screen==='scene'&&document.activeElement&&document.activeElement.id!=='frQ')renderScene()})}
   if(name!=='scan'&&name!=='reveal')camOff();
+  if(name!=='scan'){try{document.activeElement&&document.activeElement.blur&&document.activeElement.blur()}catch(e){}}
   if(name==='reveal'){st.cameFromScan=(from==='scan');if(from==='scan'&&!st.keepRec)st.rec=1;st.keepRec=false}
   if(name==='scan'){st.autoOff=false;coachPaint()}
   if(name!=='scan'&&st.scanning){st.scanGen=(st.scanGen||0)+1;st.scanning=false}
