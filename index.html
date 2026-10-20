@@ -1974,7 +1974,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.42.0 · roomy scanner';
+const BUILD='0.42.1 · wish list';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -6367,7 +6367,7 @@ const HI=(n,alt)=>`<img class="hvimg" src="assets/help/${n}.jpg" alt="${alt}" lo
 const HELP_NOW={
   scan:['How to add a record',['Pick Barcode, Label, Deadwax or Cover along the top, then tap the round button. Barcode, Label and Cover can start reading on their own.','No barcode? Tap Type it. An artist and a title is enough. Already keep a list? Settings has Import from Discogs and Upload a CSV.','The ? under the viewfinder shows how to shoot the deadwax. Listen names a song playing in the room.'],
     HI('add','The Add tab controls: the scan modes along the top, and Type it, the round button and Listen below')],
-  collection:['How to use your collection',['All records: search by title, artist, label, matrix or who played on it. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones you’re hunting.','What’s playing? names a song. Your year shows your listening so far. The gear is Settings: backup, import and sync.'],
+  collection:['How to use your collection',['All records: search by title, artist, label, matrix or who played on it. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones on your wish list.','What’s playing? names a song. Your year shows your listening so far. The gear is Settings: backup, import and sync.'],
     HI('collection','The top of the Collection tab: the gear, the How to use button, What’s playing, Your year and the three tabs')],
   reveal:['How to read a record page',['The seal shows how sure we are. Tap How we know to see the evidence.','Tap any name in The Session to see what else they played on.','My Copy is private: grade, price, photos, memory. Add to shelf, Dream Crate and Memory are in the bar at the bottom.'],
     HI('record','A record page with the cover and the Confirmed seal')+HI('actions','The bar at the bottom: Add to shelf, Dream Crate and Memory')],
