@@ -213,6 +213,11 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 @keyframes tilt{0%,100%{transform:rotate(-16deg)}50%{transform:rotate(16deg)}}
 .help{width:24px;height:24px;border-radius:50%;background:var(--cream);color:var(--ox);font-family:var(--disp);font-weight:900;font-size:15px;line-height:24px;text-align:center;flex:none;transition:transform 160ms ease-out}
 .help:active{transform:scale(.92)}
+.coach{position:absolute;left:22px;right:22px;top:556px;padding:10px 16px 12px;border-left:6px solid var(--gold);background:rgba(255,243,176,.1);color:var(--cream);transition:opacity .3s var(--ease-out)}
+.coach[hidden]{display:none}
+.coach b{display:block;font-family:var(--mono);font-weight:500;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.coach span{display:block;font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.15}
+.vf.reading ~ .coach{opacity:0}
 .readout{position:absolute;left:22px;right:22px;top:558px;padding:12px 16px 14px;border-radius:20px;background:rgba(42,5,8,.94);border:1.5px solid rgba(255,243,176,.18);color:var(--cream);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .readout .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .readout .lab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--gold)}
@@ -1072,7 +1077,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .prompt span{font-size:36px;white-space:nowrap}
 .vf{top:185px}
 .guide{top:496px}
-.readout{top:539px}
+.readout,.coach{top:539px}
 .shutter{bottom:110px;width:64px;height:64px;box-shadow:0 0 0 4px var(--ox),0 0 0 7px var(--cream)}
 .shutter::after{inset:14px;border-width:3px}
 .dpill,.npill{bottom:125px}
@@ -1299,6 +1304,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
         <svg class="corners" viewBox="0 0 300 300" aria-hidden="true"><path class="corner" d="M-6 34V-6H34M266 -6H306V34M306 266V306H266M34 306H-6V266"/></svg>
       </div>
       <div class="guide"><span class="tilt"></span><span id="guide">Find the smooth band near the label</span><button class="help" id="helpBtn" aria-label="How to shoot the deadwax">?</button></div>
+      <div class="coach" id="coach" hidden aria-live="polite"><b id="coachT"></b><span id="coachB"></span></div>
       <div class="readout">
         <div class="top"><div class="lab" id="lab1">Matrix</div><div class="cf" aria-label="Confidence"><span id="conf">0%</span> sure</div></div>
         <div class="mx" id="mx">· · ·</div>
@@ -1956,7 +1962,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.40.3 · help folds';
+const BUILD='0.41.0 · coach card';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2088,8 +2094,8 @@ async function camOn(){
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('none');
     camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});camIsHi=false;
     const v=$('#liveVid');v.srcObject=camStream;try{await v.play()}catch(e){}
-    $('#vf').classList.add('live');st.camPref=true;camSave();maybeAuto(900);return true;
-  }catch(e){camOff();toast(e&&/NotAllowed|Permission/i.test(e.name+e.message)?'The camera is off for Memory Wax. Turn it on in iPhone Settings, then Memory Wax, then Camera.':'The camera isn’t available here, so the illustration stays.');return false}
+    $('#vf').classList.add('live');st.camPref=true;st.camDeclined=false;st.camDenied=false;camSave();maybeAuto(900);return true;
+  }catch(e){camOff();if(e&&/NotAllowed|Permission/i.test(e.name+e.message))st.camDenied=true;toast(e&&/NotAllowed|Permission/i.test(e.name+e.message)?'The camera is off for Memory Wax. Turn it on in iPhone Settings, then Memory Wax, then Camera.':'The camera isn’t available here, so the illustration stays.');return false}
 }
 let camIsHi=false;
 /* small print needs pixels: ask the camera for its largest size for the moment of capture, then go back to the light preview */
@@ -2531,7 +2537,7 @@ function go(name){
   if(name!=='scan'&&name!=='reveal')camOff();
   if(name==='scan'&&st.camPref&&!camStream)camOn();
   if(name==='reveal'){st.cameFromScan=(from==='scan');if(from==='scan'&&!st.keepRec)st.rec=1;st.keepRec=false}
-  if(name==='scan')st.autoOff=false;
+  if(name==='scan'){st.autoOff=false;coachPaint()}
   if(name!=='scan'&&st.scanning){st.scanGen=(st.scanGen||0)+1;st.scanning=false}
   if(name!=='collection'){st.sel=null;const sb=$('#selBar');if(sb)sb.hidden=true}
   closeSheets();clearTimeout(leaveTimer);
@@ -2574,13 +2580,25 @@ function renderText(n){
   $('#mx').textContent=shown;
   if(st.scanMode==='deadwax')$('#ringtxt').textContent=shown;
 }
+/* a short note for the chosen scan mode, shown until you have added a few records */
+const COACH={
+  barcode:['Barcode · the quick one','Most records after 1980 have one. No barcode? Try Label.'],
+  label:['Label · the printed center','Fill the circle and keep it flat. It reads the label name and catalog number.'],
+  deadwax:['Deadwax · the exact pressing','Shoot the smooth band by the label. The etching can name the exact pressing.'],
+  cover:['Cover · the front','Fill the frame, avoid glare. Works best with clear words on the front.']
+};
+const coachN=()=>{try{return +localStorage.getItem('mw_coach')||0}catch(e){return 0}};
+function coachBump(){try{localStorage.setItem('mw_coach',String(coachN()+1))}catch(e){}}
+function coachPaint(){const c=$('#coach');if(!c)return;const k=COACH[st.scanMode],on=!DEMO&&k&&coachN()<4;c.hidden=!on;if(on){$('#coachT').textContent=k[0];$('#coachB').textContent=k[1]}}
 function setScanMode(m){
   st.scanMode=m;st.autoOff=false;$('#vf').dataset.m=m;$('#barType').hidden=(m==='deadwax');
   if(DEMO&&(m==='deadwax'||m==='cover')&&!st.simNote){st.simNote=true;setTimeout(()=>toast('Deadwax and cover reading are simulated here. Barcode and label are real.'),250)}
   const vis=$$('#modes button').filter(b=>!b.hidden),idx=Math.max(0,vis.findIndex(b=>b.dataset.mode===m));
   $('#modes').style.setProperty('--i',idx);$('#modes').style.setProperty('--n',vis.length);
   $$('#modes button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
-  resetScan();
+  resetScan();coachPaint();
+  if(!DEMO&&m==='cover'&&!camStream&&st.screen==='scan'&&!st.camDeclined&&!st.camDenied){ // Cover reads from the live camera, so open it without a shutter tap
+    if(st.camAsked)camOn();else{st.camAsked=true;camSave();openSheet('cam')}}
 }
 $$('#modes button').forEach(b=>b.addEventListener('click',()=>{if(st.scanning)stopReal();setScanMode(b.dataset.mode)}));
 if(!DEMO){setScanMode('barcode');$$('.v-rec svg text:not(.ring-text)').forEach(t=>t.textContent='')}
@@ -4947,6 +4965,7 @@ function addRel(hit,ev){
   if(ex){id=ex.id;st.owned.add(id);ex.ev={...(ex.ev||{}),...ev};if(!ex.cat&&hit.cat)ex.cat=hit.cat;if(!ex.lab&&hit.lab)ex.lab=hit.lab;if(!ex.ctry&&hit.ctry)ex.ctry=hit.ctry}
   else{id=newRecId();const ord=Math.max(...RECS.map(r=>r.ord||0))+1;
     RECS.push({id,t:hit.t,a:hit.a||'Unknown artist',y:hit.y||0,g:'',c:'album',m:id%4,ord,lab:hit.lab||'',cat:hit.cat||'',ctry:hit.ctry||'',fmt:hit.fmt||'',cred:[],real:true,mb:hit.mbid||'',dg:hit.dg||undefined,am:hit.am||undefined,src:hit.src||undefined,rg:hit.rg||'',bc:ev.bc?ev.bc.code:(ev.bcRaw||undefined),cover:hit.mbid?'https://coverartarchive.org/release/'+hit.mbid+'/front-250':'',ev,added:Date.now()});st.owned.add(id);st.justAdded=id}
+  coachBump();
   if(st.firstBought&&Date.now()-st.firstBought<6e5){ // the welcome's "first record I ever bought": it goes on a shelf of its own
     let sh=st.shelves.find(x=>x.n==='Where it started');if(!sh){sh={id:st.nextShelf++,n:'Where it started',v:0,recs:[]};st.shelves.push(sh)}
     if(!sh.recs.includes(id))sh.recs.push(id);st.firstBoughtDone=id}
@@ -5756,7 +5775,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.sessdel){const id=+t.dataset.sessdel,x=st.sessions.find(q=>q.id===id);if(!x)return;askSure({title:'Cancel this room?',body:`“${x.name}” is removed from this phone. Your records aren’t touched.`,yes:'Cancel the room',go:()=>{const i=st.sessions.findIndex(q=>q.id===id);if(i>-1)st.sessions.splice(i,1);saveState();closeSheets();renderScene();toast(`Cancelled “${x.name}”.`)}});return}
   if(t.dataset.sessplay){const x=st.sessions.find(q=>q.id===+t.dataset.sessplay);startQueue(x.recs.map(rec=>({rec})),`“${x.name}”`,{});return}
   if(t.dataset.confhelp){openSheet('conf');return}
-  if(t.dataset.cam){const k=t.dataset.cam;closeSheets();if(k==='on')camOn();else{st.camPref=false;camSave();camOff()}return}
+  if(t.dataset.cam){const k=t.dataset.cam;closeSheets();if(k==='on'){st.camDeclined=false;camOn()}else{st.camPref=false;st.camDeclined=true;camSave();camOff()}return}
   if(t.dataset.dc){const [ti,by]=t.dataset.dc.split('|');if(st.wants.some(w=>w.t===ti)){toast('Already in your Dream Crate.');return}st.wants.push({t:ti,a:by,note:'Added from credits',list:'None listed yet',alert:false,m:(ti.length%6)});renderCollection();t.setAttribute('aria-pressed','true');t.textContent='In your Dream Crate';toast(`${ti} added to your Dream Crate.`);return}
   if(t.dataset.shedit){const sh=st.shelves.find(x=>x.id===+t.dataset.shedit);st.editShelf=sh.id;$('#sheName').value=sh.n;$('#sheSub').textContent=`${rc(shelfRecs(sh.id).length)} · ${VNAME[sh.v]}`;openSheet('shedit');return}
   if(t.dataset.shsave){const sh=st.shelves.find(x=>x.id===st.editShelf),n=$('#sheName').value.trim();if(!n){toast('A shelf needs a name.');return}sh.n=n;closeSheets();renderCollection();toast(`Renamed to “${n}”.`);return}
@@ -6288,8 +6307,8 @@ async function renderYourData(){
 loadPrefs();applyPrefs();renderSettings();fillLegalContact();restoreState();renderCollection();loadCovers().then(()=>{try{renderCollection()}catch(e){}});setInterval(saveState,2500);mirrorCheck();addEventListener('pagehide',saveState);addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){saveReal();saveState()}});
 /* The real app hides controls that only the demo walkthrough used, so nothing on screen is a placeholder. */
 /* The camera question is asked once, not after every launch. */
-function camSave(){try{localStorage.setItem('mw_cam',JSON.stringify({asked:!!st.camAsked,pref:!!st.camPref}))}catch(e){}}
-try{const c=JSON.parse(localStorage.getItem('mw_cam')||'{}');if(c.asked)st.camAsked=true;if(c.pref)st.camPref=true}catch(e){}
+function camSave(){try{localStorage.setItem('mw_cam',JSON.stringify({asked:!!st.camAsked,pref:!!st.camPref,declined:!!st.camDeclined}))}catch(e){}}
+try{const c=JSON.parse(localStorage.getItem('mw_cam')||'{}');if(c.asked)st.camAsked=true;if(c.pref)st.camPref=true;if(c.declined)st.camDeclined=true}catch(e){}
 if(!DEMO){
   VNOTE[1]+=' Sharing with friends opens soon. Until then this is saved, but nothing is shared.';VNOTE[2]+=' Public shelf pages open soon. Until then this is saved, but nothing is shared.';
   const hide=x=>{if(x)x.hidden=true};
