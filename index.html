@@ -127,6 +127,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 /* pictures in How to use are crops of the real app (scripts/help-shots.py) */
 .hlp .hvimg{display:block;width:100%;height:auto;margin:6px 0 14px;border-radius:0 18px 0 0}
 .hlp .hnow .hvimg{margin:10px 0 4px}
+.hlp details.dnow .hnow{margin:2px 0 14px}
 .hlp summary::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c,var(--gold));flex:none;margin-right:-2px}
 .hlp summary{justify-content:flex-start}
 .hlp summary::after{margin-left:auto}
@@ -1955,7 +1956,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.40.2 · the story';
+const BUILD='0.40.3 · help folds';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -6330,13 +6331,13 @@ $('#wSkip').addEventListener('click',()=>welcomeShow(WEL.n-1));
 /* pictures in How to use are crops of the real app screens, made by scripts/help-shots.py */
 const HI=(n,alt)=>`<img class="hvimg" src="assets/help/${n}.jpg" alt="${alt}" loading="lazy">`;
 const HELP_NOW={
-  scan:['On the Add tab',['Pick Barcode, Label, Deadwax or Cover along the top, then tap the round button. Barcode, Label and Cover can start reading on their own.','No barcode? Tap Type it. An artist and a title is enough. Already keep a list? Settings has Import from Discogs and Upload a CSV.','The ? under the viewfinder shows how to shoot the deadwax. Listen names a song playing in the room.'],
+  scan:['How to add a record',['Pick Barcode, Label, Deadwax or Cover along the top, then tap the round button. Barcode, Label and Cover can start reading on their own.','No barcode? Tap Type it. An artist and a title is enough. Already keep a list? Settings has Import from Discogs and Upload a CSV.','The ? under the viewfinder shows how to shoot the deadwax. Listen names a song playing in the room.'],
     HI('add','The Add tab controls: the scan modes along the top, and Type it, the round button and Listen below')],
-  collection:['On the Collection tab',['All records: search by title, artist, label, matrix or who played on it. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones you’re hunting.','What’s playing? names a song. Your year shows your listening so far. The gear is Settings: backup, import and sync.'],
+  collection:['How to use your collection',['All records: search by title, artist, label, matrix or who played on it. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones you’re hunting.','What’s playing? names a song. Your year shows your listening so far. The gear is Settings: backup, import and sync.'],
     HI('collection','The top of the Collection tab: the gear, the How to use button, What’s playing, Your year and the three tabs')],
-  reveal:['On a record page',['The seal shows how sure we are. Tap How we know to see the evidence.','Tap any name in The Session to see what else they played on.','My Copy is private: grade, price, photos, memory. Add to shelf, Dream Crate and Memory are in the bar at the bottom.'],
+  reveal:['How to read a record page',['The seal shows how sure we are. Tap How we know to see the evidence.','Tap any name in The Session to see what else they played on.','My Copy is private: grade, price, photos, memory. Add to shelf, Dream Crate and Memory are in the bar at the bottom.'],
     HI('record','A record page with the cover and the Confirmed seal')+HI('actions','The bar at the bottom: Add to shelf, Dream Crate and Memory')],
-  scene:['On the Community page',['Your name and photo go on the cards you share. Tap Edit to add three short answers about you.','Your sessions list every night Listen followed along. Rooms are plans for listening together. Live chat is coming.','To add friends, sign in, then invite someone with a link or find them by username.'],
+  scene:['How to use Community',['Your name and photo go on the cards you share. Tap Edit to add three short answers about you.','Your sessions list every night Listen followed along. Rooms are plans for listening together. Live chat is coming.','To add friends, sign in, then invite someone with a link or find them by username.'],
     HI('community','The Community page: your profile strip, your sessions and Start listening')]
 };
 const HELP_TOPICS=[
@@ -6362,8 +6363,8 @@ const HELP_TOPICS=[
 const HELP_FOR={scan:[1,2],collection:[4,5,8],reveal:[1,3],scene:[6,7,5]};
 function openHelp(all){
   const scr=st.screen,now=HELP_NOW[scr]||HELP_NOW.collection,pick=all===true?HELP_TOPICS.map((_,i)=>i):(HELP_FOR[scr]||HELP_FOR.collection);
-  $('#helpBody').innerHTML=`<h4 class="disp">How to use</h4><p class="sub">${all===true?'Every part of the app.':'Lost? Start here.'}</p>
-   ${all===true?'':`<div class="hnow"><b>${now[0]}</b><ul>${now[1].map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${now[2]}</div>`}
+  $('#helpBody').innerHTML=`<h4 class="disp">How to use</h4>${all===true?'<p class="sub">Every part of the app.</p>':''}
+   ${all===true?'':`<details class="dnow"><summary>${esc(now[0])}</summary><div class="hnow"><ul>${now[1].map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${now[2]}</div></details>`}
    ${pick.map(i=>{const [t,b,v]=HELP_TOPICS[i];return `<details><summary>${esc(t)}</summary>${v}<p>${esc(b)}</p></details>`}).join('')}
    ${all===true?'':`<button class="opt-card" id="helpAll" style="margin-top:18px"><b>All topics</b><span>Every part of the app, in plain words.</span></button>`}
    <button class="opt-card" data-welcome="1" style="margin-top:${all===true?18:0}px"><b>Replay the welcome</b><span>The short hello you see the first time.</span></button>
