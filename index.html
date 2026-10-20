@@ -1091,6 +1091,12 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .scan.roomy .vf[data-m=barcode] ~ .guide{top:596px}
 }
 .vf .corner{vector-effect:non-scaling-stroke}
+/* the splash's dotted gradient, on the surfaces that felt flat */
+.sheet{background-image:var(--hts-sheet);background-repeat:no-repeat;background-position:left bottom;background-size:300px 240px}
+.welcome::before{content:"";position:absolute;left:0;right:0;bottom:150px;height:360px;background:var(--red);opacity:.55;pointer-events:none;
+  -webkit-mask-image:var(--ht-bc);mask-image:var(--ht-bc);-webkit-mask-size:390px 360px;mask-size:390px 360px;-webkit-mask-position:center bottom;mask-position:center bottom;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+#collection,#scene{background-image:var(--hts-dark);background-repeat:no-repeat;background-position:center bottom;background-size:390px 380px}
+
 /* the moment a scan upgrades a record to Confirmed */
 .moment{position:absolute;left:16px;right:16px;top:60px;z-index:95;display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px;padding:14px 16px;background:var(--cream);color:var(--ox);border:2.5px solid var(--ox);border-radius:0 18px 0 0;cursor:pointer;box-shadow:8px 8px 0 rgba(0,0,0,.35);text-align:left;transform:translateY(-150%);opacity:0;transition:transform .5s var(--ease-out),opacity .25s ease-out}
 .moment.on{transform:none;opacity:1}
@@ -1884,7 +1890,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 
 <script>
 /* halftone generator: dot radius falls off with distance from an anchor point */
-function halftone(w,h,ox,oy,maxD,step=9,pow=1.1){
+function halftone(w,h,ox,oy,maxD,step=9,pow=1.1,fill='#000'){
   let c='';const rows=Math.ceil(h/(step/2));
   for(let r=0;r<=rows;r++){const y=r*step/2;
     for(let x=(r%2)*step/2;x<=w;x+=step){
@@ -1892,7 +1898,7 @@ function halftone(w,h,ox,oy,maxD,step=9,pow=1.1){
       const rad=Math.pow(f,pow)*step*.62;if(rad<.45)continue;
       c+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rad.toFixed(2)}"/>`;
     }}
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><g fill="#000">${c}</g></svg>`;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><g fill="${fill}">${c}</g></svg>`;
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 (function initHalftone(){
@@ -1902,6 +1908,9 @@ function halftone(w,h,ox,oy,maxD,step=9,pow=1.1){
   R.setProperty('--ht-bc',halftone(390,360,195,360,330,10));
   R.setProperty('--ht-br',halftone(304,304,304,304,260));
   R.setProperty('--ht-sun',halftone(196,196,20,178,185,8));
+  /* coloured fields for surfaces that are flat: cream sheets get faint oxblood dots, the dark screens get red ones rising from the bottom */
+  R.setProperty('--hts-sheet',halftone(300,240,0,240,260,9,1.1,'rgba(84,11,14,.1)'));
+  R.setProperty('--hts-dark',halftone(390,380,195,380,340,10,1.1,'rgba(158,42,43,.5)'));
 })();
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -2033,7 +2042,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.47.0 · share a record';
+const BUILD='0.48.0 · dots, covers, facts';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2420,10 +2429,19 @@ const byLine=()=>meName()?meName()+' · Made with Memory Wax':'Made with Memory 
 async function cardFonts(){try{await document.fonts.load('900 100px Archivo');await document.fonts.load('italic 40px "Instrument Serif"');await document.fonts.load('20px "DM Mono"')}catch(_){}}
 function cardShare(b,name,text){const f=new File([b],name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share(text?{files:[f],title:'Memory Wax',text}:{files:[f],title:'Memory Wax'}).catch(()=>{});else saveBlob(b)}
 const sitName=S=>sitTitle(S).replace(/^./,c=>c.toUpperCase())+', '+new Date(S.s).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+/* the splash's dotted gradient for share cards: dots grow toward an anchor and fade away from it */
+function cardDots(x,color,alpha,ox,oy,maxD,step,W,H,clip){
+  x.save();if(clip){x.beginPath();x.arc(clip[0],clip[1],clip[2],0,7);x.clip()}
+  x.fillStyle=color;x.globalAlpha=alpha;x.beginPath();
+  const rows=Math.ceil(H/(step/2));
+  for(let r=0;r<=rows;r++){const y=r*step/2;for(let cx=(r%2)*step/2;cx<=W;cx+=step){
+    const f=1-Math.hypot(cx-ox,y-oy)/maxD;if(f<=0)continue;const rad=Math.pow(f,1.1)*step*.62;if(rad<1.2)continue;x.moveTo(cx+rad,y);x.arc(cx,y,rad,0,7)}}
+  x.fill();x.restore();
+}
 async function cardDraw(o){
   await cardFonts();const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
-  x.fillStyle='#540B0E';x.fillRect(0,0,W,H);
-  x.fillStyle='#E09F3E';x.beginPath();x.arc(930,170,300,0,7);x.fill();x.fillStyle='#540B0E';x.beginPath();x.arc(930,170,46,0,7);x.fill();
+  x.fillStyle='#540B0E';x.fillRect(0,0,W,H);cardDots(x,'#A22B2B',.5,W/2,H,H*.62,30,W,H);
+  x.fillStyle='#E09F3E';x.beginPath();x.arc(930,170,300,0,7);x.fill();cardDots(x,'#540B0E',.8,720,380,460,24,W,H,[930,170,300]);x.fillStyle='#540B0E';x.beginPath();x.arc(930,170,46,0,7);x.fill();
   x.fillStyle='#FFF3B0';x.textBaseline='alphabetic';
   x.font='500 30px "DM Mono",monospace';if('letterSpacing' in x)x.letterSpacing='5px';x.fillText(o.kicker.toUpperCase(),72,110);if('letterSpacing' in x)x.letterSpacing='0px';
   x.font='900 170px Archivo,sans-serif';if('fontStretch' in x)x.fontStretch='ultra-condensed';
@@ -2444,8 +2462,8 @@ async function sitCard(S){
   await cardFonts();const X=sitStats(S),W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),L=72,R=W-72;
   const songs=[];(S.items||[]).forEach(it=>{if(it.t&&!songs.some(o=>nz(o.t)===nz(it.t)&&nz(o.a)===nz(it.a)))songs.push(it)});
   const CREAM='#FFF3B0',GOLD='#E09F3E',sp=v=>{if('letterSpacing' in x)x.letterSpacing=v};
-  x.fillStyle='#540B0E';x.fillRect(0,0,W,H);
-  x.fillStyle=GOLD;x.beginPath();x.arc(985,95,215,0,7);x.fill();x.fillStyle='#540B0E';x.beginPath();x.arc(985,95,34,0,7);x.fill();
+  x.fillStyle='#540B0E';x.fillRect(0,0,W,H);cardDots(x,'#A22B2B',.5,W/2,H,H*.62,30,W,H);
+  x.fillStyle=GOLD;x.beginPath();x.arc(985,95,215,0,7);x.fill();cardDots(x,'#540B0E',.8,830,250,340,22,W,H,[985,95,215]);x.fillStyle='#540B0E';x.beginPath();x.arc(985,95,34,0,7);x.fill();
   x.fillStyle=CREAM;x.textBaseline='alphabetic';
   x.font='500 28px "DM Mono",monospace';sp('5px');x.fillText(fitText(x,(sitTitle(S)+' · '+new Date(X.t0).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})).toUpperCase(),700),L,100);sp('0px');
   x.font='900 156px Archivo,sans-serif';if('fontStretch' in x)x.fontStretch='ultra-condensed';
@@ -2455,6 +2473,12 @@ async function sitCard(S){
   let top=352;
   const q=X.star?`${X.star.n}${X.star.role?' on '+X.star.role:''}, on ${X.star.recs.length} of the records.`:(()=>{const o=X.people.filter(p=>!p.lead).slice(0,3).map(p=>p.n);return o.length?'With '+(o.length>1?o.slice(0,-1).join(', ')+' and '+o[o.length-1]:o[0])+'.':''})();
   if(q){x.fillStyle=GOLD;x.font='italic 46px "Instrument Serif",Georgia,serif';x.fillText(fitText(x,q,R-L),L,top+18);x.fillStyle=CREAM;top+=58}
+  /* the covers of what played, in a row */
+  const arts=(await Promise.all(X.recs.slice(0,10).map(g=>loadCover(g.art)))).filter(Boolean).slice(0,6);
+  if(arts.length){const sz=Math.min(songs.length>10?96:130,(R-L-(arts.length-1)*14)/arts.length);
+    arts.forEach((im,i)=>{const px=L+i*(sz+14),a=Math.min(im.naturalWidth,im.naturalHeight);x.save();x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=18;x.shadowOffsetY=8;x.fillStyle='#2A0507';x.fillRect(px,top,sz,sz);x.restore();
+      x.drawImage(im,(im.naturalWidth-a)/2,(im.naturalHeight-a)/2,a,a,px,top,sz,sz);x.save();x.strokeStyle='rgba(255,243,176,.4)';x.lineWidth=2;x.strokeRect(px,top,sz,sz);x.restore()});
+    top+=sz+34}
   /* the list fills from here to just above the logo */
   const LOGO_H=150,bottom=H-56-LOGO_H-26,avail=bottom-top-10,MAX2=36;
   const two=songs.length>14,cols=two?2:1,shown=songs.length>MAX2?songs.slice(0,MAX2-1):songs,more=songs.length-shown.length;
@@ -3289,12 +3313,46 @@ function askRemoveRecords(ids){
   askSure({title:n===1?'Remove this record?':`Remove ${n} records?`,body:(n===1?`“${rs[0].t}” by ${rs[0].a}. `:nameList(rs.map(r=>r.t))+'. ')+(n===1?RM_BODY:RM_BODY.replace('It leaves','They leave').replace('it is on','they are on').replace('for it','for them').replace('still has it','still has them')),yes:n===1?'Remove record':`Remove ${n} records`,
     go:()=>{const wasReveal=st.screen==='reveal';removeRecords(rs.map(r=>r.id));st.sel=null;if(wasReveal)go('collection');else renderCollection();toast(n===1?`Removed “${rs[0].t}” from your collection.`:`Removed ${n} records from your collection.`)}});
 }
+/* a record's cover for a share card. Remote art is only used when the host allows it (CORS), so the card can still be exported; otherwise a gold disc stands in. */
+const COVC={};
+function loadCover(u){
+  if(!u)return Promise.resolve(null);
+  return COVC[u]||(COVC[u]=new Promise(ok=>{
+    const t=[u.replace(/front-250$/,'front-500'),u].filter((a,i,z)=>z.indexOf(a)===i),next=i=>{
+      if(i>=t.length)return ok(null);
+      const im=new Image();if(/^https?:/.test(t[i]))im.crossOrigin='anonymous';
+      im.onload=()=>ok(im);im.onerror=()=>next(i+1);im.src=t[i]};
+    next(0)}));
+}
+async function cardCover(x,r,px,py,s){
+  const im=await loadCover(cov(r));
+  x.save();x.shadowColor='rgba(0,0,0,.5)';x.shadowBlur=40;x.shadowOffsetY=16;x.fillStyle='#2A0507';x.fillRect(px,py,s,s);x.restore();
+  if(im){const a=Math.min(im.naturalWidth,im.naturalHeight);x.drawImage(im,(im.naturalWidth-a)/2,(im.naturalHeight-a)/2,a,a,px,py,s,s)}
+  else{x.save();x.beginPath();x.rect(px,py,s,s);x.clip();const cx=px+s/2,cy=py+s/2;x.strokeStyle='#E09F3E';x.lineWidth=3;
+    for(let i=0;i<14;i++){x.globalAlpha=.16+.02*(i%3);x.beginPath();x.arc(cx,cy,s*.46-i*s*.022,0,7);x.stroke()}
+    x.globalAlpha=1;x.fillStyle='#E09F3E';x.beginPath();x.arc(cx,cy,s*.13,0,7);x.fill();x.fillStyle='#2A0507';x.beginPath();x.arc(cx,cy,s*.02,0,7);x.fill();x.restore()}
+  x.save();x.strokeStyle='rgba(255,243,176,.4)';x.lineWidth=3;x.strokeRect(px,py,s,s);x.restore();
+  return !!im;
+}
+/* one true line about a record, built only from what we hold about it: where and when it was recorded, who produced and engineered it, how many people are credited, its age */
+function recFact(r){
+  const C=r.mbc||{},crew=C.crew||[],lead=(r.a||'').split(/ [&,] /)[0],yr=+r.y||0;
+  const who=re=>crew.filter(c=>re.test(c[1])&&c[0]!==lead).map(c=>c[0]).filter((n,i,a)=>a.indexOf(n)===i).slice(0,2);
+  const nm=a=>a.length>1?a[0]+' and '+a[1]:a[0],pr=who(/producer/),en=who(/engineer|mastering|mixing/),n=(r.cred||[]).length;
+  if(C.studio&&C.studio.length){const w=C.dates&&C.dates.length?whenText2(C.dates):'';return `Recorded at ${C.studio[0]}${w?', '+w:''}.`}
+  if(pr.length&&en.length)return `Produced by ${nm(pr)}. Engineered by ${nm(en)}.`;
+  if(pr.length)return `Produced by ${nm(pr)}.`;
+  if(en.length)return `Engineered by ${nm(en)}.`;
+  if(n>=3)return `${n} people are credited on this record.`;
+  if(yr>1900&&yr<=new Date().getFullYear())return yr===new Date().getFullYear()?'Pressed this year.':`This record is ${new Date().getFullYear()-yr} years old.`;
+  return '';
+}
 /* a shareable card for a confirmed pressing */
 async function pressingCard(r){
   await cardFonts();const R=REP[r.id]||{},W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),L=72,Rr=W-72;
   const CREAM='#FFF3B0',GOLD='#E09F3E',sp=v=>{if('letterSpacing' in x)x.letterSpacing=v};
-  x.fillStyle='#540B0E';x.fillRect(0,0,W,H);
-  x.fillStyle=GOLD;x.beginPath();x.arc(985,95,215,0,7);x.fill();x.fillStyle='#540B0E';x.beginPath();x.arc(985,95,34,0,7);x.fill();
+  x.fillStyle='#540B0E';x.fillRect(0,0,W,H);cardDots(x,'#A22B2B',.5,W/2,H,H*.62,30,W,H);
+  x.fillStyle=GOLD;x.beginPath();x.arc(985,95,215,0,7);x.fill();cardDots(x,'#540B0E',.8,830,250,340,22,W,H,[985,95,215]);x.fillStyle='#540B0E';x.beginPath();x.arc(985,95,34,0,7);x.fill();
   x.fillStyle=CREAM;x.textBaseline='alphabetic';
   const mode=r.real?realModeOf(r):(MODEOF[r.c]||'confirmed'),m=MODES[mode]||MODES.confirmed,okc=r.c==='confirmed'||mode==='confirmed';
   x.font='500 28px "DM Mono",monospace';sp('5px');x.fillText(okc?'PRESSING CONFIRMED':'FROM MY COLLECTION',L,100);sp('0px');
@@ -3304,15 +3362,17 @@ async function pressingCard(r){
   lines=wrap(fs);while((lines.length>2||lines.some(l=>x.measureText(l).width>Rr-L))&&fs>70){fs-=8;lines=wrap(fs)}
   let y=250;lines.forEach(l=>{x.fillText(l,L-4,y);y+=fs*.86});if('fontStretch' in x)x.fontStretch='normal';
   y-=fs*.86;x.fillStyle=GOLD;x.font='italic 56px "Instrument Serif",Georgia,serif';x.fillText(fitText(x,r.a||'',Rr-L),L,y+84);y+=84;x.fillStyle=CREAM;
-  /* the seal */
-  const sy=y+300,sealBg=m.cls==='likely'?CREAM:m.cls==='cover'?'#2F5D6B':'#A22B2B',sealInk=m.cls==='likely'?'#540B0E':CREAM;
-  x.fillStyle=sealBg;x.beginPath();x.arc(L+150,sy,150,0,7);x.fill();x.strokeStyle=m.cls==='likely'?'#540B0E':CREAM;x.lineWidth=9;x.beginPath();x.arc(L+150,sy,150,0,7);x.stroke();
-  x.fillStyle=sealInk;x.textAlign='center';let sf=52;x.font=`900 ${sf}px Archivo,sans-serif`;while(x.measureText(m.a.toUpperCase()).width>250&&sf>26){sf-=2;x.font=`900 ${sf}px Archivo,sans-serif`}
-  x.fillText(m.a.toUpperCase(),L+150,sy+4);x.font='500 22px "DM Mono",monospace';sp('3px');x.fillText(fitText(x,m.b.toUpperCase(),250),L+150,sy+52);sp('0px');x.textAlign='left';
-  /* the facts */
+  /* the cover, with the seal stuck across its lower corner and the facts beside it */
+  const S=lines.length>1?440:500,cy=y+60;await cardCover(x,r,L,cy,S);
+  const sr=108,scx=L+S-72,scy=cy+S-72,sealBg=m.cls==='likely'?CREAM:m.cls==='cover'?'#2F5D6B':'#A22B2B',sealInk=m.cls==='likely'?'#540B0E':CREAM;
+  x.save();x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=24;x.shadowOffsetY=8;x.fillStyle=sealBg;x.beginPath();x.arc(scx,scy,sr,0,7);x.fill();x.restore();
+  x.strokeStyle=m.cls==='likely'?'#540B0E':CREAM;x.lineWidth=6;x.beginPath();x.arc(scx,scy,sr,0,7);x.stroke();
+  x.fillStyle=sealInk;x.textAlign='center';let sf=38;x.font=`900 ${sf}px Archivo,sans-serif`;while(x.measureText(m.a.toUpperCase()).width>182&&sf>18){sf-=2;x.font=`900 ${sf}px Archivo,sans-serif`}
+  x.fillText(m.a.toUpperCase(),scx,scy+4);x.font='500 16px "DM Mono",monospace';sp('2px');x.fillText(fitText(x,m.b.toUpperCase(),182),scx,scy+36);sp('0px');x.textAlign='left';
   const rows=[['LABEL',r.lab||R.lab],['CATALOG',r.cat||R.cat],['COUNTRY · YEAR',(c0=>[c0,c0&&String(c0).includes(r.y)?'':r.y].filter(Boolean).join(' · '))(r.ctry||R.ctry)],['FORMAT',r.fmt||R.fmt],['MATRIX',okc?r.mx:'']].filter(a=>a[1]);
-  let ry=sy-150;const rx=L+370;
-  rows.forEach(([k,v])=>{x.fillStyle=GOLD;x.font='500 24px "DM Mono",monospace';sp('3px');x.fillText(k,rx,ry);sp('0px');x.fillStyle=CREAM;x.font='700 44px Archivo,sans-serif';x.fillText(fitText(x,String(v),Rr-rx),rx,ry+50);ry+=104});
+  const rx=L+S+52,pitch=Math.min(104,(S-30)/Math.max(rows.length,1));let ry=cy+34;
+  rows.forEach(([k,v])=>{x.fillStyle=GOLD;x.font='500 22px "DM Mono",monospace';sp('3px');x.fillText(k,rx,ry);sp('0px');x.fillStyle=CREAM;x.font='700 40px Archivo,sans-serif';x.fillText(fitText(x,String(v),Rr-rx),rx,ry+44);ry+=pitch});
+  const fact=recFact(r);if(fact){x.fillStyle=GOLD;x.font='italic 58px "Instrument Serif",Georgia,serif';wrapText(x,fact,L,cy+S+120,Rr-L,68,2)}
   await cardLogo(x,W,H,'#540B0E',150);await cardByline(x,H,'#540B0E');
   return new Promise(res=>c.toBlob(res,'image/png'));
 }
@@ -3888,11 +3948,11 @@ function wrapText(ctx,text,x,y,maxW,lh,maxLines){
 }
 async function cardBlob(){
   const n=nightByKey(st.card.i),q=n.stories.length?n.stories[Math.min(st.card.q,n.stories.length-1)]:'';
-  const T=[{b:'#540B0E',f:'#FFF3B0',s:'#E09F3E'},{b:'#FFF3B0',f:'#540B0E',s:'#E09F3E'},{b:'#335C67',f:'#FFF3B0',s:'#9E2A2B'}][st.card.t];
+  const T=[{b:'#540B0E',f:'#FFF3B0',s:'#E09F3E',d:'#A22B2B'},{b:'#FFF3B0',f:'#540B0E',s:'#E09F3E',d:'#E09F3E'},{b:'#335C67',f:'#FFF3B0',s:'#9E2A2B',d:'#9E2A2B'}][st.card.t];
   try{await document.fonts.load('900 100px Archivo');await document.fonts.load('italic 40px "Instrument Serif"');await document.fonts.load('20px "DM Mono"')}catch(_){}
   const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
-  x.fillStyle=T.b;x.fillRect(0,0,W,H);
-  x.fillStyle=T.s;x.beginPath();x.arc(946,134,343,0,7);x.fill();
+  x.fillStyle=T.b;x.fillRect(0,0,W,H);cardDots(x,T.d,.5,W/2,H,H*.62,30,W,H);
+  x.fillStyle=T.s;x.beginPath();x.arc(946,134,343,0,7);x.fill();cardDots(x,T.b,.8,700,420,520,24,W,H,[946,134,343]);
   x.fillStyle=T.f;x.textBaseline='alphabetic';
   x.font='500 30px "DM Mono",monospace';if('letterSpacing' in x)x.letterSpacing='5px';
   x.fillText(((n.series||'Words On Wax')+' · '+n.n).toUpperCase(),72,110);if('letterSpacing' in x)x.letterSpacing='0px';
