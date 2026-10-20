@@ -123,66 +123,13 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 .hlp .hfoot a{text-decoration:underline}
 
 
-/* mini pictures of the real buttons, inside How to use */
-.hlp .hv{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;padding:14px 14px 16px;margin:4px 0 14px;border-radius:0 22px 0 0;background:var(--ox);color:var(--cream);pointer-events:none;user-select:none}
-.hlp .hv.teal{background:var(--teal)}.hlp .hv.red{background:var(--red)}.hlp .hv.gold{background:var(--gold);color:var(--ox)}
-.hlp .hv>small{flex:0 0 100%;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;opacity:.75;margin-bottom:2px}
-.hlp .hv .seg{flex:1 1 100%}
-.hlp .hv .seg button{padding:8px 2px;font-size:9.5px;letter-spacing:.06em}
-.hlp .hv .hearpill{margin-top:0;padding:8px 12px;font-size:10px;background:var(--teal);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.28),0 3px 0 rgba(0,0,0,.28)}
-.hlp .hv .hearpill.yr{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.45)}
-.hlp .hv.teal .hearpill:not(.yr){background:var(--ox)}
-.hv-btn{display:inline-block;padding:11px 16px;border-radius:999px;font-family:var(--body,inherit);font-weight:800;font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
-.hv-btn.gold{background:var(--gold);color:var(--ox)}
-.hv-btn.red{background:var(--red);color:var(--cream)}
-.hv-btn.ox{background:var(--ox);color:var(--gold)}
-.hv-btn.cream{background:var(--cream);color:var(--ox);box-shadow:inset 0 0 0 2.5px var(--ox)}
-.hv-btn.teal{background:var(--teal);color:var(--cream)}
-.hv-btn.line{box-shadow:inset 0 0 0 1.5px currentColor;background:transparent}
-.hv-btn.sm{padding:7px 12px;font-size:10.5px}
-.hv-ic{width:36px;height:36px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.5);display:grid;place-items:center;flex:none}
-.hv-ic svg{width:19px;height:19px;stroke:var(--cream);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.hv-ic.fill{background:var(--cream);box-shadow:0 0 0 1.5px var(--ox)}.hv-ic.fill svg{stroke:var(--ox)}
-.hv-plus{width:24px;height:24px;border-radius:50%;background:var(--ox);color:var(--cream);font-weight:800;font-size:17px;line-height:23px;text-align:center;box-shadow:0 0 0 1.5px rgba(255,243,176,.6);flex:none}
-.hv-shutter{width:46px;height:46px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px var(--ox),0 0 0 5px var(--cream);position:relative;flex:none;margin:0 6px}
-.hv-shutter::after{content:"";position:absolute;inset:11px;border-radius:50%;border:2.5px solid var(--cream)}
-.hlp .hv .seal{position:static;width:78px;height:78px;opacity:1;transform:rotate(-8deg);flex:none}
-.hlp .hv .seal b{font-size:11.5px}.hlp .hv .seal small{font-size:7px;margin-top:3px;max-width:56px}
-.hv-leg{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
-.hv-leg i{display:inline-block;width:11px;height:11px;border-radius:50%;border:2px solid var(--cream)}
-.hv-leg i.c{background:var(--cream)}.hv-leg i.l{background:linear-gradient(90deg,var(--cream) 50%,transparent 50%)}
-.hv-dock{display:flex;gap:4px;padding:5px;border-radius:999px;background:rgba(42,5,8,.94);border:1.5px solid rgba(255,243,176,.18);flex:1 1 100%}
-.hv-dock span{flex:1;text-align:center;padding:7px 2px;border-radius:999px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,243,176,.75)}
-.hv-dock span.on{background:var(--gold);color:var(--ox)}
-.hv-tile{width:78px;height:78px;position:relative;background:var(--gold);color:var(--ox);padding:8px;font-family:var(--disp);font-weight:900;font-stretch:62%;text-transform:uppercase;font-size:17px;line-height:.9;display:flex;align-items:flex-end;flex:none}
-.hv-tile .hv-plus{position:absolute;right:6px;top:6px}
-.hv-tile .hv-d{position:absolute;left:8px;bottom:6px;width:10px;height:10px;border-radius:50%;border:2px solid var(--ox);background:var(--ox)}
-.hv-tile.t{background:var(--teal);color:var(--cream)}.hv-tile.t .hv-plus{box-shadow:0 0 0 2px var(--cream)}
-.hv-strip{display:flex;align-items:center;gap:10px;flex:1 1 100%;padding:8px 14px 8px 8px;border-radius:999px 20px 20px 999px;background:var(--gold);color:var(--ox)}
-.hv-strip .av{width:38px;height:38px;border-radius:50%;background:var(--ox);color:var(--gold);display:grid;place-items:center;font-weight:900;flex:none}
-.hv-strip b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:19px;line-height:.95;text-transform:uppercase}
-.hv-strip span{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-top:2px}
-.hv-card{flex:1 1 100%;background:var(--cream);color:var(--ox);padding:11px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-radius:0 16px 0 0}
-.hv-card b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:19px;line-height:.95;text-transform:uppercase}
-.hv-card span{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;opacity:.75;margin-top:3px}
-.hv-sw{width:44px;height:26px;border-radius:999px;background:var(--gold);position:relative;flex:none}
-.hv-sw::after{content:"";position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:var(--ox)}
-.hv-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:1 1 100%}
-.hv-row b{font-size:13.5px}
-.hv-cnt{display:flex;gap:8px;flex:1 1 100%}
-.hv-cnt div{flex:1;background:var(--ox);color:var(--gold);text-align:center;padding:8px 2px;font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:26px;line-height:1}
-.hv-cnt small{display:block;font-family:var(--mono);font-weight:500;font-size:8.5px;letter-spacing:.14em;color:var(--cream);margin-top:3px}
-.hv-chk{display:inline-flex;align-items:center;gap:8px;font-size:12.5px}
-.hv-chk i{width:18px;height:18px;border:2px solid var(--cream);border-radius:4px;display:grid;place-items:center;font-style:normal;font-size:12px;line-height:1;background:var(--gold);border-color:var(--gold);color:var(--ox)}
-.hv-chip{padding:7px 12px;border-radius:999px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.55)}
-.hv-chip.hot{background:var(--gold);color:var(--ox);box-shadow:none;font-weight:600}
-.hv-name{padding:9px 12px;background:var(--ox);color:var(--cream);font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
-.hv-ul{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px}
+/* pictures in How to use are crops of the real app (scripts/help-shots.py) */
+.hlp .hvimg{display:block;width:100%;height:auto;margin:6px 0 14px;border-radius:0 18px 0 0}
+.hlp .hnow .hvimg{margin:10px 0 4px}
 .hlp summary::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c,var(--gold));flex:none;margin-right:-2px}
 .hlp summary{justify-content:flex-start}
 .hlp summary::after{margin-left:auto}
 .hlp details:nth-of-type(4n+1){--c:var(--gold)}.hlp details:nth-of-type(4n+2){--c:var(--teal)}.hlp details:nth-of-type(4n+3){--c:var(--red)}.hlp details:nth-of-type(4n){--c:var(--ox)}
-.hlp .hnow .hv{margin:10px 0 4px}
 
 /* ---------- screens ---------- */
 .screen{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .22s ease-out,visibility 0s linear .22s}
@@ -306,6 +253,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 .art.has-img img.cover{display:block}
 .art.has-img .t1,.art.has-img .t2,.art.has-img .disc,.art.has-img .ph{display:none}
 .seal{position:absolute;right:38px;top:34px;width:110px;height:110px;border-radius:50%;background:var(--red);color:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:inset 0 0 0 3px var(--cream),inset 0 0 0 5px var(--red),inset 0 0 0 6.5px rgba(255,243,176,.5);transform:rotate(-8deg)}
+.seal b.long{font-size:14px;letter-spacing:0}
 .seal b{font-family:var(--disp);font-weight:900;font-stretch:62%;text-transform:uppercase;font-size:19px;line-height:.9;letter-spacing:.02em;white-space:nowrap}
 .seal small{margin-top:5px;font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;line-height:1.25;max-width:70px}
 .seal.likely{background:var(--cream);color:var(--ox);box-shadow:inset 0 0 0 3px var(--ox),inset 0 0 0 5px var(--cream),inset 0 0 0 6.5px rgba(84,11,14,.5)}
@@ -1671,7 +1619,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <h4 class="disp">My copy’s notes</h4>
       <p class="sub">Photograph the sleeve, the liner notes, the inner sleeve. They stay private to you.</p>
       <label class="go press photolbl" for="photoIn">Take or choose a photo</label>
-      <input type="file" id="photoIn" accept="image/*" capture="environment" multiple hidden>
+      <input type="file" id="photoIn" accept="image/*" multiple hidden>
       <div class="pgrid" id="photoGrid"></div>
       <p class="fine2">Only photograph what you own and have the right to share. They’re stored privately on this device, and only you can see them.</p>
     </div>
@@ -1978,9 +1926,10 @@ const PEOPLE={
  'Phife Dawg':{from:'Queens, New York',yrs:'1970–2016',known:'Rapper in A Tribe Called Quest, the group’s sharp, funny counterpart to Q-Tip.',albums:[['Midnight Marauders','1993','MC','A Tribe Called Quest'],['Ventilation: Da LP','2000','Leader']]},
  'J Dilla':{from:'Detroit',yrs:'1974–2006',known:'Producer whose loose, off-the-grid drum programming influenced a generation. Donuts came out three days before he died.',albums:[['Fantastic, Vol. 2','2000','Producer','Slum Village'],['Welcome 2 Detroit','2001','Leader'],['Like Water for Chocolate','2000','Producer','Common']]}
 };
+const MYRECS=()=>DEMO?RECS:RECS.filter(r=>r.real); // the built-in sample records never count as yours in the real app
 function alongside(name){
   const cnt={};
-  RECS.forEach(r=>{
+  MYRECS().forEach(r=>{
     const people=new Set([...((REP[r.id]||{}).crew||[]).map(x=>x[0]),...(r.cred||[])]);
     const lead=r.a===name||r.a.split(' & ').includes(name);
     if(people.has(name)||lead)people.forEach(n=>{if(n!==name&&!/Studio$/.test(n))cnt[n]=(cnt[n]||0)+1});
@@ -2003,7 +1952,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.39.2 · full logo';
+const BUILD='0.40.0 · audit fixes';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2136,7 +2085,7 @@ async function camOn(){
     camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});camIsHi=false;
     const v=$('#liveVid');v.srcObject=camStream;try{await v.play()}catch(e){}
     $('#vf').classList.add('live');st.camPref=true;camSave();maybeAuto(900);return true;
-  }catch(e){camOff();toast('The camera isn’t available here, so the illustration stays.');return false}
+  }catch(e){camOff();toast(e&&/NotAllowed|Permission/i.test(e.name+e.message)?'The camera is off for Memory Wax. Turn it on in iPhone Settings, then Memory Wax, then Camera.':'The camera isn’t available here, so the illustration stays.');return false}
 }
 let camIsHi=false;
 /* small print needs pixels: ask the camera for its largest size for the moment of capture, then go back to the light preview */
@@ -2738,7 +2687,15 @@ const MODES={
     rows:[['Label',L('impulse','Impulse!')],['Catalog','Matched by barcode'],['Country','Not confirmed'],['Matrix','<span style="color:var(--gold)">Scan the deadwax to confirm</span>'],['Format','12-inch LP']],
     evid:'The barcode matched a release. A barcode names the edition, not the individual pressing, and older records often have none. Scan the deadwax to confirm yours.'}
 };
-const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Wikipedia and bio caches share the phone's small storage quota with the collection, so they are capped and evicted first.
+const CACHE_RE=/^mw_(wa|bio)_/;
+function cachePrune(keep){try{const ks=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(CACHE_RE.test(k)){let at=0;try{at=JSON.parse(localStorage.getItem(k)).at||0}catch(e){}ks.push([k,at])}}
+  ks.sort((a,b)=>b[1]-a[1]).slice(keep).forEach(([k])=>localStorage.removeItem(k))}catch(e){}}
+function cachePut(k,v){try{localStorage.setItem(k,v)}catch(e){cachePrune(20);try{localStorage.setItem(k,v)}catch(e2){}}}
+let fullWarned=false;
+function lsPut(k,v){try{localStorage.setItem(k,v);return true}catch(e){cachePrune(0);try{localStorage.setItem(k,v);return true}catch(e2){
+  if(!fullWarned){fullWarned=true;setTimeout(()=>{try{toast('This phone’s app storage is full, so recent changes may not be saved. Back up from Settings now.')}catch(e3){}},300)}return false}}}
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const recOf=id=>RECS.find(r=>r.id===id)||RECS[0];
 const recIf=id=>RECS.find(r=>r.id===id)||null;
 const copyOf=id=>(st.copies[id]=st.copies[id]||{cond:null,paid:'',where:''});
@@ -2835,11 +2792,11 @@ const REP={
   story:'The record that launched a partnership. Colón and Lavoe would record a string of Fania albums together.',
   tracks:[]}
 };
-const lab=(r)=>r.lab?(NAMEKEY[r.lab]?`<button class="cr" data-cr="${NAMEKEY[r.lab]}">${r.lab}</button>`:r.lab):'Not confirmed';
+const lab=(r)=>r.lab?(NAMEKEY[r.lab]?`<button class="cr" data-cr="${NAMEKEY[r.lab]}">${esc(r.lab)}</button>`:r.lab):'Not confirmed';
 function repRows(r,R,mode){
   const none='<span style="color:var(--mute)">Not in this sample</span>';
   if(mode==='cover'||mode==='barcode')return [['Label',lab(r)],['Catalog',r.cat?esc(r.cat):'Not confirmed'],['Country','Not confirmed'],['Matrix','<span style="color:var(--mute)">Not read yet</span>'],['Format',R.fmt||'12-inch LP']];
-  const mx=r.mx?`<span class="mono-chip">${r.mx}</span>`:'<span style="color:var(--mute)">Read from your scan</span>';
+  const mx=r.mx?`<span class="mono-chip">${esc(r.mx)}</span>`:'<span style="color:var(--mute)">Read from your scan</span>';
   return [['Label',lab(r)+(R.lblnote?` (${R.lblnote})`:'')],['Catalog',R.cat||none],['Country',R.ctry||none],['Matrix',mx+(mode==='likely'?' <span style="color:var(--mute)">you confirmed</span>':'')],['Format',R.fmt||'12-inch LP']];
 }
 function fillCopy(id){
@@ -2888,7 +2845,7 @@ async function wikiAlbum(t,a,single){
   if(!b){try{const j=await (await fetch('https://en.wikipedia.org/w/rest.php/v1/search/page?q='+encodeURIComponent(t0+' '+(various?'':lead+' ')+'album')+'&limit=6')).json();
     for(const p of (j.pages||[])){if(nz(noParen(p.title))!==nz(t0))continue;const x=await wikiSummary(p.title);if(ok(x)){b=x;break}}}catch(e){}}
   if(b)b.short=shortBio(b.text,430);
-  WIKIAB.set(key,b);try{localStorage.setItem(key,JSON.stringify({at:Date.now(),v:b}))}catch(e){}
+  WIKIAB.set(key,b);cachePut(key,JSON.stringify({at:Date.now(),v:b}));
   return b;
 }
 function storyHTML(r,wiki){
@@ -2952,7 +2909,7 @@ function playReveal(){
   const m=MODES[mode]||MODES.confirmed,r=$('#reveal');
   clearTimeout(t2);clearTimeout(t3);
   r.classList.remove('go1','go2','go3');
-  $('#badge').className='seal '+m.cls;$('#sealA').textContent=m.a;$('#sealB').textContent=(!fromScan&&mode==='likely')?'Best match':m.b;
+  $('#badge').className='seal '+m.cls;$('#sealA').textContent=m.a;$('#sealA').classList.toggle('long',m.a.length>9);$('#sealB').textContent=(!fromScan&&mode==='likely')?'Best match':m.b;
   fillReport(r0,mode);if(r0.real)ensureCredits(r0);
   $('#evid').classList.remove('open');$('#evidBtn').setAttribute('aria-expanded','false');$('#evidBtn').textContent='How we know';
   $('#repScroll').scrollTop=0;$$('.blk').forEach(s=>{s.classList.remove('in');s.style.transitionDelay='0ms'});
@@ -3020,7 +2977,7 @@ async function bioFor(name,mbid){
   if(mbid){try{b=await wikiViaMB(mbid)}catch(e){}}
   if(!b){try{b=await wikiSearch(name)}catch(e){}}
   if(b)b.short=shortBio(b.text,520);
-  BIOC.set(k,b);try{localStorage.setItem('mw_bio_'+k,JSON.stringify({at:Date.now(),v:b}))}catch(e){}
+  BIOC.set(k,b);cachePut('mw_bio_'+k,JSON.stringify({at:Date.now(),v:b}));
   return b;
 }
 async function fillBio(name,mbid){
@@ -3056,7 +3013,7 @@ function digBack(to){
 }
 function openCreditNameRender(e){
   const name=e.name,role=e.role,mbid=e.mbid,pid=e.pid;
-  const hits=RECS.filter(r=>(r.cred||[]).includes(name)||r.a===name||r.a.split(' & ').includes(name));
+  const hits=MYRECS().filter(r=>(r.cred||[]).includes(name)||r.a===name||r.a.split(' & ').includes(name));
   const base={mbid:mbid||'',type:typeOf(role||''),name,role:role||'',blurb:`Credited on ${hits.length} record${hits.length===1?'':'s'} in your collection.`,path:hits.map(r=>[r.t,String(r.y),'Credited'])};
   st.pbase=base;e.c=base;buildCredit(base);if(IDX&&!DEMO)idxPerson(name,role,pid?+pid:0,base);
 }
@@ -3110,7 +3067,7 @@ function buildCredit(c){
 }
 function openCredit(key){const c=CR[key];if(!c)return;digPush({k:'person',name:c.name,key,c});buildCredit(c)}
 function openCreditName(name,role,pid,mbid){
-  const hits=RECS.filter(r=>(r.cred||[]).includes(name)||r.a===name||r.a.split(' & ').includes(name));
+  const hits=MYRECS().filter(r=>(r.cred||[]).includes(name)||r.a===name||r.a.split(' & ').includes(name));
   const roleFor=r=>{const cr=((REP[r.id]||{}).crew||[]).find(x=>x[0]===name);return cr?cr[1]:(r.a.includes(name)?'Leader':'Credited')};
   const base={mbid:mbid||'',type:typeOf(role||''),name,role:role||'',blurb:`Credited on ${hits.length} record${hits.length===1?'':'s'} in ${DEMO?'this sample catalog':'your collection'}.`,path:hits.map(r=>[r.t,String(r.y),roleFor(r)])};
   digPush({k:'person',name,role,pid,mbid});st.pbase=base;buildCredit(base);
@@ -3142,7 +3099,7 @@ const cov=r=>{if(DEVTOOLS&&window.__nocovers)return null;if(COVERURL[r.id])retur
 function tileHTML(r){
   const c=cov(r),img=c?` has-img" style="background-image:url('${c}')`:'';
   const on=st.sel&&st.sel.has(r.id);
-  return `<div class="tile m${r.m}${img}${on?' sel':''}"><button class="tile-main" data-open="${r.id}" aria-label="${on?'Selected: ':''}${r.t}, ${r.a}"><span class="tt">${r.t}</span><span class="ta">${r.a}</span></button><i class="st ${r.c}" title="${stLabel[r.c]}"></i><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`;
+  return `<div class="tile m${r.m}${img}${on?' sel':''}"><button class="tile-main" data-open="${r.id}" aria-label="${on?'Selected: ':''}${esc(r.t)}, ${esc(r.a)}"><span class="tt">${esc(r.t)}</span><span class="ta">${esc(r.a)}</span></button><i class="st ${r.c}" title="${stLabel[r.c]}"></i><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${esc(r.t)} to a shelf">+</button></div>`;
 }
 /* search across credits, labels, matrix, year and your own memories. returns null (no match), '' (title/artist) or a reason */
 function match(r,q){
@@ -3198,7 +3155,7 @@ function renderCollection(){
   $('#selBar').hidden=!(st.sel&&st.screen==='collection');$('#selN').textContent=st.sel?`${st.sel.size} selected`:'';
   const asList=st.view==='list'||!!q,g=$('#rgrid');g.className=(asList?'rlist':'rgrid')+(st.sel?' selmode':'');
   g.innerHTML=!items.length?'<p class="empty">Nothing matches. Try another word or filter.</p>':!asList?items.map(x=>tileHTML(x.r)).join(''):
-    items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${r.t}</b><span>${r.a} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${r.t} to a shelf">+</button></div>`).join('');
+    items.map(({r,why})=>`<div class="lrow${st.sel&&st.sel.has(r.id)?' sel':''}"><div class="tile m${r.m}${cov(r)?` has-img" style="background-image:url('${cov(r)}')`:''}"></div><button class="lt" data-open="${r.id}" style="text-align:left"><b>${esc(r.t)}</b><span>${esc(r.a)} · ${r.y}${why?' · '+why:''}</span></button><span class="lst">${stLabel[r.c]}</span><i class="ck" aria-hidden="true"></i><button class="plus" data-plus="${r.id}" aria-label="Add ${esc(r.t)} to a shelf">+</button></div>`).join('');
   const loose=all.filter(r=>r.c!=='confirmed').length;
   $('#nudge').innerHTML=(backupStale()?`<button class="nudge n2" data-set="backup"><div><b>${lastBackupAt()?'It’s been a while since your last backup':'Your collection lives on this phone'}</b><span>Save a backup file. It takes a few seconds.</span></div><i>Back up</i></button>`:'')+(loose?`<button class="nudge" data-nudge="1"><div><b>${loose} could be confirmed</b><span>Scan their deadwax to name the exact pressing.</span></div><i>Scan</i></button>`:'');
   renderShelves();renderWants();
@@ -3214,11 +3171,11 @@ function renderShelves(){
     const minis=[0,1,2,3].map(j=>{const r=RECS.find(x=>x.id===s.recs.filter(id=>st.owned.has(id))[j]);return r?`<i class="mm m${r.m}"${cov(r)?` style="background:url('${cov(r)}') center/cover"`:''}></i>`:'<i></i>'}).join('');
     const n=s.recs.filter(id=>st.owned.has(id)).length;
     return `<div class="shelf s${i%3}" data-sid="${s.id}"><div class="row"><div class="mos">${minis}</div><div><div class="nm disp">${esc(s.n)}<button class="ed" data-shedit="${s.id}" aria-label="Rename or delete ${esc(s.n)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19z"/></svg></button></div><div class="ct">${rc(n)} · ${VNAME[s.v]}</div></div></div>
-    <div class="seg${st.segOpen.has(s.id)?'':' collapsed'}" style="--i:${s.v}" role="group" aria-label="Who can see ${s.n}"><i class="thumb"></i>${VNAME.map((l,v)=>`<button data-v="${v}" aria-pressed="${v===s.v}">${l}</button>`).join('')}</div>
+    <div class="seg${st.segOpen.has(s.id)?'':' collapsed'}" style="--i:${s.v}" role="group" aria-label="Who can see ${esc(s.n)}"><i class="thumb"></i>${VNAME.map((l,v)=>`<button data-v="${v}" aria-pressed="${v===s.v}">${l}</button>`).join('')}</div>
     <p class="vnote">${VNOTE[s.v]}</p><div class="shbtns"><button class="sharebtn" data-share="${s.id}">Share</button><button class="sharebtn" data-segtog="${s.id}" aria-expanded="${st.segOpen.has(s.id)}">Who can see</button><button class="sharebtn" data-shedit="${s.id}">Edit</button><button class="sharebtn" data-shl="${s.id}">Listen</button><button class="sharebtn" data-shpl="${s.id}">Playlist</button></div></div>`}).join('')+`<div class="sethead">Playlists</div>${st.playlists.map(p=>`<button class="plcard press" data-plview="${p.id}"><div class="minis">${p.items.slice(0,3).map(it=>{const r=recOf(it.rec),c=cov(r);return `<i class="m${r.m}"${c?` style="background-image:url('${c}')"`:''}></i>`}).join('')}</div><div><b>${esc(p.n)}</b><span>${p.items.length} tracks · ${p.vis?'Anyone with the link':'Just me'}</span></div></button>`).join('')}<button class="ghost" data-plnew="1">New playlist</button>`;
 }
 function renderWants(){
-  $('#wants').innerHTML=!st.wants.length?'<p class="empty" style="padding-left:0">Nothing here yet. Tap Dream Crate on any record.</p>':st.wants.map((w,i)=>`<div class="want"><div class="tile m${w.m}"><span class="tt">${w.t}</span></div><div class="lt"><b>${w.t}</b><span>${w.a}</span><span style="opacity:.9">${w.note}</span>${DEMO&&w.list?`<i class="tag2" style="font-style:normal">${w.list}</i>`:''}</div><button class="wrm" data-wrm="${i}" aria-label="Remove ${esc(w.t)} from your Dream Crate">×</button></div>`).join('');
+  $('#wants').innerHTML=!st.wants.length?'<p class="empty" style="padding-left:0">Nothing here yet. Tap Dream Crate on any record.</p>':st.wants.map((w,i)=>`<div class="want"><div class="tile m${w.m}"><span class="tt">${esc(w.t)}</span></div><div class="lt"><b>${esc(w.t)}</b><span>${w.a}</span><span style="opacity:.9">${esc(w.note)}</span>${DEMO&&w.list?`<i class="tag2" style="font-style:normal">${w.list}</i>`:''}</div><button class="wrm" data-wrm="${i}" aria-label="Remove ${esc(w.t)} from your Dream Crate">×</button></div>`).join('');
 }
 function fillLegalContact(){
   const el=$('#legalContact');if(!el)return;
@@ -3229,7 +3186,7 @@ function fillLegalContact(){
 function renderSettings(){$$('#sheet-settings .sw[data-set]').forEach(b=>b.setAttribute('aria-pressed',String(!!prefs[b.dataset.set]||(b.dataset.set==='motion'&&osReduce()))));{const md=$('#motionNote');if(md)md.textContent=osReduce()?'On, because your phone’s Reduce Motion is on. Change it in Settings → Accessibility → Motion.':'Calmer transitions. Follows your phone’s setting by default.'}cloudPaint();const x=safetyInfo(),b=$('#safetyBtn');if(b){b.hidden=!x;if(x)$('#safetySub').textContent=`A copy from ${new Date(x.at).toLocaleDateString()}, before the update from ${x.from} to ${x.to}.`}}
 function renderBatch(){
   const n=st.queue.length,rv=st.queue.filter(q=>q.review).length;
-  $('#batchList').innerHTML=st.queue.map(q=>{const r=RECS.find(x=>x.id===q.id);return `<div class="vr"><b>${r.t}</b><span>${q.review?'Needs a second look':'Confirmed'}</span></div>`}).join('');
+  $('#batchList').innerHTML=st.queue.map(q=>{const r=RECS.find(x=>x.id===q.id);return `<div class="vr"><b>${esc(r.t)}</b><span>${q.review?'Needs a second look':'Confirmed'}</span></div>`}).join('');
   $('#batchSum').textContent=`${n} added to your collection.`+(rv?` ${rv} ${rv===1?'needs':'need'} a second look because we couldn’t confirm the pressing. Fix them anytime in Collection.`:' All confirmed.');
 }
 function openShare(sid){
@@ -3237,7 +3194,7 @@ function openShare(sid){
   if(sh.v!==2){toast('Only Everyone shelves can be shared by link. Set this shelf to Everyone first.');return}
   const slug=sh.n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const rs=sh.recs.filter(i=>st.owned.has(i)).map(i=>RECS.find(r=>r.id===i));
-  $('#shareBody').innerHTML=`<div class="webcard"><div class="wbar"><i></i><i></i><i></i><span>memorywax.app/you/${slug}</span></div><div class="wbody"><div class="wk">A shelf by you</div><div class="wt disp">${sh.n}</div><div class="wgrid">${rs.map(r=>`<div class="tile m${r.m}"><span class="tt">${r.t}</span></div>`).join('')}</div><div class="wcta">Open in Memory Wax</div></div></div>`;
+  $('#shareBody').innerHTML=`<div class="webcard"><div class="wbar"><i></i><i></i><i></i><span>memorywax.app/you/${slug}</span></div><div class="wbody"><div class="wk">A shelf by you</div><div class="wt disp">${esc(sh.n)}</div><div class="wgrid">${rs.map(r=>`<div class="tile m${r.m}"><span class="tt">${esc(r.t)}</span></div>`).join('')}</div><div class="wcta">Open in Memory Wax</div></div></div>`;
   st.shareUrl='https://memorywax.app/you/'+slug;
   openSheet('share');
 }
@@ -3253,7 +3210,7 @@ function openShelfSheet(id){
 }
 function renderShelfPick(){
   const id=st.target;
-  $('#shelfPick').innerHTML=id?st.shelves.map(s=>`<button class="shelf-row" data-tog="${s.id}" aria-pressed="${s.recs.includes(id)}"><span class="t"><b>${s.n}</b><span class="s">${VNAME[s.v]} · ${rc(s.recs.filter(x=>st.owned.has(x)).length)}</span></span><i class="ck"></i></button>`).join(''):'';
+  $('#shelfPick').innerHTML=id?st.shelves.map(s=>`<button class="shelf-row" data-tog="${s.id}" aria-pressed="${s.recs.includes(id)}"><span class="t"><b>${esc(s.n)}</b><span class="s">${VNAME[s.v]} · ${rc(s.recs.filter(x=>st.owned.has(x)).length)}</span></span><i class="ck"></i></button>`).join(''):'';
 }
 function setNewVis(v){st.newV=v;$('#newVis').style.setProperty('--i',v);$$('#newVis button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.v===v)));$('#newNote').textContent=VNOTE[v]}
 
@@ -3261,7 +3218,7 @@ function setNewVis(v){st.newV=v;$('#newVis').style.setProperty('--i',v);$$('#new
 function renderVisitor(){
   const v=st.vis;$('#visSeg').style.setProperty('--i',v);$$('#visSeg button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.v===v)));
   const can=s=>s.v===2||(s.v===1&&v===1);
-  $('#visList').innerHTML=st.shelves.map(s=>{const n=s.recs.filter(i=>st.owned.has(i)).length;return can(s)?`<div class="vr"><b>${s.n}</b><span>${rc(n)} · visible</span></div>`:`<div class="vr off"><b>${s.n}</b><span>Hidden</span></div>`}).join('');
+  $('#visList').innerHTML=st.shelves.map(s=>{const n=s.recs.filter(i=>st.owned.has(i)).length;return can(s)?`<div class="vr"><b>${esc(s.n)}</b><span>${rc(n)} · visible</span></div>`:`<div class="vr off"><b>${esc(s.n)}</b><span>Hidden</span></div>`}).join('');
   const seen=st.shelves.filter(can),recs=new Set(seen.flatMap(s=>s.recs.filter(i=>st.owned.has(i))));
   $('#visSum').textContent=`${v?'A friend':'A stranger'} sees ${seen.length} of ${st.shelves.length} shelves and ${recs.size} records. Records only show on shelves they can see.`;
 }
@@ -3435,7 +3392,7 @@ function renderListen(){
   const pick=e.track!=null?recTracks(r.id)[e.track]:null;
   $('#listenBody').innerHTML=`<div class="lcard" style="--ac:${v.ac}"><div class="lsvc"><i></i>${v.n} · ${NPn?'plays with your account':'plays in their own player'}</div>
     ${multi?`<div class="lsrc">${L.qi+1} of ${L.q.length}${L.shuffle?' · shuffled':''}</div>`:''}
-    ${src||NPn?'':`<div class="lh"><div class="tile m${r.m}${cv?' has-img':''}"${cv?` style="background-image:url('${cv}')"`:''}></div><div><b>${r.t}</b><span>${r.a} · ${r.y}</span></div></div>`}
+    ${src||NPn?'':`<div class="lh"><div class="tile m${r.m}${cv?' has-img':''}"${cv?` style="background-image:url('${cv}')"`:''}></div><div><b>${esc(r.t)}</b><span>${esc(r.a)} · ${r.y}</span></div></div>`}
     ${pick&&!NPn?`<p class="fine2" style="margin:10px 0 0;color:var(--cream)">Their pick: <b>${esc(pick)}</b>. Tap it in the player to start there.</p>`:''}
     ${NPn?npHTML(r):src?`<iframe class="emb" title="${v.n} player for ${esc(r.t)}" src="${src}" height="450" loading="lazy" allow="autoplay *; encrypted-media *; clipboard-write; fullscreen; picture-in-picture" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"></iframe>`
      :`<p style="font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.15;margin:14px 0 4px">${finding?`Finding ${esc(r.t)} in ${v.n}…`:`We couldn’t find ${esc(r.t)} in ${v.n}.`}</p>`}
@@ -3539,7 +3496,7 @@ async function saveTo(svc,name,note,items,pid){
 
 /* shelves + playlists */
 function shelfRecs(sid){const sh=st.shelves.find(x=>x.id===sid);return sh?sh.recs.filter(i=>st.owned.has(i)):[]}
-function listenShelf(sid,shuffle,first){const sh=st.shelves.find(x=>x.id===sid);startQueue(shelfRecs(sid).map(rec=>({rec})),`your ${sh.n} shelf`,{shuffle,first})}
+function listenShelf(sid,shuffle,first){const sh=st.shelves.find(x=>x.id===sid);startQueue(shelfRecs(sid).map(rec=>({rec})),`your ${esc(sh.n)} shelf`,{shuffle,first})}
 function openPlBuilder(items,name){
   st.plDraft={id:null,items:items.slice()};
   $('#plHead').textContent='New playlist';$('#plName').value=name||'';$('#plNote').value='';
@@ -3549,10 +3506,10 @@ function openPlBuilder(items,name){
 function nextTrack(id){const used=new Set(st.plDraft.items.filter(x=>x.rec===id).map(x=>x.track)),n=recTracks(id).length;for(let k=0;k<n;k++)if(!used.has(k))return k;return 0}
 function renderPlBuilder(){
   const D=st.plDraft;
-  $('#plItems').innerHTML=D.items.length?D.items.map((it,i)=>{const r=recOf(it.rec),c=cov(r);return `<div class="plrow"><div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div><b>${r.t}</b><select data-pltr="${i}" aria-label="Track from ${r.t}">${recTracks(r.id).map((t,k)=>`<option value="${k}"${k===it.track?' selected':''}>${k+1}. ${t}</option>`).join('')}</select><div class="plmini"><button data-pldup="${i}">+ Another track</button><button data-plall="${i}">Whole album</button></div></div><button class="x" data-plrm="${i}" aria-label="Remove this track of ${r.t}">×</button></div>`}).join(''):'<p class="fine2" style="margin:0">Nothing here yet. Add a record below.</p>';
+  $('#plItems').innerHTML=D.items.length?D.items.map((it,i)=>{const r=recOf(it.rec),c=cov(r);return `<div class="plrow"><div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div><b>${esc(r.t)}</b><select data-pltr="${i}" aria-label="Track from ${esc(r.t)}">${recTracks(r.id).map((t,k)=>`<option value="${k}"${k===it.track?' selected':''}>${k+1}. ${t}</option>`).join('')}</select><div class="plmini"><button data-pldup="${i}">+ Another track</button><button data-plall="${i}">Whole album</button></div></div><button class="x" data-plrm="${i}" aria-label="Remove this track of ${esc(r.t)}">×</button></div>`}).join(''):'<p class="fine2" style="margin:0">Nothing here yet. Add a record below.</p>';
   const have=new Set(D.items.map(x=>x.rec));
   const pool=own().filter(r=>recTracks(r.id).length);
-  $('#plAdd').innerHTML=pool.length?pool.map(r=>`<button class="pb" aria-pressed="${have.has(r.id)}" data-pladd="${r.id}" aria-label="${have.has(r.id)?'Add another track from ':'Add '}${esc(r.t)}">${have.has(r.id)?'✓ ':'+ '}${r.t}</button>`).join(''):'<span class="fine2" style="margin:0">Records with a tracklist show up here.</span>';
+  $('#plAdd').innerHTML=pool.length?pool.map(r=>`<button class="pb" aria-pressed="${have.has(r.id)}" data-pladd="${r.id}" aria-label="${have.has(r.id)?'Add another track from ':'Add '}${esc(r.t)}">${have.has(r.id)?'✓ ':'+ '}${esc(r.t)}</button>`).join(''):'<span class="fine2" style="margin:0">Records with a tracklist show up here.</span>';
 }
 function savePlaylist(){
   const D=st.plDraft,n=$('#plName').value.trim();
@@ -3568,7 +3525,7 @@ function renderPlView(id){
   $('#plvBody').innerHTML=`<h4 class="disp">${esc(p.n)}</h4><p class="sub">${p.items.length} tracks · by you · ${p.vis?'Anyone with the link':'Just me'}</p>
    ${p.note?`<p class="quote" style="margin:0 0 6px">“${esc(p.note)}”</p>`:''}
    <div class="shbtns" style="margin:4px 0 6px"><button class="go press" style="flex:1" data-plplay="${p.id}">Play</button><button class="go press" style="flex:1;background:var(--teal)" data-plplay="${p.id}" data-shuf="1">Shuffle</button></div>
-   ${p.items.map(it=>{const r=recOf(it.rec),c=cov(r);return `<div class="plrow"><div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div><b>${recTracks(r.id)[it.track]||r.t}</b><span style="font-size:12px;opacity:.7">${r.t} · ${r.a}</span></div></div>`}).join('')}
+   ${p.items.map(it=>{const r=recOf(it.rec),c=cov(r);return `<div class="plrow"><div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}></div><div><b>${recTracks(r.id)[it.track]||r.t}</b><span style="font-size:12px;opacity:.7">${esc(r.t)} · ${esc(r.a)}</span></div></div>`}).join('')}
    <div class="sethead">Share it</div>
    <div class="opts"><button class="pb" data-plvis="${p.id}" aria-pressed="${!!p.vis}">${p.vis?'Anyone with the link':'Just me'}</button></div>
    ${p.vis?`<div class="shbtns"><button class="sharebtn" data-copy="pl">Copy link</button><button class="sharebtn" data-nshare="pl">Share</button></div><p class="vnote" style="margin:8px 0 0">Shows the playlist name, your note and the tracks. Never your username unless you add it, your prices, or your location.</p>`:'<p class="vnote" style="margin:0">Private. Turn on the link to share it with a friend, even if they aren’t on Memory Wax yet.</p>'}
@@ -3588,7 +3545,7 @@ function shareFlow(sid){
   const sh=st.shelves.find(x=>x.id===sid);
   if(sh.v===2){openShare(sid);return}
   const n=sh.recs.filter(i=>st.owned.has(i)).length;
-  $('#preshBody').innerHTML=`<h4 class="disp">Before you share</h4><p class="sub">“${sh.n}” is ${VNAME[sh.v]} right now. Here’s exactly what a link would show.</p>
+  $('#preshBody').innerHTML=`<h4 class="disp">Before you share</h4><p class="sub">“${esc(sh.n)}” is ${VNAME[sh.v]} right now. Here’s exactly what a link would show.</p>
    <ul class="leak"><li>The shelf name and its ${rc(n)}</li><li>Your username</li><li class="no">Never shown: prices, what you paid, where you bought, or your location</li><li class="no">Never shown: your other shelves</li></ul>
    <button class="go press" data-presh="everyone" data-sid="${sid}">Share with Everyone</button>
    ${sh.v<1?`<button class="opt-card" data-presh="friends" data-sid="${sid}" style="margin-top:10px"><b>Friends only</b><span>No link. Only people you’ve both approved can see it.</span></button>`:''}
@@ -3612,7 +3569,7 @@ function openCard(i){st.card={i:String(i),q:0,t:0};renderCard();openSheet('card'
 /* ---------- notes, photos, import/export, share, series ---------- */
 function openNotes(){
   const r=recOf(st.rec||1),R=REP[r.id]||{};
-  $('#notesBody').innerHTML=`<h4 class="disp">Release notes</h4><p class="sub">${r.t} · ${(R.cat||r.lab||'')}</p>
+  $('#notesBody').innerHTML=`<h4 class="disp">Release notes</h4><p class="sub">${esc(r.t)} · ${(R.cat||r.lab||'')}</p>
    <div class="sethead">Credits as listed</div><ul class="people">${(R.crew||[]).map(([n,role])=>`<li>${nameBtn(n,role)}<span>${role}</span></li>`).join('')}</ul>
    <div class="sethead">Summary</div><p class="fine" style="font-weight:600;margin:0 0 10px">${R.sent||''}</p>
    <div class="dsrc"><b>Sample summary</b><span>The real release notes come from Discogs contributors, with a link to the source.</span></div>
@@ -3632,7 +3589,7 @@ $('#photoIn').addEventListener('change',e=>{
   [...e.target.files].forEach(f=>{st.photos[id].push(URL.createObjectURL(f));photoStore(id,f)});
   e.target.value='';renderPhotos();toast('Saved. Only you can see these.');
 });
-function csvCell(v){v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function csvCell(v){v=v==null?'':String(v);if(/^[=+\-@\t\r]/.test(v)&&isNaN(Number(v)))v="'"+v;return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 function exportCSV(){
   const head=['Title','Artist','Year','Label','Catalog','Country','Format','Barcode','Matrix','Tier','Condition','Paid','Where','Memory','Shelves','Discogs release','MusicBrainz release'];
   const rows=own().map(r=>{const R=REP[r.id]||{},cp=copyOf(r.id);return [r.t,r.a,r.y||'',r.lab||'',r.cat||R.cat||'',r.ctry||R.ctry||'',r.fmt||R.fmt||'',r.bc||'',r.mx||'',stLabel[r.c]||'',cp.cond||'',cp.paid||'',cp.where||'',r.memo||'',st.shelves.filter(x=>x.recs.includes(r.id)).map(x=>x.n).join('; '),r.dg?'https://www.discogs.com/release/'+r.dg:'',r.mb?'https://musicbrainz.org/release/'+r.mb:'']});
@@ -3668,7 +3625,7 @@ $('#csvIn').addEventListener('change',e=>{
     });
     renderCollection();
     $('#importBody').innerHTML=`<h4 class="disp">Import done</h4><p class="sub">${added.length} added · ${had.length} already yours · ${flag.length} need a look</p>
-     ${added.length?`<div class="sethead">Added</div><div class="vlist">${added.map(r=>`<div class="vr"><b>${r.t}</b><span>${stLabel[r.c]}</span></div>`).join('')}</div>`:''}
+     ${added.length?`<div class="sethead">Added</div><div class="vlist">${added.map(r=>`<div class="vr"><b>${esc(r.t)}</b><span>${stLabel[r.c]}</span></div>`).join('')}</div>`:''}
      ${flag.length?`<div class="sethead">Need a look</div><div class="vlist">${flag.map(([t,a])=>`<div class="vr off"><b>${esc(t||'(blank)')}</b><span>${esc(a)||'No artist'}</span></div>`).join('')}</div><p class="fine2">This prototype matches against its 20 sample records. The real app searches the full Discogs database and asks you to confirm the pressing for anything unsure.</p>`:''}
      <button class="go press" data-set="batchview">View in Collection</button>`;
     openSheet('import');
@@ -3736,7 +3693,7 @@ function openNight(si){
   $('#nightBody').innerHTML=`<h4 class="disp">Add a night</h4><p class="sub">${esc(st.series[si].n)}. Pick what played. The recap writes itself.</p>
    <input class="txt" id="nightTitle" placeholder="Night title, like Salsa Dura" aria-label="Night title" maxlength="40">
    <div class="sethead">What played</div>
-   <div id="nightList">${rs.map(r=>`<button class="opt-card" data-nrec="${r.id}" aria-pressed="false"><b>${r.t}</b><span>${r.a}</span></button>`).join('')||'<p class="fine2">Scan a record first.</p>'}</div>
+   <div id="nightList">${rs.map(r=>`<button class="opt-card" data-nrec="${r.id}" aria-pressed="false"><b>${esc(r.t)}</b><span>${esc(r.a)}</span></button>`).join('')||'<p class="fine2">Scan a record first.</p>'}</div>
    <div class="sethead">One story from the night</div>
    <textarea id="nightStory" aria-label="A story from the night" placeholder="A moment someone shared…" style="height:90px"></textarea>
    <button class="go press" data-nightsave="${si}">Save night and make recap</button>`;
@@ -3777,7 +3734,7 @@ function hostCard(H,slug){
   return `<div class="webcard"><div class="wbar"><i></i><i></i><i></i><span>memorywax.app/night/${slug}</span></div><div class="wbody"><div class="wk">A listening room</div><div class="wt disp">${esc(H.name||'Untitled night')}</div>
    <p style="margin:0 0 8px;font-weight:700;font-size:14px">${[whenText(H),H.mode==='online'?'Online':H.where&&esc(H.where)].filter(Boolean).join(' · ')}</p>
    ${H.line?`<p class="quote" style="margin:0 0 10px">“${esc(H.line)}”</p>`:''}
-   <div class="wgrid">${rs.map(r=>{const c=cov(r);return `<div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}><span class="tt">${r.t}</span></div>`}).join('')}</div>
+   <div class="wgrid">${rs.map(r=>{const c=cov(r);return `<div class="tile m${r.m}${c?' has-img':''}"${c?` style="background-image:url('${c}')"`:''}><span class="tt">${esc(r.t)}</span></div>`}).join('')}</div>
    <div class="wcta">Open in Memory Wax</div></div></div>`;
 }
 function renderHost(){
@@ -3796,8 +3753,8 @@ function renderHost(){
   }else if(s===2){
     const mine=own();
     h+=`<p class="sub">Pick the records you’ll play, in order. Add a line on why, if you like.</p>
-     <div class="opts">${mine.map(r=>`<button class="pb" aria-pressed="${H.recs.includes(r.id)}" data-hrec="${r.id}">${H.recs.includes(r.id)?(H.recs.indexOf(r.id)+1)+'. ':'+ '}${r.t}</button>`).join('')}</div>
-     ${H.recs.map(id=>{const r=recOf(id);return `<div class="hnote"><b>${r.t}</b><input class="txt sm" data-hnote="${id}" maxlength="90" placeholder="Why this one? (optional)" aria-label="Why ${esc(r.t)}" value="${esc(H.notes[id]||'')}"></div>`}).join('')}
+     <div class="opts">${mine.map(r=>`<button class="pb" aria-pressed="${H.recs.includes(r.id)}" data-hrec="${r.id}">${H.recs.includes(r.id)?(H.recs.indexOf(r.id)+1)+'. ':'+ '}${esc(r.t)}</button>`).join('')}</div>
+     ${H.recs.map(id=>{const r=recOf(id);return `<div class="hnote"><b>${esc(r.t)}</b><input class="txt sm" data-hnote="${id}" maxlength="90" placeholder="Why this one? (optional)" aria-label="Why ${esc(r.t)}" value="${esc(H.notes[id]||'')}"></div>`}).join('')}
      <div class="hbtns"><button class="ghost" data-hback="1">Back</button><button class="go press" data-hnext="1">Next: share it</button></div>`;
   }else{
     h+=`<p class="sub">This is what people will see. Choose who can find it, then list it.</p>
@@ -4034,10 +3991,14 @@ async function acInvite(){
 }
 function handleInvite(p){
   if(!p.i||!/^[A-Za-z0-9_-]{20,64}$/.test(p.i))return;
-  if(p.c&&!acReady()){try{const c=JSON.parse(unb64u(p.c));
-    if(/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(c.u)&&typeof c.k==='string'&&c.k.length>=20&&!/service_role|sb_secret_/.test(c.k)){AC.url=c.u;AC.key=c.k}}catch(e){}}
-  AC.inv={t:p.i,n:(p.n||'').slice(0,40),h:(p.h||'').replace(/[^a-z0-9_.]/g,'').slice(0,20)};acSave();
-  closeSheets();go('scene');setTimeout(openAc,350);
+  const keep=()=>{AC.inv={t:p.i,n:(p.n||'').slice(0,40),h:(p.h||'').replace(/[^a-z0-9_.]/g,'').slice(0,20)};acSave();
+    closeSheets();go('scene');setTimeout(openAc,350)};
+  let c=null;if(p.c&&!acReady()){try{c=JSON.parse(unb64u(p.c));
+    if(!(/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(c.u)&&typeof c.k==='string'&&c.k.length>=20&&!/service_role|sb_secret_/.test(c.k)))c=null}catch(e){c=null}}
+  // A link must never silently point the app at someone else's server: the person confirms the host first.
+  if(c){closeSheets();askSure({title:'Connect to this server?',body:`This invite connects Memory Wax to ${c.u.replace('https://','')}. Only continue if the person who sent it is someone you trust.`,yes:'Connect',keep:1,
+    go:()=>{AC.url=c.u;AC.key=c.k;keep()}});return}
+  keep();
 }
 async function linkTake(){
   if(!NATIVE||!(window.Capacitor&&(Capacitor.PluginHeaders||[]).some(h=>h.name==='Links')))return;
@@ -4204,7 +4165,7 @@ function openRecap(key){
 }
 function openSpin(){
   const rs=own();
-  $('#spinList').innerHTML=rs.length?rs.map(r=>`<button class="opt-card" data-spinpick="${r.id}"><b>${r.t}</b><span>${r.a} · ${r.y}</span></button>`).join(''):'<p class="empty" style="padding:0">Scan a record first, then mark it here.</p>';
+  $('#spinList').innerHTML=rs.length?rs.map(r=>`<button class="opt-card" data-spinpick="${r.id}"><b>${esc(r.t)}</b><span>${esc(r.a)} · ${r.y}</span></button>`).join(''):'<p class="empty" style="padding:0">Scan a record first, then mark it here.</p>';
   openSheet('spin');
 }
 
@@ -4547,7 +4508,7 @@ async function mbLookup(code){
 function stopReal(){st.scanGen=(st.scanGen||0)+1;resetScan()}
 async function startBarcodeScan(){
   if(st.scanning)return;
-  if(!camStream){toast('Turn the camera on to scan, or type the barcode.');return}
+  if(!camStream){openSheet('cam');return}
   st.scanning=true;$('#shutter').disabled=true;$('#vf').classList.add('reading');setPrompt('Hold the barcode in the box.');$('#guide').textContent=prefs.auto===false?'Reading…':'It reads on its own. Hold steady.';
   const gen=st.scanGen=(st.scanGen||0)+1;let det;
   try{det=await getBarDet()}catch(e){stopReal();toast(e.message+' You can type the barcode instead.');return}
@@ -4596,7 +4557,7 @@ function renderFound(){
    <button class="ghost" data-foundno="1">Not this one. Scan again</button>
    <p class="fine2" style="margin-top:8px">Barcode <span class="fcode">${esc(code)}</span>. Data from MusicBrainz and the Cover Art Archive.</p>`;
 }
-function saveReal(){try{localStorage.setItem('mw_real_recs',JSON.stringify(RECS.filter(r=>r.real)))}catch(e){}}
+function saveReal(){try{lsPut('mw_real_recs',JSON.stringify(RECS.filter(r=>r.real)))}catch(e){}}
 function restoreReal(){
   try{const a=JSON.parse(localStorage.getItem('mw_real_recs')||'[]');a.forEach(r=>{if(!RECS.some(x=>x.id===r.id))RECS.push(r);if(st&&st.owned)st.owned.add(r.id)})}catch(e){}
 }
@@ -4615,7 +4576,7 @@ async function barLook(){
 }
 safetyCopy();
 restoreReal();
-if(/[?&]lab=1/.test(location.search))setTimeout(openLab,400);
+if(DEVTOOLS&&/[?&]lab=1/.test(location.search))setTimeout(openLab,400);
 
 
 /* the record page for a scanned record: rows from real evidence, and "how we know" built from what was actually read */
@@ -5940,7 +5901,7 @@ function snapshot(){
 }
 let lastSnap='';
 const snapKey=()=>JSON.stringify({...snapshot(),at:0});
-function saveState(){if(DEMO)return;try{const k=snapKey();if(k!==lastSnap){localStorage.setItem(DATA_KEY,JSON.stringify(snapshot()));lastSnap=k;mirrorSave()}}catch(e){}}
+function saveState(){if(DEMO)return;try{const k=snapKey();if(k!==lastSnap){if(lsPut(DATA_KEY,JSON.stringify(snapshot()))){lastSnap=k}mirrorSave()}}catch(e){}}
 function applyState(d){
   if(!d||d.app!=='memory-wax')return false;
   (d.recs||[]).forEach(r=>{const i=RECS.findIndex(x=>x.id===r.id);if(i>=0)RECS[i]=r;else RECS.push(r)});
@@ -6076,6 +6037,7 @@ async function cloudSync(why,tries){
     const local=snapshot(),base=syBaseGet();
     if(why==='save'&&base&&sySame(local,base)){CS.busy=false;cloudPaint();return}
     const r=await cloudCall('pull',{});if(r.error)throw new Error(r.error);
+    if(!sySame(snapshot(),local)){CS.busy=false;cloudPaint();if(tries<3)return cloudSync(why,tries+1);throw new Error('busy')} // edited while the pull was in flight: start over rather than write the old copy back
     let remote=null;if(r.text){try{remote=JSON.parse(r.text)}catch(e){}}if(remote&&remote.app!=='memory-wax')remote=null;
     let merged=remote?syMerge(base,local,remote):{...local,at:Date.now()};
     const lo=new Set(local.owned||[]),mo=new Set(merged.owned||[]),gone=[...lo].filter(id=>!mo.has(id));
@@ -6157,16 +6119,18 @@ async function photoBlobs(maxPx){
 }
 /* ---- backup file ---- */
 const stamp=()=>new Date().toISOString().slice(0,10);
-function downloadBlob(b,name){
+async function downloadBlob(b,name){
   const f=new File([b],name,{type:b.type});
-  if(navigator.canShare&&navigator.canShare({files:[f]})&&/iPhone|iPad|Android/.test(navigator.userAgent)){navigator.share({files:[f],title:name}).catch(()=>{});return}
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();
+  if(navigator.canShare&&navigator.canShare({files:[f]})&&/iPhone|iPad|Android/.test(navigator.userAgent)){
+    try{await navigator.share({files:[f],title:name});return true}catch(e){if(e&&e.name==='AbortError')return false}}
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();return true}catch(e){return false}
 }
 async function backupDownload(){
   const d=snapshot();d.v=2;d.lab=LAB;d.prefs={big:prefs.big,motion:prefs.motion,loc:prefs.loc};
   const hasPh=Object.values(st.photoKeys||{}).some(a=>a.length)||coverKeys().length>0;
   if(hasPh){toast('Packing your photos…');d.photos=await photoBlobs(1600)}
-  downloadBlob(new Blob([JSON.stringify(d)],{type:'application/json'}),'memory-wax-backup-'+stamp()+'.json');
+  const saved=await downloadBlob(new Blob([JSON.stringify(d)],{type:'application/json'}),'memory-wax-backup-'+stamp()+'.json');
+  if(!saved){toast('The backup wasn’t saved. Try again and choose where to keep it.');return}
   st.lastBackup=Date.now();try{localStorage.setItem('mw_backup_at',String(st.lastBackup))}catch(e){}
   const np=Object.keys(d.photos||{}).length;
   toast(`Backup ready: ${d.recs.length} record${d.recs.length===1?'':'s'}, shelves, grades, prices${np?` and ${np} photo${np===1?'':'s'}`:''}. Save it somewhere safe, like iCloud Drive.`);
@@ -6310,7 +6274,7 @@ async function renderYourData(){
    <button class="ghost" data-set="restore">Restore a backup</button>`;
 }
 
-loadPrefs();applyPrefs();renderSettings();fillLegalContact();restoreState();renderCollection();loadCovers().then(()=>{try{renderCollection()}catch(e){}});setInterval(saveState,2500);mirrorCheck();addEventListener('pagehide',saveState);
+loadPrefs();applyPrefs();renderSettings();fillLegalContact();restoreState();renderCollection();loadCovers().then(()=>{try{renderCollection()}catch(e){}});setInterval(saveState,2500);mirrorCheck();addEventListener('pagehide',saveState);addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){saveReal();saveState()}});
 /* The real app hides controls that only the demo walkthrough used, so nothing on screen is a placeholder. */
 /* The camera question is asked once, not after every launch. */
 function camSave(){try{localStorage.setItem('mw_cam',JSON.stringify({asked:!!st.camAsked,pref:!!st.camPref}))}catch(e){}}
@@ -6352,53 +6316,36 @@ $('#wSkip').addEventListener('click',()=>welcomeShow(WEL.n-1));
  w.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>50)welcomeShow(WEL.i+(dx<0?1:-1))},{passive:true})}
 
 /* ---------- How to use: tips for the screen you're on, then everything else ---------- */
-/* little pictures of the real buttons, so you know what to look for */
-const HV={
-  seg:(items,on)=>`<div class="seg" style="--i:${on};--n:${items.length}"><i class="thumb"></i>${items.map((t,i)=>`<button tabindex="-1" aria-pressed="${i===on}">${t}</button>`).join('')}</div>`,
-  hp:(t,yr)=>`<span class="hearpill${yr?' yr':''}">${t}</span>`,
-  btn:(t,c)=>`<span class="hv-btn ${c||'gold'}">${t}</span>`,
-  ic:(svg,c)=>`<span class="hv-ic ${c||''}">${svg}</span>`,
-  gear:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>`,
-  life:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="3.6"/><path d="M5.9 5.9l3.5 3.5M14.6 14.6l3.5 3.5M18.1 5.9l-3.5 3.5M9.4 14.6l-3.5 3.5"/></svg>`,
-  shutter:'<span class="hv-shutter"></span>',
-  plus:'<span class="hv-plus">+</span>',
-  seal:(b,sm,c)=>`<span class="seal ${c||''}"><b>${b}</b><small>${sm}</small></span>`,
-  leg:(t,c)=>`<span class="hv-leg"><i class="${c||''}"></i>${t}</span>`,
-  dock:on=>`<div class="hv-dock">${['Add','Collection','Community'].map((t,i)=>`<span class="${i===on?'on':''}">${t}</span>`).join('')}</div>`,
-  cap:t=>`<small>${t}</small>`,
-  panel:(c,inner)=>`<div class="hv ${c||''}" aria-hidden="true">${inner}</div>`
-};
+/* pictures in How to use are crops of the real app screens, made by scripts/help-shots.py */
+const HI=(n,alt)=>`<img class="hvimg" src="assets/help/${n}.jpg" alt="${alt}" loading="lazy">`;
 const HELP_NOW={
   scan:['On the Add tab',['Pick Barcode, Label, Deadwax or Cover along the top, then tap the round button. Barcode, Label and Cover can start reading on their own.','No barcode? Tap Type it. An artist and a title is enough. Already keep a list? Settings has Import from Discogs and Upload a CSV.','The ? under the viewfinder shows how to shoot the deadwax. Listen names a song playing in the room.'],
-    HV.panel('',HV.cap('What you’ll see')+HV.seg(['Barcode','Label','Deadwax','Cover'],0)+HV.hp('Type it')+HV.shutter+HV.hp('Listen')+HV.ic(HV.life))],
+    HI('add','The Add tab controls: the scan modes along the top, and Type it, the round button and Listen below')],
   collection:['On the Collection tab',['All records: search by title, artist, label, matrix or who played on it. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones you’re hunting.','What’s playing? names a song. Your year shows your listening so far. The gear is Settings: backup, import and sync.'],
-    HV.panel('',HV.cap('What you’ll see')+HV.hp('What’s playing?')+HV.hp('Your year',1)+HV.ic(HV.life)+HV.ic(HV.gear)+HV.seg(['All records','Shelves','Dream Crate'],0))],
+    HI('collection','The top of the Collection tab: the gear, the How to use button, What’s playing, Your year and the three tabs')],
   reveal:['On a record page',['The seal shows how sure we are. Tap How we know to see the evidence.','Tap any name in The Session to see what else they played on.','My Copy is private: grade, price, photos, memory. Add to shelf, Dream Crate and Memory are in the bar at the bottom.'],
-    HV.panel('gold',HV.cap('What you’ll see')+HV.seal('Confirmed','Matrix match')+`<span class="hv-ul">How we know</span>`+HV.btn('Add to shelf','ox')+HV.btn('Dream Crate','red')+HV.btn('Memory','cream'))],
+    HI('record','A record page with the cover and the Confirmed seal')+HI('actions','The bar at the bottom: Add to shelf, Dream Crate and Memory')],
   scene:['On the Community page',['Your name and photo go on the cards you share. Tap Edit to add three short answers about you.','Your sessions list every night Listen followed along. Rooms are plans for listening together. Live chat is coming.','To add friends, sign in, then invite someone with a link or find them by username.'],
-    HV.panel('teal',HV.cap('What you’ll see')+`<div class="hv-strip"><span class="av" style="display:grid;font-family:var(--disp);font-size:20px;letter-spacing:0">?</span><div><b>Add your name</b><span>And a photo, for the cards you share</span></div></div>`+HV.btn('Start listening','gold')+HV.btn('Host a room','line')+HV.ic(HV.life))]
+    HI('community','The Community page: your profile strip, your sessions and Start listening')]
 };
 const HELP_TOPICS=[
  ['Add a record','Open Add and choose how to read it. Barcode reads the number under the bars. Label reads the printed center label. Deadwax reads the etching by the label and is the one that can name the exact pressing. Cover reads the words on the front. Or tap Type it. Already keep a list? Settings has Import from Discogs and Upload a CSV.',
-   HV.panel('',HV.cap('Along the top of Add')+HV.seg(['Barcode','Label','Deadwax','Cover'],2)+HV.shutter+HV.hp('Type it')+HV.hp('Listen'))],
+   HI('add','The Add tab controls')],
  ['What “Confirmed” means','Confirmed: the etched matrix matched the runout listed for one pressing. Likely: the cover or barcode points to one pressing, but nothing rules out another. Album only: we know the album, not which pressing. Tap How we know on any record to see why. To move a record up, scan its deadwax.',
-   HV.panel('',HV.cap('The seal on a record page')+HV.seal('Confirmed','Matrix match')+HV.seal('Likely','Matrix read','likely')+HV.seal('Release found','Barcode match','cover')+`<div style="flex:1 1 100%;display:flex;gap:14px;flex-wrap:wrap;margin-top:4px">${HV.leg('Confirmed','c')}${HV.leg('Likely','l')}${HV.leg('Album only','')}</div>`)],
+   HI('seals','The seal on a record page in three states, Confirmed, Likely and Release found, above the legend of dots used in the collection')],
  ['Name a song (Listen)','Tap Listen, hold your phone near the speaker, and Memory Wax names the song with Apple’s Shazam. If it’s on a record you own, it shows where the needle is. Turn on Follow along and it names each track and tells you when to flip. It listens only while the sheet is open, and keeps no recording.',
-   HV.panel('teal',HV.cap('On the Listen sheet')+HV.hp('Listen')+HV.btn('Start listening','ox')+`<span class="hv-chk"><i>✓</i>Follow along</span>`)],
+   HI('listen','The Listen sheet with Start listening and the Follow along box')],
  ['The record page','The pressing, who played on it, the story, and your own copy. Tap any credited name for their page and the other records they played on. Apple Music plays the album with the account on your phone. Full songs need a subscription.',
-   HV.panel('gold',HV.cap('Look for')+`<span class="hv-name">John Coltrane ↗</span><span class="hv-ul">How we know</span>`+HV.btn('Apple Music','ox')+HV.btn('Photograph my copy','ox'))],
+   HI('recordpage','The Session on a record page: the people credited and what they played')],
  ['Shelves, Dream Crate and playlists','A shelf is a group you make. Tap the + on a record to put it on shelves. Dream Crate is for records you want. Playlists pick tracks from your own records and can be saved to Apple Music. Friends can’t see your shelves yet; that’s coming.',
-   HV.panel('red',HV.cap('On Collection')+HV.seg(['All records','Shelves','Dream Crate'],1)+`<span class="hv-tile">Kind of Blue${HV.plus}<i class="hv-d"></i></span><span class="hv-tile t">Donuts${HV.plus}<i class="hv-d" style="background:var(--cream);border-color:var(--cream)"></i></span>`+`<div style="flex:1;min-width:130px">${HV.seg(['Just me','Friends','Everyone'],0)}</div>`)],
+   HI('shelves','Records in the collection, each with its + button')],
  ['Sessions and Your year','Each song Listen names joins the current session. Name it, share it as a card or a song list, or save it as an Apple Music playlist. Your year counts spins on your records from Listen and from I played this, and makes a card you can share.',
-   HV.panel('teal',HV.cap('Under Your sessions')+`<div class="hv-card"><div><b>Friday night with friends</b><span>Oct 10 · 10 songs · 5 records</span></div>${HV.btn('Open','teal sm')}</div>`+`<div class="hv-cnt"><div>11<small>SPINS</small></div><div>3<small>RECORDS</small></div><div>5<small>SESSIONS</small></div></div>`)],
- ['Friends and invites','Sign in with Apple or your email, pick a username, then tap Invite a friend to send a one-time link. They tap it, the app opens, and you’re friends once they accept. You can unfriend, block or report from their profile.',
-   HV.panel('',HV.cap('On Community → People')+HV.btn('Invite a friend','gold')+HV.btn('Add','teal sm')+HV.btn('Friends','line sm')+HV.btn('Asked','line sm'))],
- ['Rooms','A room is a night you plan: when, where, and which records in order. You get a card to share, a calendar reminder and the track list to follow. Live chat between phones and public room pages are coming.',
-   HV.panel('red',HV.cap('On Community')+HV.btn('Host a room','gold')+`<div class="hv-cnt" style="flex:1 1 180px"><div>3<small>DAYS</small></div><div>02<small>HRS</small></div><div>36<small>MIN</small></div></div>`)],
+   HI('sessions','A list of listening sessions, and the Your year page')],
+ ['Friends and invites','Sign in with Apple or your email, pick a username, then tap Invite a friend to send a one-time link. They tap it, the app opens, and you’re friends once they accept. You can unfriend, block or report from their profile.',''],
+ ['Rooms','A room is a night you plan: when, where, and which records in order. You get a card to share, a calendar reminder and the track list to follow. Live chat between phones and public room pages are coming.',''],
  ['Backup, sync and your data','Settings has Sync with iCloud (on by default), Download a backup, Restore, and Export as CSV. A copy also lands in the Memory Wax folder in the Files app. Erase everything is at the bottom of Settings.',
-   HV.panel('teal',HV.cap('In Settings, behind the gear')+HV.ic(HV.gear)+`<div class="hv-row"><b>Sync with iCloud</b><span class="hv-sw"></span></div>`+HV.btn('Download a backup','cream')+HV.btn('Export as CSV','line'))],
- ['Privacy at a glance','Your collection stays on your devices and in your private iCloud. The camera picture never leaves your phone. Prices and places never go to anyone else. No ads and no tracking.',
-   HV.panel('',HV.cap('The promise')+`<span class="hv-chip hot">No ads</span><span class="hv-chip">No tracking</span><span class="hv-chip">Stays on your phone</span><span class="hv-chip">Yours to take with you</span>`)]
+   HI('backup','Download a backup, Restore a backup and Export as CSV in Settings')],
+ ['Privacy at a glance','Your collection stays on your devices and in your private iCloud. The camera picture never leaves your phone. Prices and places never go to anyone else. No ads and no tracking.','']
 ];
 /* which topics matter on which screen; everything else sits behind "All topics" */
 const HELP_FOR={scan:[1,2],collection:[4,5,8],reveal:[1,3],scene:[6,7,5]};
