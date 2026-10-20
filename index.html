@@ -1331,7 +1331,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <!-- Collectors -->
     <section class="screen" data-screen="scene" id="scene">
       <div class="scroll">
-        <div class="hd sm"><h2 class="disp">Community</h2><p>Your sessions, rooms to listen together, and the people whose records you follow.</p></div>
+        <div class="hd sm"><h2 class="disp">Community</h2><p>Your sessions, rooms to listen together, and your friends.</p></div>
         <div id="sceneBody"></div>
       </div>
     </section>
@@ -1512,7 +1512,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <label class="go press photolbl" for="photoIn">Take or choose a photo</label>
       <input type="file" id="photoIn" accept="image/*" capture="environment" multiple hidden>
       <div class="pgrid" id="photoGrid"></div>
-      <p class="fine2">Only photograph what you own and have the right to share. In this prototype photos stay in this browser tab. In the real app they’re stored privately and searchable only by you.</p>
+      <p class="fine2">Only photograph what you own and have the right to share. They’re stored privately on this device, and only you can see them.</p>
     </div>
 
     <div class="sheet" id="sheet-import" role="dialog" aria-label="Import"><div id="importBody"></div></div>
@@ -1534,7 +1534,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <button class="go press" data-acct="go">Continue with Apple</button>
       <button class="opt-card" data-acct="go" style="margin-top:10px"><b>Continue with email</b><span>We’ll send a link. No password to remember.</span></button>
       <button class="ghost" data-acct="later">Not yet</button>
-      <p class="fine2">By continuing you confirm you’re 13 or older and agree to the Terms and Privacy Policy. Drafts are in Settings, under Legal and safety.</p>
+      <p class="fine2">By continuing you confirm you’re 13 or older and agree to the Terms and Privacy Policy.</p>
       <p class="fine2">Prototype only: no real sign-in happens here.</p>
     </div>
 
@@ -1558,10 +1558,10 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <h4 class="disp">Settings &amp; data</h4>
       <div class="sethead">You</div>
       <button class="opt-card" data-me="edit"><b>Your name and photo</b><span>Shown on the cards you share, your playlists and your rooms.</span></button>
-      <button class="opt-card" data-ac="open"><b>Community account</b><span>Sign in with Apple to add friends. Also where the server is connected.</span></button>
+      <button class="opt-card" data-ac="open"><b>Community account</b><span>Sign in with Apple or email to add friends.</span></button>
       <div class="sethead">Add a lot at once</div>
       <button class="opt-card" data-set="import"><b>Import from Discogs</b><span>Your own collection, read with your Discogs token. Nothing is written back.</span></button>
-      <button class="opt-card" data-set="csv"><b>Upload a CSV</b><span>Title and Artist columns are enough. Label, catalog number, barcode, matrix, condition and price come along when present.</span></button>
+      <button class="opt-card" data-set="csv"><b>Upload a CSV</b><span>Only a Title column is required. Artist, label, catalog number, barcode, matrix, condition and price come along when present.</span></button>
       <div class="sethead">Your data</div>
       <div class="trow" id="cloudRow" hidden><div><b>Sync with iCloud</b><span class="d" id="cloudSub">Keeps your iPhone and iPad the same.</span></div><button class="sw" data-cloud="toggle" aria-pressed="true" aria-label="Sync with iCloud"></button></div>
       <button class="ghost" id="cloudNow" data-cloud="now" hidden style="margin:-4px 0 8px">Sync now</button>
@@ -1582,11 +1582,11 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <button class="opt-card" data-set="svc"><b>Apple Music</b><span>Check the connection, or connect it if it isn’t yet.</span></button>
       <div class="sethead">Scanner</div>
       <div class="trow"><div><b>Read automatically</b><span class="d">Barcode and label scans start on their own and capture the moment they can read it. Turn off to use the shutter button.</span></div><button class="sw" data-set="auto" aria-pressed="true" aria-label="Read automatically"></button></div>
-      <button class="opt-card" data-dgtoken="1"><b>Discogs token</b><span>Optional. Needed for the Discogs import and for matching deadwax to known pressings. Stored on this phone only.</span></button>
+      <button class="opt-card" data-dgtoken="1"><b>Discogs token</b><span>Optional. Needed for the Discogs import and for matching deadwax to known pressings. Kept on this phone. It’s also written into backup files you download, so keep those private.</span></button>
       <div class="sethead">Legal and safety</div>
       <button class="opt-card" data-set="legal"><b>Privacy, copyright and contact</b><span>What Memory Wax is and is not, what it keeps, and how to reach us.</span></button>
       <button class="ghost" data-set="about">About our data</button>
-      <button class="opt-card danger" data-set="erase" data-clean-only style="margin-top:14px"><b>Erase everything on this phone</b><span>Records, shelves, photos, lab results and tokens. Download a backup first.</span></button>
+      <button class="opt-card danger" data-set="erase" data-clean-only style="margin-top:14px"><b>Erase everything on this phone</b><span>Records, shelves, photos, lab results, tokens and your community sign-in on this phone. Download a backup first.</span></button>
       <p class="fine2" id="buildTag" style="text-align:center;margin-top:10px"></p>
     </div>
 
@@ -1635,7 +1635,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <div class="dsrc"><b>Your collection is yours</b><span>It lives on your phone. You can take all of it with you at any time: a backup file with your photos, or a spreadsheet. Both are open formats that other tools can read.</span></div>
       <div class="dsrc"><b>Kept safe, without an account</b><span>Before every update the app keeps a copy of your collection so you can go back. On iPhone it also keeps a copy in the Memory Wax folder in the Files app, which iCloud Backup includes.</span></div>
       <div class="dsrc"><b>If we ever shut down</b><span>We will tell you inside the app at least 90 days before. We will ship a final update that keeps everything working on your phone, and it will keep your export working. Nothing you have saved is held hostage.</span></div>
-      <div class="dsrc"><b>Private by default</b><span>What you paid and where you found a record never leave your phone. We don’t sell data, and there is no tracking in the app.</span></div>
+      <div class="dsrc"><b>Private by default</b><span>Your collection stays on your phone and in your own private iCloud, which we can’t read. What you paid and where you found a record are never shared with other people. We don’t sell data, and there is no tracking in the app.</span></div>
       <button class="go press" data-set="backup">Download a backup now</button>
     </div>
 
@@ -1643,9 +1643,9 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <h4 class="disp">Privacy, copyright &amp; contact</h4>
       <p class="sub">Plain-language summaries.</p>
       <div class="dsrc"><b>What Memory Wax is</b><span>A tool for knowing what you hold: it identifies pressings, shows credits and keeps your collection. It doesn’t sell records or handle payment or shipping, and it can’t promise that a match is right, that a record is genuine, or what condition it is in.</span></div>
-      <div class="dsrc"><b>Your content stays yours</b><span>Your notes, photos, prices and places stay on your phone. Nothing is shared unless you choose to share it.</span></div>
+      <div class="dsrc"><b>Your content stays yours</b><span>Your notes, photos, prices and places stay on your phone, and in your private iCloud if sync is on. Nothing is shared with other people unless you choose to share it.</span></div>
       <div class="dsrc"><b>Copyright and cover art</b><span>Album art, music, liner notes and photos belong to their owners. Covers are shown from the Cover Art Archive to help you recognise a record. Music plays in Apple Music’s own player, and we never store or stream audio. If you hold the rights to something shown here and want it removed, contact us.</span></div>
-      <div class="dsrc"><b>Privacy</b><span>No account, no ads, no tracking. The camera picture stays on your phone. Prices, places and your location never leave it. You must be 13 or older.</span></div>
+      <div class="dsrc"><b>Privacy</b><span>No ads, no tracking. An account is optional and only needed to add friends: it holds your username, name, photo and friends list, nothing from your collection. The camera picture stays on your phone. Prices, places and your location are never shared with other people. You must be 13 or older.</span></div>
       <div id="legalContact"></div>
       <p class="fine2">These are summaries, not legal documents.</p>
     </div>
@@ -1839,7 +1839,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.36.0 · one-tap links';
+const BUILD='0.37.1 · cleanup';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -1971,7 +1971,7 @@ async function camOn(){
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('none');
     camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});camIsHi=false;
     const v=$('#liveVid');v.srcObject=camStream;try{await v.play()}catch(e){}
-    $('#vf').classList.add('live');st.camPref=true;maybeAuto(900);return true;
+    $('#vf').classList.add('live');st.camPref=true;camSave();maybeAuto(900);return true;
   }catch(e){camOff();toast('The camera isn’t available here, so the illustration stays.');return false}
 }
 let camIsHi=false;
@@ -2523,7 +2523,7 @@ function finish(res){
   setTimeout(()=>go('reveal'),reduce?250:1000);
 }
 $('#shutter').addEventListener('click',()=>{haptic('press');
-  if(!st.camAsked){st.camAsked=true;openSheet('cam');return}
+  if(!st.camAsked){st.camAsked=true;camSave();openSheet('cam');return}
   if(st.scanMode==='barcode'){startBarcodeScan();return}
   if(st.scanMode==='label'){startLabelScan();return}
   if(!DEMO&&st.scanMode==='deadwax'){startDeadwaxScan();return}
@@ -2672,7 +2672,7 @@ function repRows(r,R,mode){
 function fillCopy(id){
   const cp=copyOf(id),r=recOf(id);
   $$('#cond button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cond===cp.cond)));
-  $('#condNote').textContent=cp.cond?$(`#cond [data-cond="${cp.cond}"]`).dataset.tip:'Tap a grade to see what it means.';
+  {const gb=cp.cond?$(`#cond [data-cond="${cp.cond}"]`):null;$('#condNote').textContent=gb?gb.dataset.tip:cp.cond?`Imported grade: ${cp.cond}. Tap a grade to change it.`:'Tap a grade to see what it means.'}
   $('#mcPaid').value=cp.paid||'';$('#mcWhere').value=cp.where||'';
   {let sp=$('#mcSpins');if(!sp){sp=document.createElement('p');sp.id='mcSpins';sp.className='fine2';$('#mcMemo').after(sp)}const P=cp.plays||[];sp.hidden=!P.length;const H=P.filter(p=>p.src!=='tap').length;sp.hidden=false;sp.innerHTML=(P.length?`Played ${P.length} time${P.length===1?'':'s'}${H&&H<P.length?` (${H} heard by Listen)`:H?' (heard by Listen)':''} · last ${new Date(P[P.length-1].at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}<br>`:'')+'<button class="logspin" data-logspin="1">I played this</button>'}
   const mm=$('#mcMemo');mm.hidden=!r.memo;mm.innerHTML=r.memo?`<small>Your memory · only you</small>${esc(r.memo)}`:'';
@@ -2964,7 +2964,7 @@ function coverProbe(u){
   im.onerror=()=>{COV.busy.delete(u);COV.bad.add(u);const r=RECS.find(x=>x.cover===u),again=()=>{clearTimeout(COV.t);COV.t=setTimeout(()=>{try{renderCollection()}catch(e){}},200)};if(r&&r.rg&&!/release-group/.test(u)){r.cover='https://coverartarchive.org/release-group/'+r.rg+'/front-250';saveReal()}else if(r&&r.mb&&!r.rg&&!/release-group/.test(u)){mbGet('release/'+r.mb+'?inc=release-groups').then(j=>{const g=j&&j['release-group'];if(g&&g.id){r.rg=g.id;r.cover='https://coverartarchive.org/release-group/'+g.id+'/front-250';saveReal();again()}}).catch(()=>{})}clearTimeout(COV.t);COV.t=setTimeout(()=>{try{renderCollection()}catch(e){}},200)};
   im.src=u;
 }
-const cov=r=>{if(COVERURL[r.id])return COVERURL[r.id];const u=r.cover?r.cover:r.hero?coverURL:((r.id>=2&&r.id<=12)||r.id===21||r.id===15?`assets/covers/${r.id}.jpg`:null);if(u&&/^https?:/.test(u)){if(COV.bad.has(u))return null;coverProbe(u)}return u};
+const cov=r=>{if(DEVTOOLS&&window.__nocovers)return null;if(COVERURL[r.id])return COVERURL[r.id];const u=r.cover?r.cover:r.hero?coverURL:((r.id>=2&&r.id<=12)||r.id===21||r.id===15?`assets/covers/${r.id}.jpg`:null);if(u&&/^https?:/.test(u)){if(COV.bad.has(u))return null;coverProbe(u)}return u};
 function tileHTML(r){
   const c=cov(r),img=c?` has-img" style="background-image:url('${c}')`:'';
   const on=st.sel&&st.sel.has(r.id);
@@ -3013,7 +3013,7 @@ function renderCollection(){
   const all=own(),conf=all.filter(r=>r.c==='confirmed').length,empty=!all.length;
   $('#colSub').textContent=empty?'0 records':`${all.length} records · ${conf} confirmed pressings`;
   $('#firstRun').hidden=!empty;$('#allBody').hidden=empty;
-  const genres=['All',...new Set(all.map(r=>r.g))];
+  const genres=['All',...new Set(all.map(r=>r.g).filter(Boolean))];
   $('#chips').innerHTML=genres.map(g=>`<button class="chip" data-chip="${g}" aria-pressed="${st.filter===g}">${g}</button>`).join('')+(RECS.some(r=>st.owned.has(r.id)&&IS7(r))?`<button class="chip" data-chip="45s" aria-pressed="${st.filter==='45s'}">45s</button>`:'')+`<button class="chip" data-conf aria-pressed="${st.confOnly}">Confirmed only</button>`;
   const q=st.q.trim().toLowerCase();
   let items=all.map(r=>({r,why:q?match(r,q):''})).filter(x=>x.why!==null&&(st.filter==='All'||(st.filter==='45s'?IS7(x.r):x.r.g===st.filter))&&(!st.confOnly||x.r.c==='confirmed'));
@@ -3044,7 +3044,7 @@ function renderShelves(){
     <p class="vnote">${VNOTE[s.v]}</p><div class="shbtns"><button class="sharebtn" data-share="${s.id}">Share</button><button class="sharebtn" data-segtog="${s.id}" aria-expanded="${st.segOpen.has(s.id)}">Who can see</button><button class="sharebtn" data-shedit="${s.id}">Edit</button><button class="sharebtn" data-shl="${s.id}">Listen</button><button class="sharebtn" data-shpl="${s.id}">Playlist</button></div></div>`}).join('')+`<div class="sethead">Playlists</div>${st.playlists.map(p=>`<button class="plcard press" data-plview="${p.id}"><div class="minis">${p.items.slice(0,3).map(it=>{const r=recOf(it.rec),c=cov(r);return `<i class="m${r.m}"${c?` style="background-image:url('${c}')"`:''}></i>`}).join('')}</div><div><b>${esc(p.n)}</b><span>${p.items.length} tracks · ${p.vis?'Anyone with the link':'Just me'}</span></div></button>`).join('')}<button class="ghost" data-plnew="1">New playlist</button>`;
 }
 function renderWants(){
-  $('#wants').innerHTML=!st.wants.length?'<p class="empty" style="padding-left:0">Nothing here yet. Tap Dream Crate on any record.</p>':st.wants.map((w,i)=>`<div class="want"><div class="tile m${w.m}"><span class="tt">${w.t}</span></div><div class="lt"><b>${w.t}</b><span>${w.a}</span><span style="opacity:.9">${w.note}</span><i class="tag2" style="font-style:normal">${w.list}</i></div><button class="wrm" data-wrm="${i}" aria-label="Remove ${esc(w.t)} from your Dream Crate">×</button></div>`).join('');
+  $('#wants').innerHTML=!st.wants.length?'<p class="empty" style="padding-left:0">Nothing here yet. Tap Dream Crate on any record.</p>':st.wants.map((w,i)=>`<div class="want"><div class="tile m${w.m}"><span class="tt">${w.t}</span></div><div class="lt"><b>${w.t}</b><span>${w.a}</span><span style="opacity:.9">${w.note}</span>${DEMO&&w.list?`<i class="tag2" style="font-style:normal">${w.list}</i>`:''}</div><button class="wrm" data-wrm="${i}" aria-label="Remove ${esc(w.t)} from your Dream Crate">×</button></div>`).join('');
 }
 function fillLegalContact(){
   const el=$('#legalContact');if(!el)return;
@@ -3344,7 +3344,7 @@ async function amNative(name,note,items){
       notSignedIn:'This iPhone isn’t signed in to Apple Music, or the subscription is inactive. Open the Music app, sign in, and try again.',
       privacy:'Open the Music app once and accept Apple Music’s terms, then try again.',
       userToken:'Apple Music wouldn’t sign you in just now. Check your connection and try again.',
-      developerToken:'Apple hasn’t switched MusicKit on for this build yet. In Xcode turn Automatically manage signing off and on, run again, and give it a few minutes.'};
+      developerToken:'Apple Music isn’t ready for this build yet. Give it a few minutes and try again.'};
     if(words[m])throw new Error(words[m]);
     throw new Error('Apple Music said: '+(m||'no reason given')+'.')}
 }
@@ -3400,15 +3400,17 @@ function renderPlView(id){
    ${p.vis?`<div class="shbtns"><button class="sharebtn" data-copy="pl">Copy link</button><button class="sharebtn" data-nshare="pl">Share</button></div><p class="vnote" style="margin:8px 0 0">Shows the playlist name, your note and the tracks. Never your username unless you add it, your prices, or your location.</p>`:'<p class="vnote" style="margin:0">Private. Turn on the link to share it with a friend, even if they aren’t on Memory Wax yet.</p>'}
    <div class="sethead">Keep it in your own app</div>
    <div class="plsave">${['am'].map(k=>`<button class="pb${p.saved[k]?' o done':''}" data-plto="${k}" data-pid="${p.id}">${p.saved[k]?`Saved to ${SVC[k].n} ✓ · again`:`Save to ${SVC[k].n}`}</button>`).join('')}</div>
-   <p class="fine2" style="margin:0 0 8px">Creates the playlist in your own account, so you and your friends play it in the service you each already use. Memory Wax never stores or streams audio. In this prototype, connect your own account first under Settings, Connected music services.</p>
+   <p class="fine2" style="margin:0 0 8px">Creates the playlist in your own account, so you and your friends play it in the service you each already use. Memory Wax never stores or streams audio. Connect Apple Music first under Settings, Apple Music.</p>
    <button class="ghost" data-pledit="${p.id}">Edit tracks</button><button class="ghost" data-pldel2="${p.id}">Delete playlist</button>`;
 }
 function playPlaylist(id,shuffle){const p=st.playlists.find(x=>x.id===id);startQueue(p.items.map(it=>({rec:it.rec,track:it.track})),`“${p.n}”`,{shuffle})}
 
 /* ---------- account on demand, share-first, share card ---------- */
 let pendAct=null;
-function gate(fn){if(st.account){fn();return}pendAct=fn;openSheet('account')}
+/* Shelves, sharing and playlists never need an account. The sign-in sheet is only part of the demo walkthrough. */
+function gate(fn){if(st.account||!DEMO){fn();return}pendAct=fn;openSheet('account')}
 function shareFlow(sid){
+  if(!DEMO){toast('Shelf links aren’t open yet. Your shelf stays on this phone. You can share a session card or an Apple Music playlist today.');return}
   const sh=st.shelves.find(x=>x.id===sid);
   if(sh.v===2){openShare(sid);return}
   const n=sh.recs.filter(i=>st.owned.has(i)).length;
@@ -3578,7 +3580,7 @@ function fillAvail(id){
 function fillPlan(id){
   const cp=copyOf(id),pl=cp.plan||'keep';
   $$('#plan button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.plan===pl)));
-  $('#planExtra').hidden=pl==='keep';$('#planNote').textContent='A private note for you. Nothing is shown to anyone, and nothing leaves this phone.';
+  $('#planExtra').hidden=pl==='keep';$('#planNote').textContent='A private note for you. Nothing is shown to anyone. It stays on this phone, and in your private iCloud if sync is on.';
   $('#mcAsk').value=cp.ask||'';$('#mcAsk').parentElement.style.display=pl==='sale'?'':'none';
 }
 function setPlan(id,pl){
@@ -3645,10 +3647,10 @@ function publishSession(){
 function renderSession(id){
   const x=st.sessions.find(q=>q.id===id);if(!x)return;st.sessId=id;
   const slug=x.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');st.shareUrl='https://memorywax.app/night/'+slug;
-  $('#sessBody').innerHTML=`<h4 class="disp">Your room is listed</h4><p class="sub">${HVIS[x.vis]}.${x.vis===2?' Share the link with your guests.':(DEMO?' Friends can see it on their Community page.':' Friends will see it here once profiles arrive. Until then it stays on this phone.')}</p>
+  $('#sessBody').innerHTML=`<h4 class="disp">Your room is listed</h4><p class="sub">${DEMO?HVIS[x.vis]+'.'+(x.vis===2?' Share the link with your guests.':' Friends can see it on their Community page.'):'It’s saved on this phone. Add it to your calendar and tell your guests the album and the time. Sharing a room link is coming.'}</p>
    ${hostCard(x,slug)}
-   ${x.mode==='online'?`<button class="go press" style="margin-top:0;margin-bottom:10px" data-nroom="s${x.id}">Open the room</button>`:''}
-   ${x.vis===2?`<div class="shbtns"><button class="go press" style="flex:1;margin-top:0" data-copy="sess">Copy link</button><button class="go press" style="flex:1;margin-top:0;background:var(--teal)" data-nshare="sess">Share</button></div>`:''}
+   ${x.mode==='online'?`<button class="go press" style="margin-top:0;margin-bottom:10px" data-nroom="s${x.id}">${DEMO?'Open the room':'See the plan'}</button>`:''}
+   ${x.vis===2&&DEMO?`<div class="shbtns"><button class="go press" style="flex:1;margin-top:0" data-copy="sess">Copy link</button><button class="go press" style="flex:1;margin-top:0;background:var(--teal)" data-nshare="sess">Share</button></div>`:''}
    <button class="ghost" data-sessplay="${x.id}">Play the records</button>
    <button class="ghost" data-sessdel="${x.id}">Cancel this room</button>`;
 }
@@ -3680,7 +3682,7 @@ function renderMe(){
    <button class="go press" data-me="savename">Save</button>
    <button class="ghost" data-me="photo">${m.photo?'Change the photo':'Add a photo'}</button>
    ${m.photo?'<button class="ghost" data-me="nophoto">Remove the photo</button>':''}
-   <p class="fine2" style="margin-top:10px">Kept on your devices and in your private iCloud. A profile other people can visit comes with accounts, and you’ll choose then what it shows.</p>`;
+   <p class="fine2" style="margin-top:10px">Kept on your devices and in your private iCloud. If you sign in to add friends, your name, photo and three answers show to people who find you by username.</p>`;
 }
 async function mePhoto(file){
   try{const cv=await fileToCanvas(file,640),d=Math.min(cv.width,cv.height),c=document.createElement('canvas');c.width=c.height=320;
@@ -3786,7 +3788,7 @@ function openFriend(id){
   $('#friendBody').innerHTML=`<div class="frhead">${frAv(p).replace('meav fav','meav big')}<div><h4 class="disp">${esc(p.name||'@'+p.handle)}</h4><p class="sub">@${esc(p.handle)}${isF?' · Friends':isIn?' · Wants to be friends':' · Asked'}</p></div></div>
    ${qa.length?`<dl class="meqa frqa">${qa.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`:''}
    ${isIn?`<button class="go press" data-fr="ok" data-id="${id}">Accept</button><button class="ghost" data-fr="no" data-id="${id}">Not now</button>`:''}
-   ${isF?`<p class="fine2" style="margin:14px 0 6px">Shelves you set to Friends are theirs to see, and theirs are yours.</p><button class="ghost" data-fr="unfriend" data-id="${id}">Unfriend</button>`:''}
+   ${isF?`<p class="fine2" style="margin:14px 0 6px">Seeing each other’s Friends shelves opens soon.</p><button class="ghost" data-fr="unfriend" data-id="${id}">Unfriend</button>`:''}
    ${!isF&&!isIn?`<button class="ghost" data-fr="cancel" data-id="${id}">Take back the request</button>`:''}
    <div class="sethead">If something’s wrong</div>
    <button class="ghost" data-fr="block" data-id="${id}">Block @${esc(p.handle)}</button>
@@ -3900,7 +3902,7 @@ function renderAc(){
     <button class="go press" data-ac="server">Save server</button></details>`;
   let main;
   if(!acReady())main=`<p class="sub">Connect the server below first.</p>`;
-  else if(!acIn())main=`<p class="sub">Sign in to add friends. They’ll see the shelves you set to Friends and what you’re spinning. Your collection stays on this phone and in iCloud.</p>
+  else if(!acIn())main=`<p class="sub">Sign in to add friends. They’ll see your name, photo and three answers. Your collection stays on this phone and in iCloud.</p>
     <button class="applebtn press" data-ac="apple"><span aria-hidden="true">&#xF8FF;</span> Sign in with Apple</button>
     <div class="acor"><span>or with your email</span></div>
     ${OTP.email?`<p class="sub" style="margin:0 0 4px">We emailed <b>${esc(OTP.email)}</b>. Open it <b>on this ${/iPad/.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Mac/.test(navigator.userAgent))?'iPad':'iPhone'}</b> and tap the link. It opens Memory Wax, signed in.</p>
@@ -3914,7 +3916,7 @@ function renderAc(){
   else if(!FR.me)main=`<p class="sub">${FR.busy?'Checking your profile…':'Pick a username so friends can find you. Lowercase letters, numbers, dots and underscores.'}</p>
     <label class="slab" for="acHandle">Username</label><input class="sin" id="acHandle" placeholder="djvarganessca" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
     <button class="go press" data-ac="handle">Save username</button>${FR.err?`<p class="fine2">The server said: ${esc(FR.err)}</p>`:''}`;
-  else main=`<p class="sub">Signed in with Apple as <b>@${esc(FR.me.handle)}</b>. Your name, photo and three answers show to people who find you.</p>
+  else main=`<p class="sub">Signed in as <b>@${esc(FR.me.handle)}</b>. Your name, photo and three answers show to people who find you.</p>
     <button class="go press tealbtn" data-ac="invite">Invite a friend</button>
     <button class="ghost" data-ac="friends">See your friends</button>
     <button class="ghost" data-ac="out">Sign out on this device</button>
@@ -3988,7 +3990,7 @@ function renderScene(){
    :`<div class="emptyc warm"><b>Your first session starts with a record</b><span>Put one on, tap Listen, and turn on Follow along. Each song lands here.</span></div><button class="hostcta alt press" data-hear="open">Start listening</button>`}
 
   <div class="sh"><span>Rooms</span><em>${DEMO?new Date(nextNightAt()).toLocaleDateString(undefined,{month:'short',day:'numeric'}):(st.sessions.length?st.sessions.length+' yours':'None scheduled')}</em></div>
-  <div class="rooms"><p>The same album at the same time, from anywhere, with live chat. Bring your copy or stream it.</p>
+  <div class="rooms"><p>Plan a night where everyone plays the same album at the same time, from anywhere. Pick the album and the time, and add it to your calendar. Live chat in the room is coming.</p>
   ${DEMO?`<button class="nightcard press" data-nroom="sitk"><div class="nk">Thursday · 8:00 PM Pacific</div><b>Songs in the Key of Life</b><span>Stevie Wonder, side by side with the world. Play your own copy or stream it. Live chat the whole time.</span><span style="opacity:.75;margin-top:6px">Sample room · your time: ${esc(localWhen(nextNightAt()))}</span><i>Open the room</i></button>`:''}
   <button class="hostcta solid press" data-host="start">Host a room</button></div>
   ${st.sessions.length?`<div class="ser" style="margin-top:12px"><h4 class="disp">Your rooms</h4><p class="sub">Hosted by ${n?esc(n):'you'}.</p>${st.sessions.map(x=>`<button class="srow" data-sess="${x.id}"><div><b>${esc(x.name)}</b><span>${[whenText(x),x.recs.length+' record'+(x.recs.length===1?'':'s'),HVIS[x.vis]].filter(Boolean).join(' · ')}</span></div><i>Open</i></button>`).join('')}</div>`:''}
@@ -3997,10 +3999,10 @@ function renderScene(){
 
   <div class="sh"><span>People</span><em>${DEMO?fr.list.length+' friends · '+st.follow.size+' following':FR.me?FR.list.length+' friend'+(FR.list.length===1?'':'s'):'Sign in to add'}</em></div>
   <p class="shnote">Two ways to connect, because sharing with people you know is different from following taste you admire.</p>
-  <div class="ppl"><h5>Friends</h5><p>People you know. You both say yes, then they see the shelves you set to Friends and what you’re spinning.</p><p class="why">For your own collection, with people you trust.</p>${DEMO?'':frCardHTML()}
+  <div class="ppl"><h5>Friends</h5><p>People you know. You both say yes, and you’re connected. Seeing each other’s Friends shelves and what you’re spinning opens soon.</p><p class="why">For your own collection, with people you trust.</p>${DEMO?'':frCardHTML()}
     ${DEMO?fr.req.map((q,i)=>`<div class="frow"><div><b>${q}</b><span>Wants to be friends</span></div><div style="display:flex;gap:6px"><button class="pb" data-frok="${i}">Accept</button><button class="pb o" data-frno="${i}">Not now</button></div></div>`).join('')+fr.list.map(q=>`<div class="frow"><div><b>${q}</b><span>Friends · both approved</span></div></div>`).join(''):''}
   </div>
-  <div class="ppl cur2"><h5>Curators</h5><p>Selectors, shops and listening bars whose taste you admire. Follow with one tap, no approval needed. You see only the shelves they share with everyone, and they never see who follows them.</p><p class="why">For discovering records, from people you don’t have to know.</p>${DEMO?'':'<span class="soon">Following comes with profiles</span>'}
+  <div class="ppl cur2"><h5>Curators</h5><p>Selectors, shops and listening bars whose taste you admire. Follow with one tap, no approval needed. You see only the shelves they share with everyone, and they never see who follows them.</p><p class="why">For discovering records, from people you don’t have to know.</p>${DEMO?'':'<span class="soon">Coming later</span>'}
     ${DEMO?`<div class="curs" style="margin:10px 0 0">${[...CURS].sort((a,b)=>st.follow.has(b.id)-st.follow.has(a.id)).map(c=>`<div class="cur"><button class="open" data-cur="${c.id}"><div class="av m${c.m}" aria-hidden="true">${c.n[0]}</div><div class="nm">${c.n}</div><div class="tg">${c.tag}</div><div class="kd">${c.kind} · sample · ${c.shelves.length} ${c.shelves.length>1?'shelves':'shelf'} shared</div></button><button class="follow" data-follow="${c.id}" aria-pressed="${st.follow.has(c.id)}">${st.follow.has(c.id)?'Following':'Follow'}</button></div>`).join('')}</div>`:''}
   </div>
   ${DEMO?'':`<p class="shnote" style="margin-top:14px">Your collection never leaves your devices and iCloud. Only your profile and your friends list live on the server.</p>`}`;
@@ -4149,6 +4151,7 @@ function nTick(){
   const N=st.nt;if(!N||!$('#sheet-room').classList.contains('on')&&!N.force)return;
   if(N.phase==='before'){
     const ms=N.at-Date.now();
+    if(ms<=0&&!DEMO){const el=$('#nCount');if(el)el.innerHTML='<div class="nunder">It’s time. Put the needle down.</div>';return}
     if(ms<=0){N.phase='live';N.ti=0;N.sec=0;nLiveStart();renderNight();return}
     const el=$('#nCount');if(el)el.innerHTML=nCountHTML(ms);
   }else if(N.phase==='live'){
@@ -4202,7 +4205,21 @@ function nEmbed(){
   el.innerHTML=src?`<iframe class="nframe" src="${src}" title="Apple Music player" height="175" allow="autoplay *; clipboard-write; encrypted-media *; fullscreen *; picture-in-picture" loading="lazy"></iframe>
    <p class="fine2" style="margin:6px 0 0">Press play when the host says go. Streams can drift a few seconds from the room, so the chat keeps everyone together.${N.def.tracks.some(t=>t.rec!==rid)?' The player follows the current record.':''}</p>`:`<p class="fine2">No streaming version found for this record. Play your own copy.</p>`;
 }
+/* The real app's room is a plan: what, when, the track list, a calendar file. Live chat and a shared live clock need a server and aren't in the app yet, so none of that is shown. */
+function renderNightReal(){
+  const N=st.nt,D=N.def;N.phase='before';
+  const past=N.at<=Date.now();
+  $('#roomBody').innerHTML=`<span class="nkick">Listening room</span><h4 class="disp" style="font-size:38px;margin-top:6px">${esc(D.title)}</h4>
+   ${(D.line||D.artist)?`<p class="sub" style="margin:8px 0 6px">${esc(D.line||D.artist)}</p>`:''}
+   <div class="nmeta"><b>${esc(D.ptNote)}</b><span>Your time: ${esc(localWhen(D.at))}</span><span>Hosted by ${esc(D.host)}</span></div>
+   <div class="ncountbox"><div class="nkick" style="color:var(--gold)">${past?'':'Starts in'}</div><div id="nCount" class="ncount">${past?'<div class="nunder">It’s time. Put the needle down.</div>':nCountHTML(N.at-Date.now())}</div></div>
+   <div class="nrow"><button class="pb" data-ncal="1">Add to calendar</button></div>
+   <div class="sethead">The plan</div><ul class="ntl" id="nTL"></ul>
+   <p class="fine2" style="margin-top:14px">Everyone plays their own record or their own streaming account, at the same time. Live chat in the room is coming; for now, use any group chat you like. Memory Wax doesn’t stream or broadcast this music.</p>`;
+  nTimeline();
+}
 function renderNight(){
+  if(!DEMO&&!(st.nt&&st.nt.def&&st.nt.def.sample)){renderNightReal();return}
   const N=st.nt,D=N.def,keep=($('#nIn')||{}).value||'';
   const when=D.ptNote;
   const pb=(on,attr,label)=>`<button class="pb" aria-pressed="${on}" ${attr}>${label}</button>`;
@@ -5578,7 +5595,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.nslow){st.nt.slow=+t.dataset.nslow;nPost({k:'mod',slow:st.nt.slow,locked:st.nt.locked});renderNight();return}
   if(t.dataset.nlock){st.nt.locked=!st.nt.locked;st.nt.msgs.push({sys:true,t:st.nt.locked?'The host paused the chat.':'Chat is back on.'});nPost({k:'mod',slow:st.nt.slow,locked:st.nt.locked});renderNight();return}
   if(t.dataset.nend){nPhase('after');return}
-  if(t.dataset.nremind){st.nt.remind=!st.nt.remind;renderNight();toast(st.nt.remind?'We’ll remind you 15 minutes before. (Prototype: no real notification.)':'Reminder removed.');return}
+  if(t.dataset.nremind){st.nt.remind=!st.nt.remind;renderNight();toast(st.nt.remind?'We’ll remind you 15 minutes before. ':'Reminder removed.');return}
   if(t.dataset.ngather){st.nt.gather=!st.nt.gather;renderNight();return}
   if(t.dataset.nplan){closeSheets();openHost();return}
   if(t.dataset.hmode){st.host.mode=t.dataset.hmode;renderHost();return}
@@ -5589,11 +5606,11 @@ document.addEventListener('click',e=>{
   if(t.dataset.hvis){st.host.vis=+t.dataset.hvis;renderHost();return}
   if(t.dataset.hpub){publishSession();return}
   if(t.dataset.sess){renderSession(+t.dataset.sess);openSheet('session');return}
-  if(t.dataset.sessdel){const i=st.sessions.findIndex(q=>q.id===+t.dataset.sessdel);const n=st.sessions[i].name;st.sessions.splice(i,1);closeSheets();renderScene();toast(`Cancelled “${n}”.`);return}
+  if(t.dataset.sessdel){const id=+t.dataset.sessdel,x=st.sessions.find(q=>q.id===id);if(!x)return;askSure({title:'Cancel this room?',body:`“${x.name}” is removed from this phone. Your records aren’t touched.`,yes:'Cancel the room',go:()=>{const i=st.sessions.findIndex(q=>q.id===id);if(i>-1)st.sessions.splice(i,1);saveState();closeSheets();renderScene();toast(`Cancelled “${x.name}”.`)}});return}
   if(t.dataset.sessplay){const x=st.sessions.find(q=>q.id===+t.dataset.sessplay);startQueue(x.recs.map(rec=>({rec})),`“${x.name}”`,{});return}
   if(t.dataset.confhelp){openSheet('conf');return}
-  if(t.dataset.cam){const k=t.dataset.cam;closeSheets();if(k==='on')camOn();else{st.camPref=false;camOff()}return}
-  if(t.dataset.dc){const [ti,by]=t.dataset.dc.split('|');if(st.wants.some(w=>w.t===ti)){toast('Already in your Dream Crate.');return}st.wants.push({t:ti,a:by,note:'Added from credits',list:'None listed yet',alert:true,m:(ti.length%6)});renderCollection();t.setAttribute('aria-pressed','true');t.textContent='In your Dream Crate';toast(`${ti} added to your Dream Crate. We’ll tell you when a copy shows up.`);return}
+  if(t.dataset.cam){const k=t.dataset.cam;closeSheets();if(k==='on')camOn();else{st.camPref=false;camSave();camOff()}return}
+  if(t.dataset.dc){const [ti,by]=t.dataset.dc.split('|');if(st.wants.some(w=>w.t===ti)){toast('Already in your Dream Crate.');return}st.wants.push({t:ti,a:by,note:'Added from credits',list:'None listed yet',alert:false,m:(ti.length%6)});renderCollection();t.setAttribute('aria-pressed','true');t.textContent='In your Dream Crate';toast(`${ti} added to your Dream Crate.`);return}
   if(t.dataset.shedit){const sh=st.shelves.find(x=>x.id===+t.dataset.shedit);st.editShelf=sh.id;$('#sheName').value=sh.n;$('#sheSub').textContent=`${rc(shelfRecs(sh.id).length)} · ${VNAME[sh.v]}`;openSheet('shedit');return}
   if(t.dataset.shsave){const sh=st.shelves.find(x=>x.id===st.editShelf),n=$('#sheName').value.trim();if(!n){toast('A shelf needs a name.');return}sh.n=n;closeSheets();renderCollection();toast(`Renamed to “${n}”.`);return}
   if(t.dataset.shdel){const sh=st.shelves.find(x=>x.id===st.editShelf);if(!sh)return;askSure({title:'Delete this shelf?',body:`“${sh.n}” goes away, and so does its sharing link. The records on it stay in your collection.`,yes:'Delete shelf',go:()=>{const i=st.shelves.findIndex(x=>x.id===sh.id);if(i>-1)st.shelves.splice(i,1);renderCollection();saveState();toast(`Deleted the shelf “${sh.n}”. Its records are still in your collection.`)}});return}
@@ -5617,7 +5634,7 @@ document.addEventListener('click',e=>{
     st.account=true;closeSheets();renderCollection();toast('You’re in. Everything you’ve scanned is backed up.');
     const f=pendAct;pendAct=null;if(f)setTimeout(f,450);return}
   if(t.dataset.acctopen){if(DEMO)gate(()=>{});else renderYourData().then(()=>openSheet('yourdata'));return}
-  if(t.dataset.nudge){closeSheets();setScanMode(DEMO?'deadwax':'barcode');go('scan');return}
+  if(t.dataset.nudge){closeSheets();setScanMode('deadwax');go('scan');return}
   if(t.dataset.segtog){const id=+t.dataset.segtog;st.segOpen.has(id)?st.segOpen.delete(id):st.segOpen.add(id);renderCollection();return}
   if(t.dataset.presh){
     const k=t.dataset.presh,sid=+t.dataset.sid,sh=st.shelves.find(x=>x.id===sid);
@@ -5637,7 +5654,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.spinclear){st.spin=null;renderScene();return}
   if(t.dataset.frok!==undefined){const n=st.fr.req.splice(+t.dataset.frok,1)[0];st.fr.list.push(n);renderScene();toast(`You and ${n} are friends. You can each see the other’s Friends shelves.`);return}
   if(t.dataset.frno!==undefined){st.fr.req.splice(+t.dataset.frno,1);renderScene();return}
-  if(t.dataset.addwant){if(!st.wants.some(w=>w.t==='A Love Supreme')){st.wants.push({t:'A Love Supreme',a:'John Coltrane',note:'Impulse! A-77-A RVG pressing',list:'2 copies listed',alert:false,m:0});renderCollection();toast('Added to your Dream Crate.')}else toast('Already in Dream Crate.');closeSheets();return}
+  if(t.dataset.addwant){const r=recOf(st.rec||1);if(!st.wants.some(w=>w.t===r.t&&w.a===r.a)){st.wants.push({t:r.t,a:r.a,note:[r.lab,r.y].filter(Boolean).join(' · ')||'Added from the record page',list:'None listed yet',alert:false,m:r.m||0});saveState();renderCollection();toast(`${r.t} added to your Dream Crate.`)}else toast('Already in your Dream Crate.');closeSheets();return}
   if(t.dataset.plus){gate(()=>openShelfSheet(+t.dataset.plus));return}
   if(t.dataset.open&&st.sel){const id=+t.dataset.open;if(st.sel.has(id))st.sel.delete(id);else st.sel.add(id);renderCollection();return}
   if(t.id==='selBtn'){st.sel=st.sel?null:new Set();renderCollection();return}
@@ -5647,7 +5664,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.covphoto){takeCoverPhoto(st.rec);return}
   if(t.dataset.sureno){st.sure=null;closeSheets();return}
   if(t.dataset.sureyes){const o=st.sure;st.sure=null;closeSheets();if(o&&o.go)o.go();return}
-  if(t.dataset.wrm!==undefined){const w=st.wants[+t.dataset.wrm];if(!w)return;askSure({title:'Take it off your Dream Crate?',body:`“${w.t}” by ${w.a}. Its alert stops. You can add it again from any record.`,yes:'Remove from Dream Crate',go:()=>{const i=st.wants.indexOf(w);if(i>-1)st.wants.splice(i,1);renderCollection();saveState();toast(`Removed “${w.t}” from your Dream Crate.`)}});return}
+  if(t.dataset.wrm!==undefined){const w=st.wants[+t.dataset.wrm];if(!w)return;askSure({title:'Take it off your Dream Crate?',body:`“${w.t}” by ${w.a}. You can add it again from any record.`,yes:'Remove from Dream Crate',go:()=>{const i=st.wants.indexOf(w);if(i>-1)st.wants.splice(i,1);renderCollection();saveState();toast(`Removed “${w.t}” from your Dream Crate.`)}});return}
   if(t.dataset.open){st.rec=+t.dataset.open;go('reveal');return}
   if(t.dataset.chip){st.filter=t.dataset.chip;renderCollection();return}
   if(t.hasAttribute('data-conf')){st.confOnly=!st.confOnly;renderCollection();return}
@@ -5663,7 +5680,7 @@ document.addEventListener('click',e=>{
   if(t.id==='doneBtn'){renderBatch();openSheet('batch');return}
   if(t.id==='batchMore'){closeSheets();return}
   if(t.id==='dupSecond'){$('#dup').hidden=true;toast('Added as a second copy. Both show in your collection.');return}
-  if(t.id==='dupSame'){$('#dup').hidden=true;toast('Okay. Nothing was added.');return}
+  if(t.id==='dupSame'){$('#dup').hidden=true;toast(DEMO?'Okay. Nothing was added.':'Okay.');return}
   if(t.id==='goScan'){go('scan');return}
   if(t.id==='goType'){go('scan');setTimeout(()=>openCatEntry(),250);return}
   if(t.dataset.set){
@@ -5672,7 +5689,7 @@ document.addEventListener('click',e=>{
     else if(k==='about'){closeSheets();openSheet('data')}
     else if(k==='legal'){closeSheets();openSheet('legal')}
     else if(k==='svc'){closeSheets();renderSvc();openSheet('svc')}
-    else if(k==='cam'){closeSheets();st.camAsked=true;if(camStream){st.camPref=false;camOff();toast('Back to the illustration.')}else openSheet('cam')}
+    else if(k==='cam'){closeSheets();st.camAsked=true;camSave();if(camStream){st.camPref=false;camSave();camOff();toast('Back to the illustration.')}else openSheet('cam')}
     else if(k==='import'){if(DEMO)gate(()=>openImport());else if(!dgTok()){openDgToken();toast('Add your Discogs token first.')}else{IMP.done=null;IMP.msg='';IMP.pct=0;renderImport();closeSheets();openSheet('import')}}
     else if(k==='csv')$('#csvIn').click();
     else if(k==='promises'){closeSheets();openSheet('promises')}
@@ -5683,7 +5700,7 @@ document.addEventListener('click',e=>{
     else if(k==='yourdata'){closeSheets();renderYourData().then(()=>openSheet('yourdata'))}
     else if(k==='export')exportCSV();
     else if(k==='batchview'){closeSheets();st.queue=[];updatePills();go('collection')}
-    else if(k==='panic'){st.shelves.forEach(x=>x.v=0);if(st.spin)st.spin.v=0;closeSheets();renderCollection();toast('Sharing paused. Every shelf is Just me and share links are off. Turn sharing back on shelf by shelf.')}
+    else if(k==='panic'){st.shelves.forEach(x=>x.v=0);if(st.spin)st.spin.v=0;(st.playlists||[]).forEach(p=>p.vis=0);saveState();closeSheets();renderCollection();toast('Sharing paused. Every shelf and playlist is Just me. Turn sharing back on one at a time.')}
     else if(k==='sync'||k==='big'||k==='motion'||k==='loc'||k==='auto'){prefs[k]=!prefs[k];applyPrefs();savePrefs();renderSettings();if(k==='sync')toast(prefs.sync?'Discogs sync on. Changes flow both ways.':'Discogs sync off.');if(k==='loc')toast(prefs.loc?'We’ll remember where and when you scan, for you only.':'We keep the date only.')}
     return;
   }
@@ -5961,10 +5978,10 @@ async function backupRestore(){
 }
 /* ---- erase ---- */
 async function eraseAll(){
-  if(!confirm('Erase everything Memory Wax keeps on this phone? Records, shelves, grades, prices, photos, lab results and tokens, and the copy in the Memory Wax folder. iCloud sync turns off on this phone, so your other devices keep their records. Download a backup first if you want any of it back.'))return;
+  if(!confirm('Erase everything Memory Wax keeps on this phone? Records, shelves, grades, prices, photos, lab results and tokens, and the copy in the Memory Wax folder. iCloud sync turns off on this phone, so your other devices keep their records. You’re also signed out of your community account on this phone; to remove that account itself, use Settings, Community account, Delete my account first. Download a backup first if you want any of it back.'))return;
   try{['mw_state','mw_real_recs','mw_prefs','mw_lab','mw_backup_at','mw_demo'].forEach(k=>localStorage.removeItem(k));localStorage.removeItem('mw_rt')}catch(e){}
   try{indexedDB.deleteDatabase('mwlab')}catch(e){}
-  try{['mw_build','mw_safety','mw_mirror_at','mw_state_unreadable','mw_sync_base'].forEach(k=>localStorage.removeItem(k));localStorage.setItem('mw_cloud','off')}catch(e){}
+  try{['mw_build','mw_safety','mw_mirror_at','mw_state_unreadable','mw_sync_base'].forEach(k=>localStorage.removeItem(k));localStorage.setItem('mw_cloud','off');['mw_acct2','mw_pkce','mw_cam'].forEach(k=>localStorage.removeItem(k));Object.keys(localStorage).filter(k=>/^mw_(bio|wa)_/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}
   if(BK_NATIVE()){try{await Capacitor.nativePromise('Backup','clear',{})}catch(e){}}
   location.reload();
 }
@@ -6071,17 +6088,35 @@ async function renderYourData(){
    <ul class="plain">
     <li><b>MusicBrainz</b> and the <b>Cover Art Archive</b>: the barcode or catalog number you scan, to find the release and its cover.</li>
     <li><b>Discogs</b>${dgTok()?' (token set)':' (no token)'}: catalog numbers and your collection list, with your token.</li>
+    <li><b>Apple’s music search (iTunes Search)</b>: the title and artist you type, to find an album.</li>
+    <li><b>Wikipedia and Wikidata</b>: an artist or album name, to fetch a short description.</li>
+    <li><b>Google Fonts</b>: your device asks Google for the app’s typefaces when it opens.</li>
+    <li><b>Memory Wax community server</b>: only if you sign in to add friends: your username, name, photo, three answers and friends list.</li>
     <li><b>Memory Wax index</b>: only when it is switched on, the barcode, catalogue number or artist and title you search for, to find the release.</li>
     <li><b>Apple Music</b>: only if you connect it, to play or save playlists.</li>
     <li><b>Your iCloud</b>: if iCloud sync is on, your collection (not photos, not tokens) is kept in your private iCloud so your devices match. Only your Apple Account can read it.</li>
     <li><b>Apple’s Shazam</b>: only while you tap Listen, a short fingerprint of the sound (not a recording), to name the record that’s playing.</li>
    </ul>
-   <p class="fine2">No account exists yet, so nothing syncs by itself. Your backup is a file you keep. Prices and places you paid never leave the phone.</p>
+   <p class="fine2">With iCloud sync on, your collection (including grades, prices and places) is copied to your private iCloud. It’s never shared with other people. A friends account adds only your username, name, photo, three answers and friends list to our server. Your backup is a file you keep; it contains your Discogs token if you added one.</p>
    <button class="go press" data-set="backup">Download a backup</button>
    <button class="ghost" data-set="restore">Restore a backup</button>`;
 }
 
 loadPrefs();applyPrefs();renderSettings();fillLegalContact();restoreState();renderCollection();loadCovers().then(()=>{try{renderCollection()}catch(e){}});setInterval(saveState,2500);mirrorCheck();addEventListener('pagehide',saveState);
+/* The real app hides controls that only the demo walkthrough used, so nothing on screen is a placeholder. */
+/* The camera question is asked once, not after every launch. */
+function camSave(){try{localStorage.setItem('mw_cam',JSON.stringify({asked:!!st.camAsked,pref:!!st.camPref}))}catch(e){}}
+try{const c=JSON.parse(localStorage.getItem('mw_cam')||'{}');if(c.asked)st.camAsked=true;if(c.pref)st.camPref=true}catch(e){}
+if(!DEMO){
+  VNOTE[1]+=' Sharing with friends opens soon. Until then this is saved, but nothing is shared.';VNOTE[2]+=' Public shelf pages open soon. Until then this is saved, but nothing is shared.';
+  const hide=x=>{if(x)x.hidden=true};
+  hide($('#batchBtn'));
+  const ro=$('.readout');if(ro)ro.style.display='none';
+  const ls=document.querySelector('[data-set="loc"]');if(ls)hide(ls.closest('.trow'));
+  const ds=$('#dupSecond');if(ds)ds.remove();
+  const dn=$('#dupSame');if(dn)dn.textContent='Got it';
+  const dq=document.querySelector('#dup span');if(dq)dq.textContent='There’s one entry for it in your collection. We added what this scan found to that entry.';
+}
 setTimeout(()=>{amDiag();cloudSync('start');if(CLOUD_OK())Capacitor.nativePromise('Cloud','status',{}).then(x=>{try{console.log('[cloud] account: '+x.status+' '+(x.why||''))}catch(e){}}).catch(()=>{})},1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')cloudSync('resume')});setInterval(()=>{if(document.visibilityState==='visible')cloudSync('tick')},60000);
 {const b=$('#buildTag');if(b){b.textContent='Memory Wax '+(DEVTOOLS?BUILD:BUILD.split(' ')[0])+(DEMO?' · sample data on':'');let n=0,t0=0;b.addEventListener('click',()=>{const now=Date.now();n=now-t0<2500?n+1:1;t0=now;if(DEVTOOLS&&n>=7){n=0;closeSheets();openLab()}})}}
 renderCollection();updatePills();
