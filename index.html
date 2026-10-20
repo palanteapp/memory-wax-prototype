@@ -69,6 +69,59 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outl
 .panel ol{padding-left:18px}.panel li{margin-bottom:4px}
 .panel .note{font-size:12px;border-left:3px solid var(--red);padding-left:10px;margin-top:18px}
 
+
+/* ---------- welcome (first launch only) and the How to use button ---------- */
+.welcome{background:radial-gradient(120% 70% at 50% 100%,#6a1519 0%,var(--ox) 55%,var(--night) 100%);overflow:hidden;color:var(--cream)}
+.w-meta{position:absolute;top:66px;left:24px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+.w-skip{position:absolute;top:58px;right:14px;padding:12px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream);opacity:.8}
+.w-slides{position:absolute;inset:112px 0 150px}
+.w-slide{position:absolute;inset:0;padding:8px 26px 0;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden;transform:translateX(26px);transition:opacity .32s var(--ease-out),transform .32s var(--ease-out),visibility 0s linear .32s}
+.w-slide.on{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.w-slide.past{transform:translateX(-26px)}
+.welcome:not(.active) .w-slide{visibility:hidden!important}
+.w-slide .kick{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.w-slide h2{font-size:58px;line-height:.86;color:var(--gold);margin-bottom:20px}
+.w-slide p{font-family:var(--serif);font-style:italic;font-size:24px;line-height:1.12;max-width:340px}
+.w-slide p.sm{font-size:19px;margin-top:14px;opacity:.9}
+.w-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.w-chips span{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:8px 13px;border-radius:999px;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.5)}
+.w-chips span.hot{background:var(--gold);color:var(--ox);box-shadow:none;font-weight:600}
+.w-sign{margin-top:22px;font-family:var(--disp);font-weight:900;font-stretch:62%;text-transform:uppercase;font-size:34px;color:var(--cream)}
+.w-doors{display:grid;gap:9px;margin-top:6px}
+.w-door{display:block;width:100%;text-align:left;padding:13px 16px;border-radius:16px;background:rgba(255,243,176,.08);box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.28);transition:transform 160ms ease-out,background-color 160ms ease-out}
+.w-door:active{transform:scale(.98);background:rgba(255,243,176,.16)}
+.w-door b{display:block;font-family:var(--disp);font-weight:800;font-stretch:75%;text-transform:uppercase;font-size:21px;line-height:1;color:var(--gold)}
+.w-door span{display:block;font-family:var(--serif);font-style:italic;font-size:17px;margin-top:3px;opacity:.92}
+.w-look{margin-top:6px;padding:12px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px;color:var(--cream);opacity:.85}
+.w-foot{position:absolute;left:0;right:0;bottom:44px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.w-dots{display:flex;gap:9px}
+.w-dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,243,176,.3);transition:background-color .2s ease-out,transform .2s ease-out}
+.w-dots i.on{background:var(--gold);transform:scale(1.25)}
+.w-next{display:inline-flex;align-items:center;gap:10px;padding:16px 30px;border-radius:999px;background:var(--teal);color:var(--cream);font-weight:800;font-size:15px;letter-spacing:.02em;text-transform:uppercase;transition:transform 160ms ease-out}
+.w-next:active{transform:scale(.97)}
+.w-next[hidden]{display:none}
+.helpb{position:absolute;width:40px;height:40px;border-radius:50%;z-index:25;box-shadow:inset 0 0 0 1.5px rgba(255,243,176,.45);display:grid;place-items:center;transition:transform 160ms ease-out}
+.helpb:active{transform:scale(.92)}
+.helpb svg{width:21px;height:21px;stroke:var(--cream);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.helpb.scanh{top:62px;right:24px;width:41px;height:41px}
+.helpb.colh{top:112px;right:22px}
+.helpb.sceneh{top:66px;right:22px}
+.hero .helpb.lt{position:absolute;top:8px;right:16px;background:var(--cream);box-shadow:0 0 0 1.5px var(--ox);z-index:30}
+.helpb.lt svg{stroke:var(--ox)}
+.hero .r-top{padding-right:50px}
+.hlp .hnow{background:rgba(84,11,14,.07);border-left:6px solid var(--ox);padding:12px 16px;margin:6px 0 18px}
+.hlp .hnow b{display:block;font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.hlp .hnow ul{margin:0;padding-left:18px}.hlp .hnow li{margin:5px 0;font-size:15.5px;line-height:1.3}
+.hlp details{border-top:1.5px solid rgba(84,11,14,.2)}
+.hlp details:last-of-type{border-bottom:1.5px solid rgba(84,11,14,.2)}
+.hlp summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;font-family:var(--disp);font-weight:800;font-stretch:75%;text-transform:uppercase;font-size:21px;line-height:1}
+.hlp summary::-webkit-details-marker{display:none}
+.hlp summary::after{content:'+';font-size:24px;font-weight:500}
+.hlp details[open] summary::after{content:'\2212'}
+.hlp details p{font-size:15.5px;line-height:1.38;margin:0 0 12px}
+.hlp .hfoot{margin-top:18px;font-size:14px;opacity:.85}
+.hlp .hfoot a{text-decoration:underline}
+
 /* ---------- screens ---------- */
 .screen{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .22s ease-out,visibility 0s linear .22s}
 .screen.active{opacity:1;visibility:visible;transition:opacity .22s ease-out}
@@ -1154,6 +1207,45 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       </div>
     </section>
 
+
+    <!-- Welcome: first launch only -->
+    <section class="screen welcome" data-screen="welcome" id="welcome" aria-label="Welcome to Memory Wax">
+      <div class="w-meta" aria-hidden="true">MW—001 · WELCOME</div>
+      <button class="w-skip" id="wSkip" type="button">Skip</button>
+      <div class="w-slides" id="wSlides">
+        <div class="w-slide on" data-w="0">
+          <span class="kick">Welcome to Memory Wax</span>
+          <h2 class="disp">Every record holds a room full of people.</h2>
+          <p>A drummer who nailed it on the second take. A producer who heard what it could be. An engineer who cut the groove. And you, the night you wore it out. Memory Wax is where all of that lives.</p>
+          <div class="w-chips" aria-hidden="true"><span>Players</span><span>Producers</span><span>Engineers</span><span>Studios</span><span class="hot">You</span></div>
+        </div>
+        <div class="w-slide" data-w="1">
+          <span class="kick">For everyone</span>
+          <h2 class="disp">You don’t need a crate.</h2>
+          <p>No digging habit required. No wall of shelves, no thousand records, no records at all. If a song has ever stopped you in your tracks, you belong here.</p>
+          <p class="sm">Memory Wax is for everyone who loves music: lifelong collectors, first-time record buyers, and anyone who simply loves to listen.</p>
+        </div>
+        <div class="w-slide" data-w="2">
+          <span class="kick">Together</span>
+          <h2 class="disp">Remember it. Share it.</h2>
+          <p>Remember what you play. Find out who made it. Share the love with the people who feel it too. There’s a whole world down in the grooves.</p>
+          <div class="w-sign">Dig, deeper.</div>
+        </div>
+        <div class="w-slide" data-w="3">
+          <span class="kick">Your turn</span>
+          <h2 class="disp" style="font-size:46px">Where would you like to start?</h2>
+          <div class="w-doors">
+            <button class="w-door" data-door="scan"><b>Scan a record</b><span>Barcode, label or deadwax.</span></button>
+            <button class="w-door" data-door="listen"><b>Name a song I’m hearing</b><span>Hold your phone near the speaker.</span></button>
+            <button class="w-door" data-door="type"><b>Find an album by name</b><span>An artist and a title is enough.</span></button>
+            <button class="w-door" data-door="discogs"><b>Bring my Discogs list</b><span>Import what you already keep.</span></button>
+          </div>
+          <button class="w-look" data-door="look">Just look around</button>
+        </div>
+      </div>
+      <div class="w-foot"><div class="w-dots" id="wDots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div><button class="w-next press" id="wNext" type="button">Next <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+    </section>
+
     <!-- Scanner -->
     <section class="screen scan" data-screen="scan" id="scan">
       <div class="seg modes" id="modes" style="--i:0" role="group" aria-label="Scan mode">
@@ -1163,6 +1255,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
         <button aria-pressed="true" data-mode="deadwax">Deadwax</button>
         <button aria-pressed="false" data-mode="cover">Cover</button>
       </div>
+      <button class="helpb scanh" data-help="1" aria-label="How to use Memory Wax" id="helpScan"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="3.6"/><path d="M5.9 5.9l3.5 3.5M14.6 14.6l3.5 3.5M18.1 5.9l-3.5 3.5M9.4 14.6l-3.5 3.5"/></svg></button>
       <button class="batchbtn" id="batchBtn" aria-pressed="false" aria-label="Batch scan mode">Batch</button>
       <div class="prompt" aria-live="polite"><span id="prompt">Point at any record.</span></div>
       <div class="vf" id="vf" data-m="deadwax">
@@ -1208,6 +1301,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <section class="screen reveal" data-screen="reveal" id="reveal">
       <div class="scroll" id="repScroll">
         <div class="hero">
+          <button class="helpb lt" data-help="1" aria-label="How to use Memory Wax"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="3.6"/><path d="M5.9 5.9l3.5 3.5M14.6 14.6l3.5 3.5M18.1 5.9l-3.5 3.5M9.4 14.6l-3.5 3.5"/></svg></button>
           <div class="dup" id="dup" hidden><b>You already own this pressing.</b><span>Is this a second copy?</span><div class="btnrow"><button id="dupSecond">Yes, second copy</button><button class="alt" id="dupSame">Same one</button></div></div>
           <div class="dup" id="notown" hidden><b>Not in your collection yet.</b><span>Add it to start tracking it.</span><div class="btnrow"><button id="addOwn">Add to collection</button></div></div>
           <div class="r-top" id="rTop"><span>No. 01</span><span>Impulse! · A-77 · US 1965</span></div>
@@ -1299,6 +1393,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <!-- Collection -->
     <section class="screen" data-screen="collection" id="collection">
       <div class="scroll" id="colScroll">
+        <button class="helpb colh" data-help="1" aria-label="How to use Memory Wax"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="3.6"/><path d="M5.9 5.9l3.5 3.5M14.6 14.6l3.5 3.5M18.1 5.9l-3.5 3.5M9.4 14.6l-3.5 3.5"/></svg></button>
         <button class="gear" data-set="settings" aria-label="Settings and data"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
         <div class="hd sm"><h2 class="disp">Collection</h2><p id="colSub"></p><div class="hearrow"><button class="hearpill press" data-hear="open">What’s playing?</button><button class="hearpill yr press" data-year="open">Your year</button></div></div>
         <div class="colbar"><div class="seg" id="colTabs" style="--i:0" role="group" aria-label="Collection view">
@@ -1332,6 +1427,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <!-- Collectors -->
     <section class="screen" data-screen="scene" id="scene">
       <div class="scroll">
+        <button class="helpb sceneh" data-help="1" aria-label="How to use Memory Wax"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="3.6"/><path d="M5.9 5.9l3.5 3.5M14.6 14.6l3.5 3.5M18.1 5.9l-3.5 3.5M9.4 14.6l-3.5 3.5"/></svg></button>
         <div class="hd sm"><h2 class="disp">Community</h2><p>Your sessions, rooms to listen together, and your friends.</p></div>
         <div id="sceneBody"></div>
       </div>
@@ -1505,6 +1601,8 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <div id="battleBody"></div>
     </div>
 
+    <div class="sheet" id="sheet-help" role="dialog" aria-label="How to use Memory Wax"><div class="hlp" id="helpBody"></div></div>
+
     <div class="sheet" id="sheet-notes" role="dialog" aria-label="Release notes"><div id="notesBody"></div></div>
 
     <div class="sheet" id="sheet-photo" role="dialog" aria-label="Photograph my copy">
@@ -1558,6 +1656,8 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <div class="sheet" id="sheet-settings" role="dialog" aria-label="Settings and data">
       <h4 class="disp">Settings &amp; data</h4>
       <div class="sethead">You</div>
+      <button class="opt-card" data-help="1"><b>How to use Memory Wax</b><span>Tips for the screen you’re on, and every part of the app in plain words.</span></button>
+      <button class="opt-card" data-welcome="1"><b>Replay the welcome</b><span>The short hello you see the first time.</span></button>
       <button class="opt-card" data-me="edit"><b>Your name and photo</b><span>Shown on the cards you share, your playlists and your rooms.</span></button>
       <button class="opt-card" data-ac="open"><b>Community account</b><span>Sign in with Apple or email to add friends.</span></button>
       <div class="sethead">Add a lot at once</div>
@@ -1841,7 +1941,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.38.0 · small fixes';
+const BUILD='0.39.0 · welcome and help';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2425,14 +2525,21 @@ function go(name){
   if(from==='scan'&&name==='reveal'){leaveTimer=setTimeout(()=>$('#scan').classList.remove('active'),reduce?0:850)}
   $('#dock').style.setProperty('--i',TABIDX[name]??0);
   $$('.tab').forEach(t=>t.setAttribute('aria-current',t.dataset.go===(name==='reveal'?'scan':name)?'page':'false'));
-  $('#dock').classList.toggle('hidden',name==='arrive');
+  $('#dock').classList.toggle('hidden',name==='arrive'||name==='welcome');
   setTimeout(()=>{phone.dataset.theme=(st.screen==='reveal')?'light':'dark'},name==='reveal'&&!reduce?320:0);
   if(name==='reveal')playReveal();
   if(name==='scan')resetScan();
   if(name==='collection')renderCollection();
 }
 $$('.tab').forEach(t=>t.addEventListener('click',()=>go(t.dataset.go)));
-$('#arrive').addEventListener('click',()=>go('scan'));
+/* where "Start digging" leads: the welcome the first time, then Collection once you have records, or Add while you have none */
+const welcomeSeen=()=>{try{return localStorage.getItem('mw_welcome')==='1'}catch(e){return true}};
+function startFlow(){
+  const has=own().length>0;
+  if(!DEMO&&!has&&!welcomeSeen()){welcomeOpen();return}
+  go(has?'collection':'scan');
+}
+$('#arrive').addEventListener('click',startFlow);
 
 /* ---------- scanner ---------- */
 const SCAN={
@@ -3233,7 +3340,7 @@ async function npTick(){
 /* the small player bar: the music keeps going when the Listen sheet is closed, so a way back stays on screen */
 function npMini(){
   const el=$('#miniNP');if(!el)return;const S=NP.s||{},I=NP.info;
-  const show=!!(I&&S.title&&!document.querySelector('.sheet.on')&&st.screen!=='scan'&&st.screen!=='arrive');
+  const show=!!(I&&S.title&&!document.querySelector('.sheet.on')&&st.screen!=='scan'&&st.screen!=='arrive'&&st.screen!=='welcome');
   el.hidden=!show;if(!show)return;
   $('#miniT').textContent=S.title;$('#miniA').textContent=I.artist||'';
   const art=$('#miniArt');if(I.artwork&&art.dataset.src!==I.artwork){art.dataset.src=I.artwork;art.style.cssText=`background:url('${I.artwork}') center/cover`}
@@ -5494,13 +5601,16 @@ document.addEventListener('input',e=>{
 
 /* one delegated handler for everything dynamic */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-me],[data-ac],[data-fr],[data-sitend],[data-sitdel],[data-sitpl],[data-amconnect],[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
+  const t=e.target.closest('[data-help],[data-door],[data-welcome],[data-me],[data-ac],[data-fr],[data-sitend],[data-sitdel],[data-sitpl],[data-amconnect],[data-cloud],[data-hearorg],[data-sit],[data-sitshare],[data-year],[data-yearshare],[data-yearpick],[data-logspin],[data-hearver],[data-hear],[data-hearadd],[data-hearfollow],[data-size],[data-trail],[data-trailback],[data-digrec],[data-dgtest],[data-impfill],[data-impfillstop],[data-npa],[data-cr],[data-addtyped],[data-pidpick],[data-plus],[data-open],[data-covphoto],[data-pldup],[data-plall],[data-rmrec],[data-selrm],[data-selcancel],[data-sureyes],[data-sureno],[data-wrm],#selBtn,[data-chip],[data-conf],[data-v],[data-tog],[data-sheet],[data-set],[data-share],[data-alert],[data-cond],#sortBtn,#colTabs button,#newShelfBtn,#newToggle,#newCreate,#visSeg button,#newVis button,#batchBtn,#doneBtn,#dupSecond,#dupSame,#goScan,#goType,#batchMore,[data-cur],[data-follow],[data-dwscan],[data-foundpick],[data-bcpick],[data-dwattach],[data-dwagain],[data-dwreset],[data-catmanual],[data-catlook],[data-dgtoken],[data-dgsave],[data-dgclear],[data-imprun],[data-impcancel],[data-np],[data-recap],[data-spinpick],[data-spinv],[data-spinopen],[data-spinclear],[data-frok],[data-frno],[data-addwant],[data-acct],[data-acctopen],[data-presh],[data-segtog],[data-card],[data-cardq],[data-cardt],[data-nudge],[data-listen],[data-lconn],[data-ldis],[data-ltrack],[data-lplay],[data-battle],[data-bpick],[data-bvote],[data-bwhy],[data-bnext],[data-crn],[data-fp],[data-svcgo],[data-svcdis],[data-qsave],[data-close],[data-host],[data-hnext],[data-hback],[data-hrec],[data-hvis],[data-hpub],[data-sess],[data-sessdel],[data-sessplay],[data-confhelp],[data-cam],[data-dc],[data-shedit],[data-shsave],[data-shdel],[data-shl],[data-shpl],[data-plview],[data-plnew],[data-plsave],[data-plplay],[data-plvis],[data-plto],[data-pledit],[data-pldel2],[data-pladd],[data-plrm],[data-clisten],[data-lnext],[data-lprev],[data-lq],[data-plan],[data-notes],[data-photo],[data-pdel],[data-copy],[data-nshare],[data-cardsave],[data-tablecode],[data-series],[data-night],[data-nrec],[data-nightsave],[data-runimport],[data-dmo],[data-lab],[data-nroom],[data-foundadd],[data-foundno],[data-barlook],[data-barmanual],[data-ncal],[data-nphase],[data-nmode],[data-nhost],[data-nsend],[data-nrep],[data-nrem],[data-nnext],[data-nslow],[data-nlock],[data-nend],[data-nremind],[data-ngather],[data-nplan],[data-hmode]');
   if(!t)return;
   if(t.dataset.cr){openCredit(t.dataset.cr);return}
   if(t.dataset.crn){NAMEKEY[t.dataset.crn]?openCredit(NAMEKEY[t.dataset.crn]):openCreditName(t.dataset.crn,t.dataset.crr,t.dataset.pid,t.dataset.mbid);return}
   if(t.dataset.pidpick){const b=st.pbase;if(b)idxPerson(b.name,b.role,+t.dataset.pidpick,{...b,alts:[]});return}
   if(t.dataset.plan){setPlan(st.rec||1,t.dataset.plan);return}
   if(t.dataset.notes){openNotes();return}
+  if(t.dataset.help){openHelp();return}
+  if(t.dataset.welcome){closeSheets();welcomeOpen(true);return}
+  if(t.dataset.door){welcomeDoor(t.dataset.door);return}
   if(t.dataset.photo){openPhoto();return}
   if(t.dataset.pdel!==undefined){(st.photos[st.rec||1]||[]).splice(+t.dataset.pdel,1);photoDrop(st.rec||1,+t.dataset.pdel);renderPhotos();return}
   if(t.dataset.copy){copyText(st.shareUrl||'https://memorywax.app',t.dataset.copy==='recap'?'Link copied. Anyone can open this recap, even without the app.':t.dataset.copy==='pl'?'Link copied. Friends can play it in their own Apple Music.':t.dataset.copy==='sess'?'Link copied. Anyone can open the session page, even without the app.':undefined);return}
@@ -6151,6 +6261,62 @@ if(!DEMO){
   const dn=$('#dupSame');if(dn)dn.textContent='Got it';
   const dq=document.querySelector('#dup span');if(dq)dq.textContent='There’s one entry for it in your collection. We added what this scan found to that entry.';
 }
+
+/* ---------- welcome: a warm first hello, then four doors in ---------- */
+const WEL={i:0,n:4};
+function welcomeShow(i){
+  WEL.i=Math.max(0,Math.min(WEL.n-1,i));
+  $$('#wSlides .w-slide').forEach((el,k)=>{el.classList.toggle('on',k===WEL.i);el.classList.toggle('past',k<WEL.i)});
+  $$('#wDots i').forEach((d,k)=>d.classList.toggle('on',k===WEL.i));
+  const last=WEL.i===WEL.n-1;$('#wNext').hidden=last;$('#wSkip').hidden=last;
+  if(!last)$('#wNext').firstChild.nodeValue=WEL.i===WEL.n-2?'Let’s go ':'Next ';
+}
+function welcomeOpen(){WEL.i=0;welcomeShow(0);go('welcome')}
+function welcomeDone(){try{localStorage.setItem('mw_welcome','1')}catch(e){}}
+function welcomeDoor(d){
+  welcomeDone();
+  if(d==='scan')go('scan');
+  else if(d==='type'){go('scan');setTimeout(()=>openCatEntry(),250)}
+  else if(d==='listen'){go('collection');setTimeout(()=>openHear(),250)}
+  else if(d==='discogs'){go('collection');setTimeout(()=>{const b=$('#firstRun [data-set="import"]');if(b)b.click()},250)}
+  else go('collection');
+}
+$('#wNext').addEventListener('click',()=>welcomeShow(WEL.i+1));
+$('#wSkip').addEventListener('click',()=>welcomeShow(WEL.n-1));
+{let x0=null;const w=$('#welcome');
+ w.addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});
+ w.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>50)welcomeShow(WEL.i+(dx<0?1:-1))},{passive:true})}
+
+/* ---------- How to use: tips for the screen you're on, then everything else ---------- */
+const HELP_NOW={
+  scan:['On the Add tab',['Pick Barcode, Label, Deadwax or Cover along the top, then tap the round button. Barcode, Label and Cover can start reading on their own.','No barcode, or the camera isn’t cooperating? Tap Type it. An artist and a title is enough.','The ? under the viewfinder shows how to shoot the deadwax, the part that names the exact pressing.','Tap Listen to name a song playing in the room.']],
+  collection:['On the Collection tab',['All records: search by title, artist, label, matrix or who played on it. The dot on each record shows how sure the match is.','Shelves group records your way. Dream Crate keeps the ones you’re hunting.','What’s playing? names a song. Your year shows your listening so far. The gear is Settings: backup, import and sync.']],
+  reveal:['On a record page',['The seal shows how sure we are. Tap How we know to see the evidence.','Tap any name in The Session to see what else they played on.','My Copy is private: your grade, what you paid, photos of your copy, and your own memory.','Add to shelf, Dream Crate and Memory are in the bar at the bottom.']],
+  scene:['On the Community page',['Your name and photo go on the cards you share. Tap Edit to add three short answers about you.','Your sessions list every night Listen followed along. Rooms are plans for listening together. Live chat is coming.','To add friends, sign in, then invite someone with a link or find them by username.']]
+};
+const HELP_TOPICS=[
+ ['Add a record','Open Add and choose how to read it. Barcode reads the number under the bars. Label reads the printed center label. Deadwax reads the etching by the label and is the one that can name the exact pressing. Cover reads the words on the front. Or tap Type it. Already keep a list? Settings has Import from Discogs and Upload a CSV.'],
+ ['What “Confirmed” means','Confirmed: the etched matrix matched the runout listed for one pressing. Likely: the cover or barcode points to one pressing, but nothing rules out another. Album only: we know the album, not which pressing. Tap How we know on any record to see why. To move a record up, scan its deadwax.'],
+ ['Name a song (Listen)','Tap Listen, hold your phone near the speaker, and Memory Wax names the song with Apple’s Shazam. If it’s on a record you own, it shows where the needle is. Turn on Follow along and it names each track and tells you when to flip. It listens only while the sheet is open, and keeps no recording.'],
+ ['The record page','The pressing, who played on it, the story, and your own copy. Tap any credited name for their page and the other records they played on. Apple Music plays the album with the account on your phone. Full songs need a subscription.'],
+ ['Shelves, Dream Crate and playlists','A shelf is a group you make. Tap the + on a record to put it on shelves. Dream Crate is for records you want. Playlists pick tracks from your own records and can be saved to Apple Music. Friends can’t see your shelves yet; that’s coming.'],
+ ['Sessions and Your year','Each song Listen names joins the current session. Name it, share it as a card or a song list, or save it as an Apple Music playlist. Your year counts spins on your records from Listen and from I played this, and makes a card you can share.'],
+ ['Friends and invites','Sign in with Apple or your email, pick a username, then tap Invite a friend to send a one-time link. They tap it, the app opens, and you’re friends once they accept. You can unfriend, block or report from their profile.'],
+ ['Rooms','A room is a night you plan: when, where, and which records in order. You get a card to share, a calendar reminder and the track list to follow. Live chat between phones and public room pages are coming.'],
+ ['Backup, sync and your data','Settings has Sync with iCloud (on by default), Download a backup, Restore, and Export as CSV. A copy also lands in the Memory Wax folder in the Files app. Erase everything is at the bottom of Settings.'],
+ ['Privacy at a glance','Your collection stays on your devices and in your private iCloud. The camera picture never leaves your phone. Prices and places never go to anyone else. No ads and no tracking.']
+];
+function openHelp(){
+  const scr=st.screen,now=HELP_NOW[scr]||HELP_NOW.collection;
+  $('#helpBody').innerHTML=`<h4 class="disp">How to use</h4><p class="sub">Lost? Start here.</p>
+   <div class="hnow"><b>${now[0]}</b><ul>${now[1].map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+   ${HELP_TOPICS.map(([t,b])=>`<details><summary>${esc(t)}</summary><p>${esc(b)}</p></details>`).join('')}
+   <button class="opt-card" data-welcome="1" style="margin-top:18px"><b>Replay the welcome</b><span>The short hello you see the first time.</span></button>
+   <p class="hfoot">Something not working, or an idea? Write to <a href="mailto:info@memorywax.app">info@memorywax.app</a>.</p>`;
+  openSheet('help');
+}
+
+if(DEMO){const hs=$('#helpScan');if(hs)hs.hidden=true}
 setTimeout(()=>{amDiag();cloudSync('start');if(CLOUD_OK())Capacitor.nativePromise('Cloud','status',{}).then(x=>{try{console.log('[cloud] account: '+x.status+' '+(x.why||''))}catch(e){}}).catch(()=>{})},1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')cloudSync('resume')});setInterval(()=>{if(document.visibilityState==='visible')cloudSync('tick')},60000);
 {const b=$('#buildTag');if(b){b.textContent='Memory Wax '+(DEVTOOLS?BUILD:BUILD.split(' ')[0])+(DEMO?' · sample data on':'');let n=0,t0=0;b.addEventListener('click',()=>{const now=Date.now();n=now-t0<2500?n+1:1;t0=now;if(DEVTOOLS&&n>=7){n=0;closeSheets();openLab()}})}}
 renderCollection();updatePills();
