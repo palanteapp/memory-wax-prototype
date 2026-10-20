@@ -1262,6 +1262,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
               <p class="mc-note" id="planNote"></p>
             </div>
             <div class="mc-two"><div><span class="mc-lab">Paid</span><input class="mc-in" id="mcPaid" inputmode="decimal" placeholder="$" aria-label="Price paid"></div><div><span class="mc-lab">Where</span><input class="mc-in" id="mcWhere" placeholder="Shop, fair, gift…" aria-label="Where you got it"></div></div>
+            <button class="chipbtn dark press" id="mcPhotos" data-photo="1" style="margin-top:14px">Photograph my copy</button>
             <p class="mc-note">Saved automatically. Price and place are always private. They never show on a public shelf.</p>
           </article>
           <article class="blk avail"><header><span class="num">05</span><h3 class="disp">Copies From Collectors</h3></header>
@@ -1577,7 +1578,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <button class="opt-card" data-set="panic" style="margin-top:10px"><b>Pause all sharing</b><span>One tap puts every shelf back to Just me and turns off share links.</span></button>
       <div class="sethead">Accessibility</div>
       <div class="trow"><div><b>Larger text</b><span class="d">Bigger type across the app.</span></div><button class="sw" data-set="big" aria-pressed="false" aria-label="Larger text"></button></div>
-      <div class="trow"><div><b>Reduce motion</b><span class="d">Calmer transitions. Follows your phone’s setting by default.</span></div><button class="sw" data-set="motion" aria-pressed="false" aria-label="Reduce motion"></button></div>
+      <div class="trow"><div><b>Reduce motion</b><span class="d" id="motionNote">Calmer transitions. Follows your phone’s setting by default.</span></div><button class="sw" data-set="motion" aria-pressed="false" aria-label="Reduce motion"></button></div>
       <div class="sethead">Music</div>
       <button class="opt-card" data-set="svc"><b>Apple Music</b><span>Check the connection, or connect it if it isn’t yet.</span></button>
       <div class="sethead">Scanner</div>
@@ -1714,7 +1715,8 @@ function halftone(w,h,ox,oy,maxD,step=9,pow=1.1){
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const prefs={big:false,motion:false,sync:true,loc:false,auto:true};
-let reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const osReduce=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+let reduce=osReduce();
 function applyPrefs(){phone.classList.toggle('big',prefs.big);document.documentElement.classList.toggle('rm',prefs.motion);reduce=matchMedia('(prefers-reduced-motion: reduce)').matches||prefs.motion}
 const phone=$('#phone');
 const TABIDX={scan:0,collection:1,scene:2,reveal:0};
@@ -1839,7 +1841,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.37.1 · cleanup';
+const BUILD='0.38.0 · small fixes';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2675,6 +2677,7 @@ function fillCopy(id){
   {const gb=cp.cond?$(`#cond [data-cond="${cp.cond}"]`):null;$('#condNote').textContent=gb?gb.dataset.tip:cp.cond?`Imported grade: ${cp.cond}. Tap a grade to change it.`:'Tap a grade to see what it means.'}
   $('#mcPaid').value=cp.paid||'';$('#mcWhere').value=cp.where||'';
   {let sp=$('#mcSpins');if(!sp){sp=document.createElement('p');sp.id='mcSpins';sp.className='fine2';$('#mcMemo').after(sp)}const P=cp.plays||[];sp.hidden=!P.length;const H=P.filter(p=>p.src!=='tap').length;sp.hidden=false;sp.innerHTML=(P.length?`Played ${P.length} time${P.length===1?'':'s'}${H&&H<P.length?` (${H} heard by Listen)`:H?' (heard by Listen)':''} · last ${new Date(P[P.length-1].at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}<br>`:'')+'<button class="logspin" data-logspin="1">I played this</button>'}
+  {const pb=$('#mcPhotos'),n=((st.photos||{})[id]||[]).length;if(pb)pb.textContent=n?`Photos of my copy · ${n}`:'Photograph my copy'}
   const mm=$('#mcMemo');mm.hidden=!r.memo;mm.innerHTML=r.memo?`<small>Your memory · only you</small>${esc(r.memo)}`:'';
 }
 function fillReport(r,mode){
@@ -2986,12 +2989,12 @@ async function loadCovers(){for(const r of RECS){if(r.coverKey){try{const b=awai
 /* a cover the person photographs stays on this phone, in the same private store as their copy photos */
 async function takeCoverPhoto(id){
   const f=await pickPhoto(true);if(!f)return;
-  try{const cv=await fileToCanvas(f,700),blob=await cvBlob(cv,.85),r=recOf(id),old=r.coverKey,k='cover'+id+'-'+Date.now();await imgPut(k,blob);r.coverKey=k;if(old)imgDel(old);COVERURL[id]=URL.createObjectURL(blob);saveReal();saveState();renderCollection();if(st.screen==='reveal'&&st.rec===id)fillReport(r,st.cameFromScan?st.mode:realModeOf(r));toast('Cover photo saved on this phone.')}
+  try{const cv=await fileToCanvas(f,700),blob=await cvBlob(cv,.85),r=recOf(id),old=r.coverKey,k='cover'+id+'-'+Date.now();await imgPut(k,blob);r.coverKey=k;if(old)coverGone(old);COVERURL[id]=URL.createObjectURL(blob);saveReal();saveState();renderCollection();if(st.screen==='reveal'&&st.rec===id)fillReport(r,st.cameFromScan?st.mode:realModeOf(r));toast('Cover photo saved on this phone.')}
   catch(e){toast('Couldn’t save that photo.')}
 }
 function removeRecords(ids){
   ids.forEach(id=>{
-    const rr=RECS.find(r=>r.id===id);if(rr&&rr.coverKey)imgDel(rr.coverKey);delete COVERURL[id];
+    const rr=RECS.find(r=>r.id===id);if(rr&&rr.coverKey)coverGone(rr.coverKey);delete COVERURL[id];
     st.owned.delete(id);
     st.shelves.forEach(sh=>{sh.recs=sh.recs.filter(x=>x!==id)});
     st.playlists=(st.playlists||[]).map(p=>({...p,items:(p.items||[]).filter(i=>i.rec!==id)}));
@@ -3052,7 +3055,7 @@ function fillLegalContact(){
   const links=SITE_URL?`<p class="fine2">The full <a href="${esc(SITE_URL)}/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="${esc(SITE_URL)}/support.html" target="_blank" rel="noopener">Support</a> pages are on our website.</p>`:'';
   el.innerHTML=mail+links;
 }
-function renderSettings(){$$('#sheet-settings .sw[data-set]').forEach(b=>b.setAttribute('aria-pressed',String(!!prefs[b.dataset.set])));cloudPaint();const x=safetyInfo(),b=$('#safetyBtn');if(b){b.hidden=!x;if(x)$('#safetySub').textContent=`A copy from ${new Date(x.at).toLocaleDateString()}, before the update from ${x.from} to ${x.to}.`}}
+function renderSettings(){$$('#sheet-settings .sw[data-set]').forEach(b=>b.setAttribute('aria-pressed',String(!!prefs[b.dataset.set]||(b.dataset.set==='motion'&&osReduce()))));{const md=$('#motionNote');if(md)md.textContent=osReduce()?'On, because your phone’s Reduce Motion is on. Change it in Settings → Accessibility → Motion.':'Calmer transitions. Follows your phone’s setting by default.'}cloudPaint();const x=safetyInfo(),b=$('#safetyBtn');if(b){b.hidden=!x;if(x)$('#safetySub').textContent=`A copy from ${new Date(x.at).toLocaleDateString()}, before the update from ${x.from} to ${x.to}.`}}
 function renderBatch(){
   const n=st.queue.length,rv=st.queue.filter(q=>q.review).length;
   $('#batchList').innerHTML=st.queue.map(q=>{const r=RECS.find(x=>x.id===q.id);return `<div class="vr"><b>${r.t}</b><span>${q.review?'Needs a second look':'Confirmed'}</span></div>`}).join('');
@@ -3449,6 +3452,7 @@ function openNotes(){
 }
 function renderPhotos(){
   const id=st.rec||1,ps=st.photos[id]||[];
+  {const pb=$('#mcPhotos');if(pb)pb.textContent=ps.length?`Photos of my copy · ${ps.length}`:'Photograph my copy'}
   $('#photoGrid').innerHTML=ps.length?ps.map((u,i)=>`<div><img src="${u}" alt="Photo ${i+1} of your copy"><button data-pdel="${i}" aria-label="Delete photo ${i+1}">×</button></div>`).join(''):'<p class="fine2" style="grid-column:1/-1;margin:0">No photos yet.</p>';
 }
 function openPhoto(){renderPhotos();openSheet('photo')}
@@ -5701,6 +5705,7 @@ document.addEventListener('click',e=>{
     else if(k==='export')exportCSV();
     else if(k==='batchview'){closeSheets();st.queue=[];updatePills();go('collection')}
     else if(k==='panic'){st.shelves.forEach(x=>x.v=0);if(st.spin)st.spin.v=0;(st.playlists||[]).forEach(p=>p.vis=0);saveState();closeSheets();renderCollection();toast('Sharing paused. Every shelf and playlist is Just me. Turn sharing back on one at a time.')}
+    else if(k==='motion'&&osReduce()){toast('Your phone’s Reduce Motion is on, so the app is already calm. Turn it off in Settings → Accessibility → Motion.')}
     else if(k==='sync'||k==='big'||k==='motion'||k==='loc'||k==='auto'){prefs[k]=!prefs[k];applyPrefs();savePrefs();renderSettings();if(k==='sync')toast(prefs.sync?'Discogs sync on. Changes flow both ways.':'Discogs sync off.');if(k==='loc')toast(prefs.loc?'We’ll remember where and when you scan, for you only.':'We keep the date only.')}
     return;
   }
@@ -5912,8 +5917,36 @@ async function cloudSync(why,tries){
     if(here&&remote&&why!=='start')toast('Updated from your other device.');
   }catch(e){CS.err=String((e&&e.message)||e);if(/noAccount|restricted/.test(CS.err))CS.status='';try{console.warn('[cloud] '+why+': '+CS.err)}catch(x){}}
   CS.busy=false;cloudPaint();
+  if(!CS.err)coverSync().catch(()=>{});
   if(CS.again){CS.again=false;setTimeout(()=>cloudSync('again'),1500)}
 }
+/* cover photos you took travel as small records of their own, so the other device shows them too */
+const imgUpGet=()=>{try{return new Set(JSON.parse(localStorage.getItem('mw_img_up')||'[]'))}catch(e){return new Set()}};
+const imgUpSet=u=>{try{localStorage.setItem('mw_img_up',JSON.stringify([...u]))}catch(e){}};
+const blobB64=b=>new Promise((ok,no)=>{const f=new FileReader();f.onload=()=>ok(String(f.result).split(',')[1]);f.onerror=no;f.readAsDataURL(b)});
+let coverBusy=false;
+async function coverSync(){
+  if(coverBusy||DEMO||!CLOUD_OK()||!cloudOn())return;coverBusy=true;
+  try{
+    const up=imgUpGet();let got=false;
+    for(const r of RECS){
+      if(!r.real||!r.coverKey)continue;
+      const b=await imgGet(r.coverKey).catch(()=>null);
+      if(b){
+        if(up.has(r.coverKey))continue;
+        const p=await cloudCall('imgPush',{key:r.coverKey,b64:await blobB64(b)});
+        if(p.error)break;up.add(r.coverKey);imgUpSet(up);
+      }else{
+        const g=await cloudCall('imgPull',{key:r.coverKey});
+        if(g.error)break;
+        if(g.b64){const blob=await (await fetch('data:image/jpeg;base64,'+g.b64)).blob();await imgPut(r.coverKey,blob);COVERURL[r.id]=URL.createObjectURL(blob);up.add(r.coverKey);imgUpSet(up);got=true}
+      }
+    }
+    if(got){try{renderCollection()}catch(e){}}
+  }finally{coverBusy=false}
+}
+/* a cover that was replaced or whose record was removed is cleared from iCloud too */
+function coverGone(k){if(!k)return;imgDel(k);const u=imgUpGet();if(u.delete(k)){imgUpSet(u);if(CLOUD_OK()&&cloudOn())cloudCall('imgRemove',{keys:[k]}).catch(()=>{})}}
 /* iCloud can go quiet (no signal, account settling); never let one stuck call stop syncing for good */
 function cloudCall(m,o){return Promise.race([Capacitor.nativePromise('Cloud',m,o),new Promise(ok=>setTimeout(()=>ok({error:'offline'}),25000))])}
 function cloudSoon(){if(!CLOUD_OK()||!cloudOn())return;clearTimeout(CS.timer);CS.timer=setTimeout(()=>cloudSync('save'),5000)}
@@ -5923,7 +5956,7 @@ function cloudPaint(){
   const ago=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?'just now':m<60?m+' min ago':new Date(t).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})};
   const E=CS.err,msg=!on?'Off on this device. Your records stay only here.':CS.busy?'Syncing…':
     /noAccount/.test(E)?'Sign in to iCloud in the Settings app to sync.':/restricted/.test(E)?'iCloud is restricted on this device.':/offline/.test(E)?'Waiting for a connection. It syncs when you’re back online.':/full/.test(E)?'Your iCloud storage is full, so syncing is paused.':/unavailable/.test(E)?'iCloud isn’t available in this build.':
-    E?'Couldn’t sync just now. It will try again.':CS.last?`On · synced ${ago(CS.last)}. Photos and tokens stay on each device.`:'Keeps your iPhone and iPad the same. Photos and tokens stay on each device.';
+    E?'Couldn’t sync just now. It will try again.':CS.last?`On · synced ${ago(CS.last)}. Copy photos and tokens stay on each device.`:'Keeps your iPhone and iPad the same. Copy photos and tokens stay on each device.';
   $('#cloudSub').textContent=msg;
 }
 /* if this phone has no records but the Documents folder has a copy (storage cleared, or a fresh install restored from iCloud), offer it back */
@@ -5940,9 +5973,10 @@ async function mirrorCheck(){
 const lastBackupAt=()=>{try{return +localStorage.getItem('mw_backup_at')||0}catch(e){return 0}};
 const backupStale=()=>{const n=RECS.filter(r=>r.real).length;return n>=3&&Date.now()-lastBackupAt()>30*864e5};
 /* your own photos, shrunk so a backup file stays a sensible size */
+const coverKeys=()=>RECS.filter(r=>r.real&&r.coverKey).map(r=>r.coverKey);
 async function photoBlobs(maxPx){
   const out={};
-  for(const ks of Object.values(st.photoKeys||{}))for(const k of ks){
+  for(const k of [...Object.values(st.photoKeys||{}).flat(),...coverKeys()]){
     try{const b=await imgGet(k);if(!b)continue;out[k]=(await fileToCanvas(b,maxPx)).toDataURL('image/jpeg',.82)}catch(e){}
   }
   return out;
@@ -5956,7 +5990,7 @@ function downloadBlob(b,name){
 }
 async function backupDownload(){
   const d=snapshot();d.v=2;d.lab=LAB;d.prefs={big:prefs.big,motion:prefs.motion,loc:prefs.loc};
-  const hasPh=Object.values(st.photoKeys||{}).some(a=>a.length);
+  const hasPh=Object.values(st.photoKeys||{}).some(a=>a.length)||coverKeys().length>0;
   if(hasPh){toast('Packing your photos…');d.photos=await photoBlobs(1600)}
   downloadBlob(new Blob([JSON.stringify(d)],{type:'application/json'}),'memory-wax-backup-'+stamp()+'.json');
   st.lastBackup=Date.now();try{localStorage.setItem('mw_backup_at',String(st.lastBackup))}catch(e){}
@@ -5974,14 +6008,14 @@ async function backupRestore(){
   for(let i=RECS.length-1;i>=0;i--)if(RECS[i].real)RECS.splice(i,1);
   if(d.photos){for(const [k,u] of Object.entries(d.photos)){try{await imgPut(k,await (await fetch(u)).blob())}catch(e){}}}
   initState(true);applyState(d);if(d.lab){LAB=d.lab;labSave()}if(d.prefs){Object.assign(prefs,d.prefs);applyPrefs();savePrefs()}
-  saveReal();saveState();closeSheets();renderCollection();go('collection');toast(`Restored ${n} record${n===1?'':'s'}.`);
+  saveReal();saveState();closeSheets();loadCovers().then(()=>{try{renderCollection()}catch(e){}});renderCollection();go('collection');toast(`Restored ${n} record${n===1?'':'s'}.`);
 }
 /* ---- erase ---- */
 async function eraseAll(){
   if(!confirm('Erase everything Memory Wax keeps on this phone? Records, shelves, grades, prices, photos, lab results and tokens, and the copy in the Memory Wax folder. iCloud sync turns off on this phone, so your other devices keep their records. You’re also signed out of your community account on this phone; to remove that account itself, use Settings, Community account, Delete my account first. Download a backup first if you want any of it back.'))return;
   try{['mw_state','mw_real_recs','mw_prefs','mw_lab','mw_backup_at','mw_demo'].forEach(k=>localStorage.removeItem(k));localStorage.removeItem('mw_rt')}catch(e){}
   try{indexedDB.deleteDatabase('mwlab')}catch(e){}
-  try{['mw_build','mw_safety','mw_mirror_at','mw_state_unreadable','mw_sync_base'].forEach(k=>localStorage.removeItem(k));localStorage.setItem('mw_cloud','off');['mw_acct2','mw_pkce','mw_cam'].forEach(k=>localStorage.removeItem(k));Object.keys(localStorage).filter(k=>/^mw_(bio|wa)_/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}
+  try{['mw_build','mw_safety','mw_mirror_at','mw_state_unreadable','mw_sync_base'].forEach(k=>localStorage.removeItem(k));localStorage.setItem('mw_cloud','off');['mw_acct2','mw_pkce','mw_cam','mw_img_up'].forEach(k=>localStorage.removeItem(k));Object.keys(localStorage).filter(k=>/^mw_(bio|wa)_/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}
   if(BK_NATIVE()){try{await Capacitor.nativePromise('Backup','clear',{})}catch(e){}}
   location.reload();
 }
