@@ -1514,10 +1514,11 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     </div>
 
     <div class="sheet" id="sheet-memory" role="dialog" aria-label="Add a memory">
-      <h4 class="disp">Add a memory</h4>
-      <p class="sub">Where did you find it? Who gave it to you? What were you doing the first time you heard it?</p>
+      <h4 class="disp" id="memH">Add a memory</h4>
+      <p class="sub" id="memSub">Where did you find it? Who gave it to you? What were you doing the first time you heard it?</p>
       <textarea id="memTxt" aria-label="Your memory of this record" placeholder="Start anywhere…"></textarea>
       <button class="go press" id="memSave">Save · only you can see this</button>
+      <button class="ghost" id="memSkip" data-close="1" hidden>Not now</button>
     </div>
 
     <div class="sheet" id="sheet-visitor" role="dialog" aria-label="What visitors see">
@@ -1954,7 +1955,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.40.1 · where it started';
+const BUILD='0.40.2 · the story';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -4951,7 +4952,7 @@ function addRel(hit,ev){
   st.firstBought=null;
   const r=recOf(id);{const qs=st.found&&st.found.q&&st.found.q.size;if(qs&&!r.fmt)r.fmt=SIZEFMT[qs]}if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
   if((r.src==='discogs'||r.src==='apple')&&!r.mb)attachMB(r);
-  saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(st.firstBoughtDone===id?(st.firstBoughtDone=null,'Added to Where it started. Your first one.'):ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
+  saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(st.firstBoughtDone===id?(setTimeout(()=>{if(st.rec===id){memCopy(true);$('#memTxt').value=recOf(id).memo||'';openSheet('memory')}},900),st.firstBoughtDone=null,'Added to Where it started. Your first one.'):ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
 }
 /* the label, cut out of the middle of the frame and enlarged: a tight crop first (label fills it), then the whole circle */
 function rotCanvas(cv,deg){const q=Math.abs(deg)%180===90,c=document.createElement('canvas');c.width=q?cv.height:cv.width;c.height=q?cv.width:cv.height;const x=c.getContext('2d');x.translate(c.width/2,c.height/2);x.rotate(deg*Math.PI/180);x.drawImage(cv,-cv.width/2,-cv.height/2);return c}
@@ -5861,7 +5862,7 @@ document.addEventListener('click',e=>{
     else{closeSheets();renderCollection();toast(`Created “${n}” (${VNAME[s.v]}).`)}
     return;
   }
-  if(t.dataset.sheet){const id=t.dataset.sheet;if(id==='memory'){$('#memTxt').value=recOf(st.rec||1).memo||'';openSheet('memory')}else if(id==='shelf'){gate(()=>openShelfSheet(st.rec||1))}else{if(id==='visitor'){st.vis=0;renderVisitor()}openSheet(id)}return}
+  if(t.dataset.sheet){const id=t.dataset.sheet;if(id==='memory'){memCopy(false);$('#memTxt').value=recOf(st.rec||1).memo||'';openSheet('memory')}else if(id==='shelf'){gate(()=>openShelfSheet(st.rec||1))}else{if(id==='visitor'){st.vis=0;renderVisitor()}openSheet(id)}return}
 });
 $('#search').addEventListener('input',e=>{st.q=e.target.value;renderCollection()});
 document.addEventListener('input',e=>{const f=e.target.closest('[data-hf]');if(f&&st.host){st.host[f.dataset.hf]=f.value;return}const n=e.target.closest('[data-hnote]');if(n&&st.host)st.host.notes[n.dataset.hnote]=n.value});
@@ -5869,6 +5870,9 @@ document.addEventListener('change',e=>{if(e.target.id==='meIn'){const f=e.target
 $('#mcAsk').addEventListener('input',e=>{copyOf(st.rec||1).ask=e.target.value});
 $('#mcPaid').addEventListener('input',e=>{copyOf(st.rec||1).paid=e.target.value});
 $('#mcWhere').addEventListener('input',e=>{copyOf(st.rec||1).where=e.target.value});
+function memCopy(story){$('#memH').textContent=story?'Where it started':'Add a memory';
+  $('#memSub').textContent=story?'The first record you ever bought. Where were you, and who were you with?':'Where did you find it? Who gave it to you? What were you doing the first time you heard it?';
+  $('#memTxt').placeholder=story?'I was fourteen, at…':'Start anywhere…';$('#memSkip').hidden=!story}
 $('#memSave').addEventListener('click',()=>{const txt=$('#memTxt').value.trim(),r=recOf(st.rec||1);r.memo=txt||undefined;closeSheets();fillCopy(r.id);renderCollection();toast(txt?'Memory saved to this record. Only you can see it.':'Memory cleared.')});
 
 /* simulation controls in the side panel */
