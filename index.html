@@ -1078,6 +1078,18 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .vf{top:185px}
 .guide{top:496px}
 .readout,.coach{top:539px}
+/* once the coach card has gone, the scan area grows into the space it left */
+@media (min-height:780px){
+.vf{transition:width .25s var(--ease-out),height .25s var(--ease-out),margin-left .25s var(--ease-out)}
+.scan.roomy .vf{width:330px;height:330px;margin-left:-165px}
+.scan.roomy .vf::before{width:344px;height:344px;margin:-172px 0 0 -172px}
+.scan.roomy .vf .sheen{width:296px;height:296px;margin:-148px 0 0 -148px}
+.scan.roomy .vf[data-m=barcode]{width:310px;height:380px;margin-left:-155px}
+.scan.roomy .vf ~ .guide{top:546px}
+.scan.roomy .vf[data-m=barcode] ~ .guide{top:596px}
+}
+.vf .corner{vector-effect:non-scaling-stroke}
+
 .shutter{bottom:110px;width:64px;height:64px;box-shadow:0 0 0 4px var(--ox),0 0 0 7px var(--cream)}
 .shutter::after{inset:14px;border-width:3px}
 .dpill,.npill{bottom:125px}
@@ -1301,7 +1313,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
         <div class="view v-cov"><div class="cov-card" id="covCard"><div class="scanline"></div></div></div>
         <div class="view v-bar"><div class="bar-card"><svg id="barSvg" viewBox="0 0 220 78" preserveAspectRatio="none" aria-hidden="true"></svg><div class="digits">0 12345 67890 5</div><div class="scanline"></div></div></div>
         <video class="live" id="liveVid" playsinline muted autoplay aria-hidden="true"></video>
-        <svg class="corners" viewBox="0 0 300 300" aria-hidden="true"><path class="corner" d="M-6 34V-6H34M266 -6H306V34M306 266V306H266M34 306H-6V266"/></svg>
+        <svg class="corners" viewBox="0 0 300 300" preserveAspectRatio="none" aria-hidden="true"><path class="corner" d="M-6 34V-6H34M266 -6H306V34M306 266V306H266M34 306H-6V266"/></svg>
       </div>
       <div class="guide"><span class="tilt"></span><span id="guide">Find the smooth band near the label</span><button class="help" id="helpBtn" aria-label="How to shoot the deadwax">?</button></div>
       <div class="coach" id="coach" hidden aria-live="polite"><b id="coachT"></b><span id="coachB"></span></div>
@@ -1962,7 +1974,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.41.0 · coach card';
+const BUILD='0.42.0 · roomy scanner';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2535,7 +2547,6 @@ function go(name){
   const from=st.screen;st.screen=name;
   if(name==='scene'){try{renderScene()}catch(e){}if(typeof acLoad==='function'&&acIn())acLoad().then(()=>{if(st.screen==='scene'&&document.activeElement&&document.activeElement.id!=='frQ')renderScene()})}
   if(name!=='scan'&&name!=='reveal')camOff();
-  if(name==='scan'&&st.camPref&&!camStream)camOn();
   if(name==='reveal'){st.cameFromScan=(from==='scan');if(from==='scan'&&!st.keepRec)st.rec=1;st.keepRec=false}
   if(name==='scan'){st.autoOff=false;coachPaint()}
   if(name!=='scan'&&st.scanning){st.scanGen=(st.scanGen||0)+1;st.scanning=false}
@@ -2551,7 +2562,7 @@ function go(name){
   $('#dock').classList.toggle('hidden',name==='arrive'||name==='welcome');
   setTimeout(()=>{phone.dataset.theme=(st.screen==='reveal')?'light':'dark'},name==='reveal'&&!reduce?320:0);
   if(name==='reveal')playReveal();
-  if(name==='scan')resetScan();
+  if(name==='scan'){resetScan();if(st.skipCamOnce)st.skipCamOnce=false;else setTimeout(camAuto,300)} // after closeSheets, so the camera sheet isn't closed again
   if(name==='collection')renderCollection();
 }
 $$('.tab').forEach(t=>t.addEventListener('click',()=>go(t.dataset.go)));
@@ -2589,16 +2600,20 @@ const COACH={
 };
 const coachN=()=>{try{return +localStorage.getItem('mw_coach')||0}catch(e){return 0}};
 function coachBump(){try{localStorage.setItem('mw_coach',String(coachN()+1))}catch(e){}}
-function coachPaint(){const c=$('#coach');if(!c)return;const k=COACH[st.scanMode],on=!DEMO&&k&&coachN()<4;c.hidden=!on;if(on){$('#coachT').textContent=k[0];$('#coachB').textContent=k[1]}}
+function coachPaint(){const c=$('#coach');if(!c)return;const k=COACH[st.scanMode],on=!DEMO&&k&&coachN()<4;$('#scan').classList.toggle('roomy',!DEMO&&coachN()>=4);c.hidden=!on;if(on){$('#coachT').textContent=k[0];$('#coachB').textContent=k[1]}}
+/* every mode reads from the live camera, so open it without a shutter tap: ask first the first time, and respect a decline or an OS denial */
+function camAuto(){
+  if(DEMO||camStream||st.screen!=='scan'||st.camDeclined||st.camDenied)return;
+  if(st.camAsked||st.camPref)camOn();else{st.camAsked=true;camSave();openSheet('cam')}
+}
 function setScanMode(m){
-  st.scanMode=m;st.autoOff=false;$('#vf').dataset.m=m;$('#barType').hidden=(m==='deadwax');
+  st.scanMode=m;st.autoOff=false;$('#vf').dataset.m=m;$('#barType').hidden=false;
   if(DEMO&&(m==='deadwax'||m==='cover')&&!st.simNote){st.simNote=true;setTimeout(()=>toast('Deadwax and cover reading are simulated here. Barcode and label are real.'),250)}
   const vis=$$('#modes button').filter(b=>!b.hidden),idx=Math.max(0,vis.findIndex(b=>b.dataset.mode===m));
   $('#modes').style.setProperty('--i',idx);$('#modes').style.setProperty('--n',vis.length);
   $$('#modes button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
   resetScan();coachPaint();
-  if(!DEMO&&m==='cover'&&!camStream&&st.screen==='scan'&&!st.camDeclined&&!st.camDenied){ // Cover reads from the live camera, so open it without a shutter tap
-    if(st.camAsked)camOn();else{st.camAsked=true;camSave();openSheet('cam')}}
+  camAuto();
 }
 $$('#modes button').forEach(b=>b.addEventListener('click',()=>{if(st.scanning)stopReal();setScanMode(b.dataset.mode)}));
 if(!DEMO){setScanMode('barcode');$$('.v-rec svg text:not(.ring-text)').forEach(t=>t.textContent='')}
@@ -6334,8 +6349,8 @@ function welcomeDone(){try{localStorage.setItem('mw_welcome','1')}catch(e){}}
 function welcomeDoor(d){
   welcomeDone();
   if(d==='scan')go('scan');
-  else if(d==='type'){go('scan');setTimeout(()=>openCatEntry(),250)}
-  else if(d==='first'){st.firstBought=Date.now();go('scan');setTimeout(()=>{openCatEntry();toast('Type the first record you ever bought.')},250)}
+  else if(d==='type'){st.skipCamOnce=true;go('scan');setTimeout(()=>openCatEntry(),250)}
+  else if(d==='first'){st.firstBought=Date.now();st.skipCamOnce=true;go('scan');setTimeout(()=>{openCatEntry();toast('Type the first record you ever bought.')},250)}
   else if(d==='listen'){go('collection');setTimeout(()=>openHear(),250)}
   else if(d==='discogs'){go('collection');setTimeout(()=>{const b=$('#firstRun [data-set="import"]');if(b)b.click()},250)}
   else go('collection');
