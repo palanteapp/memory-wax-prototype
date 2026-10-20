@@ -2003,7 +2003,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.39.1 · help pictures';
+const BUILD='0.39.2 · full logo';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -2354,7 +2354,9 @@ async function cardLogo(x,W,H,bg,lh){
   const h=String(bg||'#000').replace('#',''),lum=(parseInt(h.slice(0,2),16)*.3+parseInt(h.slice(2,4),16)*.59+parseInt(h.slice(4,6),16)*.11)/255;
   try{
     if(lum<.5){const im=await loadImg('assets/memory-wax-logo.png'),sx=80,sy=225,sw=1100,sh=800,hh=lh||218,w=hh*sw/sh;x.save();x.globalCompositeOperation='lighten';x.drawImage(im,sx,sy,sw,sh,W-64-w,H-50-hh,w,hh);x.restore()}
-    else{const im=await loadImg('assets/memory-wax-wordmark-ox.png'),w=230,hh=w*844/1643;x.drawImage(im,W-72-w,H-62-hh,w,hh)}
+    else{const im=await loadImg('assets/memory-wax-logo.png'),sx=80,sy=225,sw=1100,sh=800,hh=lh||218,w=hh*sw/sh,px=W-64-w,py=H-50-hh,pad=22;
+      x.save();x.fillStyle='#540B0E';x.beginPath();(x.roundRect?x.roundRect(px-pad,py-pad,w+pad*2,hh+pad*2,26):x.rect(px-pad,py-pad,w+pad*2,hh+pad*2));x.fill();
+      x.globalCompositeOperation='lighten';x.drawImage(im,sx,sy,sw,sh,px,py,w,hh);x.restore()}
   }catch(e){x.save();x.font='500 26px "DM Mono",monospace';x.globalAlpha=.85;x.textAlign='right';x.fillText('MADE WITH MEMORY WAX',W-72,H-70);x.restore()}
 }
 /* your photo and name, bottom left of a card, when you've added them */
