@@ -1851,7 +1851,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
     <div class="sheet" id="sheet-data" role="dialog" aria-label="About our data">
       <h4 class="disp">About our data</h4>
       <p class="sub">Where each thing on a record’s page comes from.</p>
-      <div class="dsrc"><b>Pressings, labels and catalogue numbers</b><span>MusicBrainz and Discogs open data. Data provided by Discogs where it is used.</span></div>
+      <div class="dsrc"><b>Pressings, labels and catalogue numbers</b><span>Memory Wax’s own index of Discogs open data, then MusicBrainz. Data provided by Discogs where it is used.</span></div>
       <div class="dsrc"><b>Credits and who played what</b><span>Discogs and MusicBrainz, with a link to the source on each record.</span></div>
       <div class="dsrc"><b>Cover art</b><span>Shown from the Cover Art Archive to identify a record. It belongs to its rights holders. Covers you photograph yourself stay on your phone.</span></div>
       <div class="dsrc"><b>Music</b><span>Apple Music plays it, with your own account. Memory Wax never stores audio.</span></div>
@@ -2043,7 +2043,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.48.4 · clean seal';
+const BUILD='0.49.0 · pressings index';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -4720,8 +4720,8 @@ async function getBarDet(){
   h.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.UPC_E,Z.BarcodeFormat.EAN_8]);h.set(Z.DecodeHintType.TRY_HARDER,true);reader.setHints(h);
   return barDet={detect:async c=>{try{return reader.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(c)))).getText()}catch(e){return null}}};
 }
-/* ---------- Memory Wax index: our own read-only copy of public catalogue data (see index-server/). Until INDEX_URL is set the app uses MusicBrainz as before. ---------- */
-const INDEX_URL='';
+/* ---------- Memory Wax index: our own read-only copy of public catalogue data (see index-server/). The app asks it first and falls back to MusicBrainz and Discogs when it is unreachable or has no answer. ---------- */
+const INDEX_URL='https://memory-wax-index.fly.dev';
 const IDX=(()=>{let u=INDEX_URL;try{if(DEVTOOLS){const m=location.search.match(/[?&]idx=([^&]*)/);if(m){const v=decodeURIComponent(m[1]);v?localStorage.setItem('mw_idx',v):localStorage.removeItem('mw_idx')}u=localStorage.getItem('mw_idx')||u}}catch(e){}return String(u||'').replace(/\/$/,'')})();
 async function idxGet(path){
   if(!IDX)return null;const ac=new AbortController(),t=setTimeout(()=>ac.abort(),7000);
