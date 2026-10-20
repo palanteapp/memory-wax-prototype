@@ -1098,6 +1098,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 #collection .gear.cols{right:148px}
 .fdot{position:absolute;top:2px;right:2px;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--ox)}
 #collection .hd.sm{padding-top:44px}
+.colline #colSub{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .colline{display:flex;justify-content:space-between;align-items:baseline;gap:12px;max-width:none!important}
 .yrlink,.colline .yrlink{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
 .search[hidden]{display:none}
@@ -2010,7 +2011,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.44.0 · quiet collection';
+const BUILD='0.44.1 · day story';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3265,6 +3266,15 @@ function askRemoveRecords(ids){
   askSure({title:n===1?'Remove this record?':`Remove ${n} records?`,body:(n===1?`“${rs[0].t}” by ${rs[0].a}. `:nameList(rs.map(r=>r.t))+'. ')+(n===1?RM_BODY:RM_BODY.replace('It leaves','They leave').replace('it is on','they are on').replace('for it','for them').replace('still has it','still has them')),yes:n===1?'Remove record':`Remove ${n} records`,
     go:()=>{const wasReveal=st.screen==='reveal';removeRecords(rs.map(r=>r.id));st.sel=null;if(wasReveal)go('collection');else renderCollection();toast(n===1?`Removed “${rs[0].t}” from your collection.`:`Removed ${n} records from your collection.`)}});
 }
+/* the count line carries one small fact about your shelf, a different one each day */
+function colStory(all,conf){
+  const base=`${all.length} record${all.length===1?'':'s'}`,loose=all.length-conf,F=[`${base} · ${conf} confirmed`];
+  if(loose>0)F.push(`${base} · ${loose} left to confirm`);
+  const nw=all.slice().sort((a,b)=>(b.ord||0)-(a.ord||0))[0];if(nw&&all.length>1)F.push(`${base} · newest: ${nw.t.length>15?nw.t.slice(0,14)+'…':nw.t}`);
+  const wk=Date.now()-7*864e5;let sp=0;all.forEach(r=>((st.copies[r.id]||{}).plays||[]).forEach(x=>{if(x.at>wk)sp++}));if(sp>0)F.push(`${base} · ${sp} spin${sp===1?'':'s'} this week`);
+  const ys=all.map(r=>+r.y).filter(y=>y>1900);if(ys.length>1){const o=Math.min(...ys);F.push(`${base} · oldest from ${o}`);const dc={};ys.forEach(y=>{const d=Math.floor(y/10)*10;dc[d]=(dc[d]||0)+1});const top=Object.entries(dc).sort((a,b)=>b[1]-a[1])[0];if(top&&top[1]>1)F.push(`${base} · most from the ${top[0]}s`)}
+  return F[Math.floor(Date.now()/864e5)%F.length];
+}
 function renderCollection(){
   const all=own(),conf=all.filter(r=>r.c==='confirmed').length,empty=!all.length;
   $('#colSearchBtn').hidden=$('#colViewBtn').hidden=empty;
@@ -3276,7 +3286,7 @@ function renderCollection(){
   items.sort(st.sort==='az'?(a,b)=>a.r.t.localeCompare(b.r.t):st.sort==='year'?(a,b)=>a.r.y-b.r.y:(a,b)=>b.r.ord-a.r.ord);
   $('#sortBtn').textContent=SORTS[st.sort];
   {const fil=st.filter!=='All'||st.confOnly||!!q;$('#colDot').hidden=!(st.filter!=='All'||st.confOnly||st.view==='list'||st.sort!=='recent');
-   $('#colSub').innerHTML=empty?'0 records':fil?`${items.length} of ${all.length} shown · <button class="yrlink" data-clearf="1">Clear</button>`:`${all.length} records · ${conf} confirmed`;
+   $('#colSub').innerHTML=empty?'0 records':fil?`${items.length} of ${all.length} shown · <button class="yrlink" data-clearf="1">Clear</button>`:colStory(all,conf);
    $('#search').hidden=!(st.searchOpen||q);}$('#sortBtn').setAttribute('aria-label','Change sort order. Now: '+SORTS[st.sort]);
   if(st.colTab!==0||empty)st.sel=null;
   $('#selBtn').textContent=st.sel?'Cancel':'Select';$('#selBtn').hidden=!all.length;
