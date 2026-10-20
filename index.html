@@ -1089,6 +1089,16 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
 .scan.roomy .vf[data-m=barcode] ~ .guide{top:596px}
 }
 .vf .corner{vector-effect:non-scaling-stroke}
+/* the moment a scan upgrades a record to Confirmed */
+.moment{position:absolute;left:16px;right:16px;top:60px;z-index:95;display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--cream);color:var(--ox);border-radius:0 18px 0 0;box-shadow:8px 8px 0 rgba(0,0,0,.35);text-align:left;transform:translateY(-150%);opacity:0;transition:transform .5s var(--ease-out),opacity .25s ease-out}
+.moment.on{transform:none;opacity:1}
+.moment[hidden]{display:none}
+.moment .mk{flex:none;width:46px;height:46px;border-radius:50%;background:var(--red);color:var(--cream);display:grid;place-items:center;font-style:normal;font-weight:900;font-size:24px;box-shadow:inset 0 0 0 3px var(--cream),inset 0 0 0 5px var(--red)}
+.moment .mtx b{display:block;font-family:var(--disp);font-weight:900;font-stretch:62%;text-transform:uppercase;font-size:26px;line-height:.9}
+.moment .mtx span{display:block;margin-top:4px;font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.15}
+.seal.stamp{animation:sealstamp .6s var(--ease-out)}
+@keyframes sealstamp{0%{transform:rotate(-26deg) scale(1.8);opacity:0}55%{transform:rotate(-6deg) scale(.92);opacity:1}100%{transform:rotate(-8deg) scale(1)}}
+
 /* Collection: a calm header. Tools live behind the search and ⋯ buttons; the nudge floats low and slim. */
 #collection .gear,#collection .helpb.colh{top:62px;width:34px;height:34px}
 #collection .gear svg,#collection .helpb.colh svg{width:18px;height:18px}
@@ -1837,6 +1847,7 @@ ul.plain{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.45}ul.pl
       <p class="fine" style="margin-top:12px;font-weight:600">Every claim carries a source. Anything unverified is labeled.</p>
     </div>
 
+    <button class="moment" id="moment" type="button" hidden aria-live="polite"><i class="mk" aria-hidden="true">✓</i><span class="mtx"><b>Pressing confirmed</b><span id="momentTxt"></span></span></button>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <div class="grain" aria-hidden="true"></div>
   </div></div>
@@ -2017,7 +2028,7 @@ function initState(empty){
 /* first launch is the clean, nothing-scanned version. The sample collection is opt-in (Settings, or ?demo=1). */
 /* Developer tools (test lab, sample data, saved scan shots, runtime-loaded libraries). Release builds set this to false in scripts/sync-web.sh --release so no hidden or dormant features ship. */
 const DEVTOOLS=true;
-const BUILD='0.45.0 · confirm list';
+const BUILD='0.46.0 · confirmed moment';
 /* where people reach us. Left empty until the real address exists, and the screens that need it stay hidden meanwhile. */
 const SUPPORT_EMAIL='',SITE_URL='';
 const DEMO=DEVTOOLS&&(()=>{try{if(/[?&]demo=1/.test(location.search))localStorage.setItem('mw_demo','1');if(/[?&]demo=0/.test(location.search))localStorage.removeItem('mw_demo');return localStorage.getItem('mw_demo')==='1'}catch(e){return false}})();
@@ -3273,6 +3284,19 @@ function askRemoveRecords(ids){
   askSure({title:n===1?'Remove this record?':`Remove ${n} records?`,body:(n===1?`“${rs[0].t}” by ${rs[0].a}. `:nameList(rs.map(r=>r.t))+'. ')+(n===1?RM_BODY:RM_BODY.replace('It leaves','They leave').replace('it is on','they are on').replace('for it','for them').replace('still has it','still has them')),yes:n===1?'Remove record':`Remove ${n} records`,
     go:()=>{const wasReveal=st.screen==='reveal';removeRecords(rs.map(r=>r.id));st.sel=null;if(wasReveal)go('collection');else renderCollection();toast(n===1?`Removed “${rs[0].t}” from your collection.`:`Removed ${n} records from your collection.`)}});
 }
+/* a record that was Likely or Album only has just been confirmed by a deadwax read: stamp the seal and say which pressing it is */
+let momentT=null;
+function hideMoment(){const m=$('#moment');if(!m)return;m.classList.remove('on');clearTimeout(momentT);setTimeout(()=>{m.hidden=true},500)}
+function confirmMoment(r){
+  const R=REP[r.id]||{},bits=[r.lab||R.lab,[r.ctry||R.ctry,r.y].filter(Boolean).join(' '),r.cat||R.cat,r.fmt||R.fmt].filter(Boolean);
+  setTimeout(()=>{
+    if(st.rec!==r.id||st.screen!=='reveal')return;
+    const b=$('#badge');b.classList.remove('stamp');void b.offsetWidth;if(!reduce)b.classList.add('stamp');haptic('success');
+    $('#momentTxt').textContent=bits.length?bits.join(' · '):'The etching matches a listed pressing.';
+    const m=$('#moment');m.hidden=false;void m.offsetWidth;m.classList.add('on');clearTimeout(momentT);momentT=setTimeout(hideMoment,5600);
+  },reduce?200:1800);
+}
+$('#moment').addEventListener('click',hideMoment);
 /* confirming a pressing compares the etched runout with Discogs' listings (or our own index), so it only works when one of them is set up */
 const canConfirm=()=>DEMO||!!(dgTok()||IDX);
 function openConfirm(){
@@ -5101,9 +5125,9 @@ function addRel(hit,ev){
     let sh=st.shelves.find(x=>x.n==='Where it started');if(!sh){sh={id:st.nextShelf++,n:'Where it started',v:0,recs:[]};st.shelves.push(sh)}
     if(!sh.recs.includes(id))sh.recs.push(id);st.firstBoughtDone=id}
   st.firstBought=null;
-  const r=recOf(id);{const qs=st.found&&st.found.q&&st.found.q.size;if(qs&&!r.fmt)r.fmt=SIZEFMT[qs]}if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
+  const r=recOf(id),wasC=ex?ex.c:'';{const qs=st.found&&st.found.q&&st.found.q.size;if(qs&&!r.fmt)r.fmt=SIZEFMT[qs]}if(ev.dw){r.mx=ev.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely'}
   if((r.src==='discogs'||r.src==='apple')&&!r.mb)attachMB(r);
-  saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(st.firstBoughtDone===id?(setTimeout(()=>{if(st.rec===id){memCopy(true);$('#memTxt').value=recOf(id).memo||'';openSheet('memory')}},900),st.firstBoughtDone=null,'Added to Where it started. Your first one.'):ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
+  saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;st.rec=id;st.keepRec=true;st.mode=evMode(r);go('reveal');if(ex&&ev.dw&&wasC&&wasC!=='confirmed'&&r.c==='confirmed')confirmMoment(r);toast(st.firstBoughtDone===id?(setTimeout(()=>{if(st.rec===id){memCopy(true);$('#memTxt').value=recOf(id).memo||'';openSheet('memory')}},900),st.firstBoughtDone=null,'Added to Where it started. Your first one.'):ex?'Already in your collection. Evidence updated.':'Added. It’s in your collection.');
 }
 /* the label, cut out of the middle of the frame and enlarged: a tight crop first (label fills it), then the whole circle */
 function rotCanvas(cv,deg){const q=Math.abs(deg)%180===90,c=document.createElement('canvas');c.width=q?cv.height:cv.width;c.height=q?cv.width:cv.height;const x=c.getContext('2d');x.translate(c.width/2,c.height/2);x.rotate(deg*Math.PI/180);x.drawImage(cv,-cv.width/2,-cv.height/2);return c}
@@ -5258,8 +5282,8 @@ async function startDeadwaxScan(){
 }
 function dwAttach(){
   const F=st.found;if(!F||F.kind!=='deadwax'||!F.ctx)return;const r=recOf(F.ctx);if(!r)return;
-  r.ev={...(r.ev||{}),dw:F.dw};r.mx=F.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely';saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;
-  st.rec=r.id;st.keepRec=true;st.mode=evMode(r);go('reveal');toast(r.c==='confirmed'?'Matches a listed pressing.':'Matrix saved. Not matched to a database runout yet.');
+  const wasC=r.c;r.ev={...(r.ev||{}),dw:F.dw};r.mx=F.dw.mx;r.c=evMode(r)==='confirmed'?'confirmed':'likely';saveReal();closeSheets();st.dwCtx=null;st.dwAcc=null;
+  st.rec=r.id;st.keepRec=true;st.mode=evMode(r);go('reveal');if(wasC!=='confirmed'&&r.c==='confirmed')confirmMoment(r);toast(r.c==='confirmed'?'Matches a listed pressing.':'Matrix saved. Not matched to a database runout yet.');
 }
 const DG_NOTE='<p class="fine2" style="margin-top:10px">Runout data provided by Discogs. This app uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs.</p>';
 /* where several pressings fit, show what actually separates them instead of picking one for the person */
